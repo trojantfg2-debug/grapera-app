@@ -1,679 +1,553 @@
-import React, { useState, useEffect } from 'react';
-
-// ==========================================
-// 1. ЗВУКОВОЙ ДВИЖОК (Web Audio API)
-// ==========================================
-const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-let audioCtx = null;
-
-function getAudioContext() {
-  if (!audioCtx) {
-    audioCtx = new AudioContextClass();
-  }
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-  return audioCtx;
-}
-
-const playSound = (type) => {
-  try {
-    const ctx = getAudioContext();
-    const now = ctx.currentTime;
-
-    switch (type) {
-      // Щелчок вращения рулетки
-      case 'tick': {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(500, now);
-        osc.frequency.exponentialRampToValueAtTime(100, now + 0.03);
-        gain.gain.setValueAtTime(0.15, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.03);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.03);
-        break;
-      }
-
-      // Звук выигрыша
-      case 'win': {
-        const notes = [523.25, 659.25, 783.99, 1046.50];
-        notes.forEach((freq, idx) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          const noteTime = now + idx * 0.08;
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, noteTime);
-          gain.gain.setValueAtTime(0.2, noteTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.25);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(noteTime);
-          osc.stop(noteTime + 0.25);
-        });
-        break;
-      }
-
-      // Проигрыш в рулетке
-      case 'lose': {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, now);
-        osc.frequency.exponentialRampToValueAtTime(50, now + 0.35);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.35);
-        break;
-      }
-
-      // Открытие кристалла в Минах
-      case 'gem': {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, now);
-        osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
-        gain.gain.setValueAtTime(0.15, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.12);
-        break;
-      }
-
-      // Звук взрыва мины
-      case 'explosion': {
-        const bufferSize = ctx.sampleRate * 0.6;
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-          data[i] = Math.random() * 2 - 1;
-        }
-
-        const noise = ctx.createBufferSource();
-        noise.buffer = buffer;
-
-        const filter = ctx.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1000, now);
-        filter.frequency.exponentialRampToValueAtTime(20, now + 0.6);
-
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0.6, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
-
-        noise.connect(filter);
-        filter.connect(gain);
-        gain.connect(ctx.destination);
-
-        noise.start(now);
-        noise.stop(now + 0.6);
-        break;
-      }
-      default: break;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Казино: Рулетка и Мины</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-  } catch (e) {
-    console.warn("Ошибка аудио:", e);
-  }
-};
-
-// ==========================================
-// 2. КОНСТАНТЫ РУЛЕТКИ
-// ==========================================
-const RED_NUMBERS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-
-// ==========================================
-// 3. КОМПОНЕНТ РУЛЕТКИ
-// ==========================================
-const RouletteGame = ({ balance, setBalance }) => {
-  const [betAmount, setBetAmount] = useState(50);
-  const [selectedBet, setSelectedBet] = useState(null);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [result, setResult] = useState(null);
-  const [message, setMessage] = useState('');
-
-  const handleSpin = () => {
-    if (isSpinning) return;
-    if (!selectedBet) {
-      setMessage('Выберите тип ставки!');
-      return;
-    }
-    if (betAmount <= 0 || betAmount > balance) {
-      setMessage('Недостаточно баланса или неверная ставка!');
-      return;
+    body {
+      margin: 0;
+      background-color: #121214;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      min-height: 100vh;
     }
 
-    setBalance((prev) => prev - betAmount);
-    setIsSpinning(true);
-    setMessage('Рулетка крутится...');
-    setResult(null);
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 500px;
+      background: #1e1e24;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
 
-    let ticksCount = 0;
-    const tickInterval = setInterval(() => {
-      playSound('tick');
-      ticksCount++;
-      if (ticksCount >= 12) clearInterval(tickInterval);
-    }, 120);
+    .balance-badge {
+      background: #2b2d42;
+      padding: 6px 14px;
+      border-radius: 20px;
+      color: #ffb703;
+      font-weight: bold;
+    }
 
-    setTimeout(() => {
-      const rolled = Math.floor(Math.random() * 37); // 0..36
-      setResult(rolled);
-      setIsSpinning(false);
+    .tab-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
 
-      const isRed = RED_NUMBERS.includes(rolled);
-      const isBlack = rolled !== 0 && !isRed;
-      let winMultiplier = 0;
+    .tab-btn {
+      background: #2b2d42;
+      border: none;
+      color: #8d99ae;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
 
-      if (selectedBet.type === 'number' && selectedBet.value === rolled) {
-        winMultiplier = 36;
-      } else if (rolled !== 0) {
-        if (selectedBet.type === 'color') {
-          if (selectedBet.value === 'red' && isRed) winMultiplier = 2;
-          if (selectedBet.value === 'black' && isBlack) winMultiplier = 2;
-        } else if (selectedBet.type === 'parity') {
-          if (selectedBet.value === 'even' && rolled % 2 === 0) winMultiplier = 2;
-          if (selectedBet.value === 'odd' && rolled % 2 !== 0) winMultiplier = 2;
-        } else if (selectedBet.type === 'range') {
-          if (selectedBet.value === '1-18' && rolled >= 1 && rolled <= 18) winMultiplier = 2;
-          if (selectedBet.value === '19-36' && rolled >= 19 && rolled <= 36) winMultiplier = 2;
-        }
-      }
+    .tab-btn.active {
+      background: #7209b7;
+      color: #fff;
+    }
 
-      if (winMultiplier > 0) {
-        const wonSum = betAmount * winMultiplier;
-        setBalance((prev) => prev + wonSum);
-        setMessage(`Выиграли +${wonSum}! (Выпало: ${rolled})`);
-        playSound('win');
-      } else {
-        setMessage(`Вы проиграли. Выпало: ${rolled}`);
-        playSound('lose');
-      }
-    }, 1800);
-  };
+    .game-card {
+      background: #1e1e24;
+      padding: 20px;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
 
-  const getNumberColorClass = (num) => {
-    if (num === 0) return 'bg-green';
-    return RED_NUMBERS.includes(num) ? 'bg-red' : 'bg-black';
-  };
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
 
-  return (
-    <div className="game-card">
-      <h2>Европейская Рулетка</h2>
+    .btn-bet {
+      flex: 1;
+      padding: 10px;
+      background: #2b2d42;
+      border: 2px solid transparent;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-      {result !== null && (
-        <div className="roulette-result">
-          Выпало: <span className={`num-badge ${getNumberColorClass(result)}`}>{result}</span>
-        </div>
-      )}
+    .btn-bet.selected { border-color: #7209b7; }
 
-      {/* Выбор цвета */}
-      <div className="btn-group">
-        <button 
-          className={`btn-bet bg-red ${selectedBet?.value === 'red' ? 'selected' : ''}`}
-          onClick={() => setSelectedBet({ type: 'color', value: 'red' })}
-        >Красное (x2)</button>
-        <button 
-          className={`btn-bet bg-black ${selectedBet?.value === 'black' ? 'selected' : ''}`}
-          onClick={() => setSelectedBet({ type: 'color', value: 'black' })}
-        >Черное (x2)</button>
-      </div>
+    .numbers-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      width: 100%;
+      margin: 10px 0;
+      max-height: 180px;
+      overflow-y: auto;
+    }
 
-      {/* Внешние ставки */}
-      <div className="btn-group">
-        <button 
-          className={`btn-bet ${selectedBet?.value === 'even' ? 'selected' : ''}`}
-          onClick={() => setSelectedBet({ type: 'parity', value: 'even' })}
-        >Чёт (x2)</button>
-        <button 
-          className={`btn-bet ${selectedBet?.value === 'odd' ? 'selected' : ''}`}
-          onClick={() => setSelectedBet({ type: 'parity', value: 'odd' })}
-        >Нечёт (x2)</button>
-        <button 
-          className={`btn-bet ${selectedBet?.value === '1-18' ? 'selected' : ''}`}
-          onClick={() => setSelectedBet({ type: 'range', value: '1-18' })}
-        >1-18 (x2)</button>
-        <button 
-          className={`btn-bet ${selectedBet?.value === '19-36' ? 'selected' : ''}`}
-          onClick={() => setSelectedBet({ type: 'range', value: '19-36' })}
-        >19-36 (x2)</button>
-      </div>
+    .num-btn {
+      padding: 8px 0;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
 
-      {/* Выбор конкретного числа */}
-      <div className="numbers-grid">
-        <button 
-          className={`num-btn bg-green ${selectedBet?.value === 0 ? 'selected' : ''}`}
-          onClick={() => setSelectedBet({ type: 'number', value: 0 })}
-        >0</button>
-        {Array.from({ length: 36 }, (_, i) => i + 1).map((n) => (
-          <button
-            key={n}
-            className={`num-btn ${getNumberColorClass(n)} ${selectedBet?.value === n ? 'selected' : ''}`}
-            onClick={() => setSelectedBet({ type: 'number', value: n })}
-          >
-            {n}
-          </button>
-        ))}
-      </div>
+    .num-btn.selected { border-color: #ffffff; transform: scale(1.05); }
 
-      <div className="input-row">
+    .bg-red { background-color: #e63946; }
+    .bg-black { background-color: #2b2d42; }
+    .bg-green { background-color: #2a9d8f; }
+
+    .input-row {
+      display: flex;
+      gap: 15px;
+      margin: 15px 0;
+      align-items: center;
+    }
+
+    .custom-input {
+      background: #2b2d42;
+      border: 1px solid #4a4e69;
+      color: white;
+      padding: 8px;
+      border-radius: 6px;
+      width: 80px;
+      text-align: center;
+    }
+
+    .main-action-btn {
+      width: 100%;
+      padding: 14px;
+      background: #7209b7;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .main-action-btn:disabled { background: #4a4e69; cursor: not-allowed; }
+
+    .roulette-result {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+
+    .num-badge {
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .status-msg { margin-top: 15px; color: #ffb703; font-weight: 500; }
+
+    /* ЭЛЕМЕНТЫ ИГРЫ «МИНЫ» */
+    .mines-stats {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 15px;
+      background: #2b2d42;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    .mines-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 15px;
+    }
+
+    .mine-tile {
+      aspect-ratio: 1;
+      background: #2b2d42;
+      border: none;
+      border-radius: 8px;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .mine-tile.revealed-gem { background: #2a9d8f; }
+    .mine-tile.revealed-mine { background: #4a4e69; }
+
+    /* Анимация взрыва мины */
+    @keyframes explodeShake {
+      0% { transform: scale(1) translate(0, 0); background-color: #e63946; box-shadow: 0 0 20px #e63946; }
+      20% { transform: scale(1.2) translate(-3px, 3px); background-color: #ffb703; }
+      40% { transform: scale(0.9) translate(3px, -3px); }
+      60% { transform: scale(1.1) translate(-2px, -2px); }
+      80% { transform: scale(0.95) translate(2px, 2px); }
+      100% { transform: scale(1) translate(0, 0); background-color: #d62828; }
+    }
+
+    .mine-tile.exploded {
+      animation: explodeShake 0.5s ease-in-out forwards;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- АУДИО ТЭГИ ДЛЯ ВАШИХ ФАЙЛОВ (УКАЖИТЕ ПУТИ К ВАШИМ ЗВУКАМ) -->
+  <audio id="sound-tick" src="sounds/tick.mp3" preload="auto"></audio>
+  <audio id="sound-win" src="sounds/win.mp3" preload="auto"></audio>
+  <audio id="sound-lose" src="sounds/lose.mp3" preload="auto"></audio>
+  <audio id="sound-gem" src="sounds/gem.mp3" preload="auto"></audio>
+  <audio id="sound-explosion" src="sounds/explosion.mp3" preload="auto"></audio>
+
+  <div class="header-bar">
+    <h3 style="margin: 0;">Gapera Casino</h3>
+    <div class="balance-badge">💰 <span id="balance-val">1000</span></div>
+  </div>
+
+  <div class="tab-selector">
+    <button class="tab-btn active" id="tab-roulette-btn" onclick="switchTab('roulette')">🎰 Рулетка</button>
+    <button class="tab-btn" id="tab-mines-btn" onclick="switchTab('mines')">💣 Мины</button>
+  </div>
+
+  <!-- КОМПОНЕНТ РУЛЕТКИ -->
+  <div id="roulette-game" class="game-card">
+    <h2>Европейская Рулетка</h2>
+
+    <div id="roulette-result" class="roulette-result hidden">
+      Выпало: <span id="roulette-result-badge" class="num-badge"></span>
+    </div>
+
+    <!-- Выбор цвета -->
+    <div class="btn-group">
+      <button class="btn-bet bg-red" onclick="selectRouletteBet('color', 'red', this)">Красное (x2)</button>
+      <button class="btn-bet bg-black" onclick="selectRouletteBet('color', 'black', this)">Черное (x2)</button>
+    </div>
+
+    <!-- Внешние ставки -->
+    <div class="btn-group">
+      <button class="btn-bet" onclick="selectRouletteBet('parity', 'even', this)">Чёт (x2)</button>
+      <button class="btn-bet" onclick="selectRouletteBet('parity', 'odd', this)">Нечёт (x2)</button>
+      <button class="btn-bet" onclick="selectRouletteBet('range', '1-18', this)">1-18 (x2)</button>
+      <button class="btn-bet" onclick="selectRouletteBet('range', '19-36', this)">19-36 (x2)</button>
+    </div>
+
+    <!-- Выбор числа -->
+    <div class="numbers-grid" id="roulette-numbers-grid"></div>
+
+    <div class="input-row">
+      <label>Ставка: </label>
+      <input type="number" id="roulette-bet-input" class="custom-input" value="50">
+    </div>
+
+    <button id="roulette-spin-btn" class="main-action-btn" onclick="spinRoulette()">КРУТИТЬ</button>
+    <p id="roulette-msg" class="status-msg"></p>
+  </div>
+
+  <!-- КОМПОНЕНТ МИН -->
+  <div id="mines-game" class="game-card hidden">
+    <h2>Мины</h2>
+
+    <div id="mines-setup" class="input-row">
+      <div>
         <label>Ставка: </label>
-        <input 
-          type="number" 
-          className="custom-input"
-          value={betAmount} 
-          onChange={(e) => setBetAmount(Number(e.target.value))} 
-          disabled={isSpinning}
-        />
+        <input type="number" id="mines-bet-input" class="custom-input" value="50">
       </div>
-
-      <button className="main-action-btn" onClick={handleSpin} disabled={isSpinning}>
-        {isSpinning ? 'КРУТИМ...' : 'КРУТИТЬ (x36)'}
-      </button>
-
-      {message && <p className="status-msg">{message}</p>}
+      <div>
+        <label>Мин (1-24): </label>
+        <input type="number" id="mines-count-input" class="custom-input" value="3" min="1" max="24">
+      </div>
     </div>
-  );
-};
 
-// ==========================================
-// 4. КОМПОНЕНТ МИН
-// ==========================================
-const GRID_SIZE = 25;
+    <div id="mines-stats" class="mines-stats hidden">
+      <span>Найдено: <strong id="gems-count">0</strong> 💎</span>
+      <span>Множитель: <strong id="mines-multiplier">x1.0</strong></span>
+    </div>
 
-const MinesGame = ({ balance, setBalance }) => {
-  const [minesCount, setMinesCount] = useState(3);
-  const [betAmount, setBetAmount] = useState(50);
-  const [inGame, setInGame] = useState(false);
-  const [grid, setGrid] = useState(Array(GRID_SIZE).fill({ revealed: false, isMine: false, exploded: false }));
-  const [gemsFound, setGemsFound] = useState(0);
-  const [multiplier, setMultiplier] = useState(1.0);
-  const [gameOver, setGameOver] = useState(false);
+    <div class="mines-grid" id="mines-grid"></div>
 
-  const startGame = () => {
-    if (betAmount <= 0 || betAmount > balance) return;
+    <button id="mines-start-btn" class="main-action-btn" onclick="startMines()">ИГРАТЬ</button>
+    <button id="mines-take-btn" class="main-action-btn bg-green hidden" onclick="takeMinesWin()">ЗАБРАТЬ</button>
+  </div>
 
-    setBalance((prev) => prev - betAmount);
+  <script>
+    // --- СОСТОЯНИЕ ИГРЫ ---
+    let balance = 1000;
+    const RED_NUMBERS = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
     
-    let newGrid = Array(GRID_SIZE).fill(null).map(() => ({ revealed: false, isMine: false, exploded: false }));
-    let placedMines = 0;
-    while (placedMines < minesCount) {
-      const idx = Math.floor(Math.random() * GRID_SIZE);
-      if (!newGrid[idx].isMine) {
-        newGrid[idx].isMine = true;
-        placedMines++;
+    // Рулетка
+    let rouletteSelectedBet = null;
+    let isSpinning = false;
+
+    // Мины
+    let minesGridData = [];
+    let inMinesGame = false;
+    let gemsFound = 0;
+    let currentMultiplier = 1.0;
+    let activeMinesCount = 3;
+    let currentMinesBet = 50;
+
+    // --- ФУНКЦИЯ ВОСПРОИЗВЕДЕНИЯ ЗВУКОВ ВАШИХ ФАЙЛОВ ---
+    function playAudio(soundId) {
+      const audio = document.getElementById(soundId);
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play().catch(e => console.log('Для воспроизведения звука требуется взаимодействие с графикой.'));
       }
     }
 
-    setGrid(newGrid);
-    setInGame(true);
-    setGameOver(false);
-    setGemsFound(0);
-    setMultiplier(1.0);
-  };
-
-  const handleTileClick = (index) => {
-    if (!inGame || grid[index].revealed || gameOver) return;
-
-    const newGrid = [...grid];
-
-    if (newGrid[index].isMine) {
-      newGrid[index] = { ...newGrid[index], revealed: true, exploded: true };
-      
-      newGrid.forEach((tile, i) => {
-        if (tile.isMine) newGrid[i].revealed = true;
-      });
-
-      setGrid(newGrid);
-      setGameOver(true);
-      setInGame(false);
-      playSound('explosion');
-    } else {
-      newGrid[index] = { ...newGrid[index], revealed: true };
-      const newGemsCount = gemsFound + 1;
-      
-      const nextMultiplier = Number((multiplier + 0.15 + minesCount * 0.08).toFixed(2));
-      
-      setGrid(newGrid);
-      setGemsFound(newGemsCount);
-      setMultiplier(nextMultiplier);
-      playSound('gem');
+    // --- ОБНОВЛЕНИЕ БАЛАНСА ---
+    function updateBalance(amount) {
+      balance += amount;
+      document.getElementById('balance-val').innerText = balance;
     }
-  };
 
-  const takeEarnings = () => {
-    if (!inGame || gemsFound === 0) return;
+    // --- ПЕРЕКЛЮЧЕНИЕ ТАБОВ ---
+    function switchTab(tab) {
+      if (isSpinning || inMinesGame) return;
+      document.getElementById('tab-roulette-btn').classList.toggle('active', tab === 'roulette');
+      document.getElementById('tab-mines-btn').classList.toggle('active', tab === 'mines');
+      document.getElementById('roulette-game').classList.toggle('hidden', tab !== 'roulette');
+      document.getElementById('mines-game').classList.toggle('hidden', tab !== 'mines');
+    }
 
-    const winSum = Math.floor(betAmount * multiplier);
-    setBalance((prev) => prev + winSum);
-    setInGame(false);
-    playSound('win');
-  };
+    // ==========================================
+    // ЛОГИКА РУЛЕТКИ
+    // ==========================================
+    function initRouletteNumbers() {
+      const grid = document.getElementById('roulette-numbers-grid');
+      grid.innerHTML = '';
+      
+      // Зеро
+      const zeroBtn = document.createElement('button');
+      zeroBtn.className = 'num-btn bg-green';
+      zeroBtn.innerText = '0';
+      zeroBtn.onclick = (e) => selectRouletteBet('number', 0, e.target);
+      grid.appendChild(zeroBtn);
 
-  return (
-    <div className="game-card">
-      <h2>Мины</h2>
+      // Числа 1-36
+      for (let i = 1; i <= 36; i++) {
+        const btn = document.createElement('button');
+        const colorClass = RED_NUMBERS.includes(i) ? 'bg-red' : 'bg-black';
+        btn.className = `num-btn ${colorClass}`;
+        btn.innerText = i;
+        btn.onclick = (e) => selectRouletteBet('number', i, e.target);
+        grid.appendChild(btn);
+      }
+    }
 
-      {!inGame ? (
-        <div className="input-row">
-          <div>
-            <label>Ставка: </label>
-            <input 
-              type="number" 
-              className="custom-input"
-              value={betAmount} 
-              onChange={(e) => setBetAmount(Number(e.target.value))} 
-            />
-          </div>
-          <div>
-            <label>Мин (1-24): </label>
-            <input 
-              type="number" 
-              className="custom-input"
-              min="1" 
-              max="24" 
-              value={minesCount} 
-              onChange={(e) => setMinesCount(Math.min(24, Math.max(1, Number(e.target.value))))} 
-            />
-          </div>
-        </div>
-      ) : (
-        <div className="mines-stats">
-          <span>Найдено: <strong>{gemsFound}</strong> 💎</span>
-          <span>Множитель: <strong>x{multiplier}</strong></span>
-        </div>
-      )}
+    function selectRouletteBet(type, value, element) {
+      if (isSpinning) return;
+      document.querySelectorAll('.btn-bet, .num-btn').forEach(el => el.classList.remove('selected'));
+      element.classList.add('selected');
+      rouletteSelectedBet = { type, value };
+    }
 
-      <div className="mines-grid">
-        {grid.map((tile, idx) => {
-          let content = '';
-          let tileClass = 'mine-tile';
+    function spinRoulette() {
+      const betInput = document.getElementById('roulette-bet-input');
+      const betAmount = Number(betInput.value);
+      const msgEl = document.getElementById('roulette-msg');
 
-          if (tile.revealed) {
-            if (tile.isMine) {
-              content = '💣';
-              tileClass += tile.exploded ? ' exploded' : ' revealed-mine';
-            } else {
-              content = '💎';
-              tileClass += ' revealed-gem';
-            }
+      if (isSpinning) return;
+      if (!rouletteSelectedBet) {
+        msgEl.innerText = 'Выберите тип ставки!';
+        return;
+      }
+      if (betAmount <= 0 || betAmount > balance) {
+        msgEl.innerText = 'Недостаточно средств на балансе!';
+        return;
+      }
+
+      updateBalance(-betAmount);
+      isSpinning = true;
+      msgEl.innerText = 'Крутим рулетку...';
+      document.getElementById('roulette-result').classList.add('hidden');
+
+      let ticks = 0;
+      const tickInterval = setInterval(() => {
+        playAudio('sound-tick'); // ВАШ ЗВУК ТИКА
+        ticks++;
+        if (ticks >= 12) clearInterval(tickInterval);
+      }, 120);
+
+      setTimeout(() => {
+        const rolled = Math.floor(Math.random() * 37);
+        const resultBadge = document.getElementById('roulette-result-badge');
+        
+        resultBadge.innerText = rolled;
+        resultBadge.className = 'num-badge ' + (rolled === 0 ? 'bg-green' : RED_NUMBERS.includes(rolled) ? 'bg-red' : 'bg-black');
+        document.getElementById('roulette-result').classList.remove('hidden');
+
+        const isRed = RED_NUMBERS.includes(rolled);
+        const isBlack = rolled !== 0 && !isRed;
+        let winMultiplier = 0;
+
+        if (rouletteSelectedBet.type === 'number' && rouletteSelectedBet.value === rolled) {
+          winMultiplier = 36;
+        } else if (rolled !== 0) {
+          if (rouletteSelectedBet.type === 'color') {
+            if (rouletteSelectedBet.value === 'red' && isRed) winMultiplier = 2;
+            if (rouletteSelectedBet.value === 'black' && isBlack) winMultiplier = 2;
+          } else if (rouletteSelectedBet.type === 'parity') {
+            if (rouletteSelectedBet.value === 'even' && rolled % 2 === 0) winMultiplier = 2;
+            if (rouletteSelectedBet.value === 'odd' && rolled % 2 !== 0) winMultiplier = 2;
+          } else if (rouletteSelectedBet.type === 'range') {
+            if (rouletteSelectedBet.value === '1-18' && rolled >= 1 && rolled <= 18) winMultiplier = 2;
+            if (rouletteSelectedBet.value === '19-36' && rolled >= 19 && rolled <= 36) winMultiplier = 2;
           }
-
-          return (
-            <button
-              key={idx}
-              className={tileClass}
-              onClick={() => handleTileClick(idx)}
-              disabled={!inGame || tile.revealed}
-            >
-              {content}
-            </button>
-          );
-        })}
-      </div>
-
-      {!inGame ? (
-        <button className="main-action-btn" onClick={startGame}>ИГРАТЬ</button>
-      ) : (
-        <button 
-          className="main-action-btn bg-green" 
-          onClick={takeEarnings} 
-          disabled={gemsFound === 0}
-        >
-          ЗАБРАТЬ {Math.floor(betAmount * multiplier)}
-        </button>
-      )}
-    </div>
-  );
-};
-
-// ==========================================
-// 5. ГЛАВНЫЙ КОМПОНЕНТ С ИНДЖЕКЦИЕЙ СТИЛЕЙ
-// ==========================================
-export default function App() {
-  const [balance, setBalance] = useState(1000);
-  const [activeTab, setActiveTab] = useState('roulette');
-
-  return (
-    <div className="app-container">
-      {/* Инджекция CSS-стилей и анимаций прямо в компонент */}
-      <style>{`
-        * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { margin: 0; background-color: #121214; color: #ffffff; }
-
-        .app-container {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 20px;
-          min-height: 100vh;
         }
 
-        .header-bar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          width: 100%;
-          max-width: 500px;
-          background: #1e1e24;
-          padding: 12px 20px;
-          border-radius: 12px;
-          margin-bottom: 20px;
+        if (winMultiplier > 0) {
+          const wonSum = betAmount * winMultiplier;
+          updateBalance(wonSum);
+          msgEl.innerText = `Выиграли +${wonSum}!`;
+          playAudio('sound-win'); // ВАШ ЗВУК ВЫИГРЫША
+        } else {
+          msgEl.innerText = 'Вы проиграли.';
+          playAudio('sound-lose'); // ВАШ ЗВУК ПРОИГРЫША
         }
 
-        .balance-badge {
-          background: #2b2d42;
-          padding: 6px 14px;
-          border-radius: 20px;
-          color: #ffb703;
-          font-weight: bold;
+        isSpinning = false;
+      }, 1800);
+    }
+
+    // ==========================================
+    // ЛОГИКА МИН
+    // ==========================================
+    function startMines() {
+      const betInput = document.getElementById('mines-bet-input');
+      const countInput = document.getElementById('mines-count-input');
+      
+      currentMinesBet = Number(betInput.value);
+      activeMinesCount = Math.min(24, Math.max(1, Number(countInput.value)));
+
+      if (currentMinesBet <= 0 || currentMinesBet > balance) return;
+
+      updateBalance(-currentMinesBet);
+
+      // Генерируем массив
+      minesGridData = Array(25).fill(null).map(() => ({ isMine: false, revealed: false }));
+      let placed = 0;
+      while (placed < activeMinesCount) {
+        const idx = Math.floor(Math.random() * 25);
+        if (!minesGridData[idx].isMine) {
+          minesGridData[idx].isMine = true;
+          placed++;
+        }
+      }
+
+      inMinesGame = true;
+      gemsFound = 0;
+      currentMultiplier = 1.0;
+
+      document.getElementById('mines-setup').classList.add('hidden');
+      document.getElementById('mines-stats').classList.remove('hidden');
+      document.getElementById('mines-start-btn').classList.add('hidden');
+      document.getElementById('mines-take-btn').classList.remove('hidden');
+      
+      updateMinesUI();
+      renderMinesGrid();
+    }
+
+    function renderMinesGrid() {
+      const grid = document.getElementById('mines-grid');
+      grid.innerHTML = '';
+
+      minesGridData.forEach((tile, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'mine-tile';
+        
+        if (tile.revealed) {
+          if (tile.isMine) {
+            btn.innerText = '💣';
+            btn.className += tile.exploded ? ' exploded' : ' revealed-mine';
+          } else {
+            btn.innerText = '💎';
+            btn.className += ' revealed-gem';
+          }
         }
 
-        .tab-selector {
-          display: flex;
-          gap: 10px;
-          margin-bottom: 20px;
-        }
+        btn.onclick = () => clickMineTile(idx);
+        grid.appendChild(btn);
+      });
+    }
 
-        .tab-btn {
-          background: #2b2d42;
-          border: none;
-          color: #8d99ae;
-          padding: 10px 20px;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: bold;
-          transition: all 0.2s;
-        }
+    function clickMineTile(index) {
+      if (!inMinesGame || minesGridData[index].revealed) return;
 
-        .tab-btn.active {
-          background: #7209b7;
-          color: #fff;
-        }
+      minesGridData[index].revealed = true;
 
-        .game-card {
-          background: #1e1e24;
-          padding: 20px;
-          border-radius: 16px;
-          width: 100%;
-          max-width: 500px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-        }
+      if (minesGridData[index].isMine) {
+        // Взрыв
+        minesGridData[index].exploded = true;
+        minesGridData.forEach(tile => { if (tile.isMine) tile.revealed = true; });
+        inMinesGame = false;
+        
+        playAudio('sound-explosion'); // ВАШ ЗВУК ВЗРЫВА
+        renderMinesGrid();
+        resetMinesControls();
+      } else {
+        // Кристалл
+        gemsFound++;
+        currentMultiplier = Number((currentMultiplier + 0.15 + activeMinesCount * 0.08).toFixed(2));
+        playAudio('sound-gem'); // ВАШ ЗВУК НАХОЖДЕНИЯ КРИСТАЛЛА
+        
+        updateMinesUI();
+        renderMinesGrid();
+      }
+    }
 
-        .btn-group {
-          display: flex;
-          gap: 8px;
-          width: 100%;
-          margin-bottom: 10px;
-        }
+    function updateMinesUI() {
+      document.getElementById('gems-count').innerText = gemsFound;
+      document.getElementById('mines-multiplier').innerText = 'x' + currentMultiplier;
+      document.getElementById('mines-take-btn').innerText = `ЗАБРАТЬ ${Math.floor(currentMinesBet * currentMultiplier)}`;
+    }
 
-        .btn-bet {
-          flex: 1;
-          padding: 10px;
-          background: #2b2d42;
-          border: 2px solid transparent;
-          border-radius: 8px;
-          color: white;
-          font-weight: bold;
-          cursor: pointer;
-        }
+    function takeMinesWin() {
+      if (!inMinesGame || gemsFound === 0) return;
 
-        .btn-bet.selected { border-color: #7209b7; }
+      const wonSum = Math.floor(currentMinesBet * currentMultiplier);
+      updateBalance(wonSum);
+      playAudio('sound-win'); // ВАШ ЗВУК ВЫИГРЫША
+      
+      inMinesGame = false;
+      resetMinesControls();
+    }
 
-        .numbers-grid {
-          display: grid;
-          grid-template-columns: repeat(6, 1fr);
-          gap: 6px;
-          width: 100%;
-          margin: 10px 0;
-          max-height: 180px;
-          overflow-y: auto;
-        }
+    function resetMinesControls() {
+      document.getElementById('mines-setup').classList.remove('hidden');
+      document.getElementById('mines-stats').classList.add('hidden');
+      document.getElementById('mines-start-btn').classList.remove('hidden');
+      document.getElementById('mines-take-btn').classList.add('hidden');
+    }
 
-        .num-btn {
-          padding: 8px 0;
-          border: 2px solid transparent;
-          border-radius: 6px;
-          color: white;
-          font-weight: bold;
-          cursor: pointer;
-        }
-
-        .num-btn.selected { border-color: #ffffff; transform: scale(1.05); }
-
-        .bg-red { background-color: #e63946; }
-        .bg-black { background-color: #2b2d42; }
-        .bg-green { background-color: #2a9d8f; }
-
-        .input-row {
-          display: flex;
-          gap: 15px;
-          margin: 15px 0;
-          align-items: center;
-        }
-
-        .custom-input {
-          background: #2b2d42;
-          border: 1px solid #4a4e69;
-          color: white;
-          padding: 8px;
-          border-radius: 6px;
-          width: 80px;
-          text-align: center;
-        }
-
-        .main-action-btn {
-          width: 100%;
-          padding: 14px;
-          background: #7209b7;
-          border: none;
-          border-radius: 10px;
-          color: white;
-          font-size: 16px;
-          font-weight: bold;
-          cursor: pointer;
-          transition: background 0.2s;
-        }
-
-        .main-action-btn:disabled { background: #4a4e69; cursor: not-allowed; }
-
-        .roulette-result {
-          font-size: 20px;
-          margin-bottom: 15px;
-        }
-
-        .num-badge {
-          padding: 4px 10px;
-          border-radius: 6px;
-          font-weight: bold;
-        }
-
-        .status-msg { margin-top: 15px; color: #ffb703; font-weight: 500; }
-
-        /* МИНЫ STYLES */
-        .mines-stats {
-          display: flex;
-          justify-content: space-between;
-          width: 100%;
-          margin-bottom: 15px;
-          background: #2b2d42;
-          padding: 10px;
-          border-radius: 8px;
-        }
-
-        .mines-grid {
-          display: grid;
-          grid-template-columns: repeat(5, 1fr);
-          gap: 8px;
-          width: 100%;
-          margin-bottom: 15px;
-        }
-
-        .mine-tile {
-          aspect-ratio: 1;
-          background: #2b2d42;
-          border: none;
-          border-radius: 8px;
-          font-size: 22px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          transition: background 0.2s;
-        }
-
-        .mine-tile.revealed-gem { background: #2a9d8f; }
-        .mine-tile.revealed-mine { background: #4a4e69; }
-
-        @keyframes explodeShake {
-          0% { transform: scale(1) translate(0, 0); background-color: #e63946; box-shadow: 0 0 20px #e63946; }
-          20% { transform: scale(1.2) translate(-3px, 3px); background-color: #ffb703; }
-          40% { transform: scale(0.9) translate(3px, -3px); }
-          60% { transform: scale(1.1) translate(-2px, -2px); }
-          80% { transform: scale(0.95) translate(2px, 2px); }
-          100% { transform: scale(1) translate(0, 0); background-color: #d62828; }
-        }
-
-        .mine-tile.exploded {
-          animation: explodeShake 0.5s ease-in-out forwards;
-        }
-      `}</style>
-
-      <div className="header-bar">
-        <h3>Казино Игра</h3>
-        <div className="balance-badge">💰 {balance}</div>
-      </div>
-
-      <div className="tab-selector">
-        <button 
-          className={`tab-btn ${activeTab === 'roulette' ? 'active' : ''}`} 
-          onClick={() => setActiveTab('roulette')}
-        >
-          🎰 Рулетка
-        </button>
-        <button 
-          className={`tab-btn ${activeTab === 'mines' ? 'active' : ''}`} 
-          onClick={() => setActiveTab('mines')}
-        >
-          💣 Мины
-        </button>
-      </div>
-
-      {activeTab === 'roulette' ? (
-        <RouletteGame balance={balance} setBalance={setBalance} />
-      ) : (
-        <MinesGame balance={balance} setBalance={setBalance} />
-      )}
-    </div>
-  );
-}
+    // Инициализация при старте
+    initRouletteNumbers();
+  </script>
+</body>
+</html>
