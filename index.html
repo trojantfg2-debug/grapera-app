@@ -12,6 +12,11 @@
   <style>
 :root{--f:"Google Sans","Roboto",system-ui,sans-serif;--sh-xs:4px;--sh-s:8px;--sh-m:12px;--sh-l:16px;--sh-xl:28px;--sh-full:9999px;--ease:cubic-bezier(.2,0,0,1)}
 :root{color-scheme:dark;--p:#D0BCFF;--on-p:#381E72;--p-c:#4F378B;--on-p-c:#EADDFF;--s2-c:#4A4458;--on-s2:#E8DEF8;--e:#F2B8B5;--on-e:#601410;--bg:#1C1B1F;--on:#E6E1E5;--sv:#49454F;--on-sv:#CAC4D0;--ol:#938F99;--ol-v:#49454F;--sc:#211F26;--sc-h:#2B2930;--sc-hi:#36343B;--win:#81C784;--on-win:#1B5E20;--wallpaper:url('https://s.fotora.ru/b4a6c30bcffdad8d.jpeg')}
+/* ===== Themes ===== */
+:root[data-theme="purple"]{color-scheme:dark;--p:#D0BCFF;--on-p:#381E72;--p-c:#4F378B;--on-p-c:#EADDFF;--s2-c:#4A4458;--on-s2:#E8DEF8;--e:#F2B8B5;--on-e:#601410;--bg:#1C1B1F;--on:#E6E1E5;--sv:#49454F;--on-sv:#CAC4D0;--ol:#938F99;--ol-v:#49454F;--sc:#211F26;--sc-h:#2B2930;--sc-hi:#36343B;--win:#81C784;--on-win:#1B5E20}
+:root[data-theme="black"]{color-scheme:dark;--p:#C9C9C9;--on-p:#1A1A1A;--p-c:#333333;--on-p-c:#F2F2F2;--s2-c:#2A2A2A;--on-s2:#EDEDED;--e:#FF6B6B;--on-e:#3A0000;--bg:#000000;--on:#F2F2F2;--sv:#2E2E2E;--on-sv:#ABABAB;--ol:#4D4D4D;--ol-v:#2E2E2E;--sc:#121212;--sc-h:#161616;--sc-hi:#1F1F1F;--win:#8BC98F;--on-win:#0E3B12}
+:root[data-theme="white"]{color-scheme:light;--p:#6750A4;--on-p:#FFFFFF;--p-c:#EADDFF;--on-p-c:#21005D;--s2-c:#E8DEF8;--on-s2:#1D192B;--e:#BA1A1A;--on-e:#FFFFFF;--bg:#FBF8FD;--on:#1C1B1F;--sv:#E7E0EC;--on-sv:#49454F;--ol:#79747E;--ol-v:#CAC4D0;--sc:#F3EDF7;--sc-h:#F7F2FA;--sc-hi:#ECE6F0;--win:#2E7D32;--on-win:#FFFFFF}
+:root[data-theme="red"]{color-scheme:dark;--p:#FFB4AB;--on-p:#690005;--p-c:#93000A;--on-p-c:#FFDAD6;--s2-c:#5C3A38;--on-s2:#FFDAD6;--e:#FF897A;--on-e:#5A0000;--bg:#1F0F0E;--on:#F4DEDA;--sv:#534341;--on-sv:#D8C2BE;--ol:#9E8D89;--ol-v:#534341;--sc:#261513;--sc-h:#2E1917;--sc-hi:#3A211E;--win:#8BC98F;--on-win:#0E3B12}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 input,textarea{-webkit-user-select:text;user-select:text}
 body{font-family:var(--f);background:transparent;color:var(--on);min-height:100vh;min-height:100dvh;padding-bottom:calc(80px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;position:relative}
@@ -156,11 +161,16 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 @keyframes spaceDrift{from{background-position:0 0}to{background-position:0 96px}}
 .crash-top{position:absolute;left:0;right:0;top:16px;text-align:center;z-index:4}.crash-mult{font-size:3.1rem;font-weight:700;letter-spacing:-1px;text-shadow:0 0 20px rgba(208,188,255,.28);transition:transform .12s var(--ease),color .2s}.crash-mult.live{color:var(--p)}.crash-mult.danger{color:#FFC107;animation:multPulse .55s ease-in-out infinite}.crash-mult.dead{color:var(--e)}
 @keyframes multPulse{50%{transform:scale(1.035)}}
-.crash-status{font-size:.72rem;color:var(--on-sv);margin-top:.15rem}.crash-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}.rocket{position:absolute;left:11%;bottom:18%;font-size:2.9rem;z-index:3;filter:drop-shadow(0 0 10px rgba(255,193,7,.4));transform:rotate(-18deg);transition:transform .08s linear}.rocket.live{animation:rocketBob .34s ease-in-out infinite alternate}.rocket.crashed{animation:rocketCrash .55s ease-in forwards}
-@keyframes rocketBob{to{transform:translateY(-4px) rotate(-18deg) scale(1.04)}}
-@keyframes rocketCrash{0%{transform:translate(0,0) rotate(-18deg);opacity:1}100%{transform:translate(95px,95px) rotate(28deg) scale(.65);opacity:0}}
-.crash-flame{position:absolute;left:-14px;top:30px;width:12px;height:34px;border-radius:50%;background:linear-gradient(180deg,#FFC107,#FF7043,transparent);filter:blur(1px);transform:rotate(8deg);animation:flame .12s infinite alternate}.rocket.crashed .crash-flame{animation:none}
-@keyframes flame{to{height:43px;transform:rotate(-5deg) scaleX(.8)}}
+.crash-status{font-size:.72rem;color:var(--on-sv);margin-top:.15rem}.crash-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+/* Точка на конце растущего графика — никакого движения-перелёта, только мгновенная смена состояния */
+.crash-point{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--p);box-shadow:0 0 12px color-mix(in srgb,var(--p) 70%,transparent);z-index:3;left:8%;top:86%}
+.crash-point.live{animation:pointPulse .5s ease-in-out infinite alternate}
+.crash-point.dead{background:var(--e);box-shadow:0 0 16px color-mix(in srgb,var(--e) 75%,transparent);animation:none}
+@keyframes pointPulse{to{transform:scale(1.35)}}
+/* Разлетающийся разрыв в точке краха — появляется мгновенно, без анимации перемещения линии */
+.crash-burst{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;border:3px solid var(--e);z-index:2;left:8%;top:86%;opacity:0;pointer-events:none}
+.crash-burst.on{animation:crashBurstPop .5s ease-out forwards}
+@keyframes crashBurstPop{0%{transform:scale(.3);opacity:1}100%{transform:scale(6);opacity:0}}
 .crash-grid{position:absolute;left:8%;right:8%;bottom:11%;height:1px;background:linear-gradient(90deg,transparent,var(--p),transparent);opacity:.38;box-shadow:0 0 12px rgba(208,188,255,.4)}
 .crash-controls{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}.crash-panel{background:var(--sc);border-radius:var(--sh-l);padding:.8rem}.crash-panel .lbl{margin-bottom:.3rem}.crash-value{font-weight:700;font-size:1.1rem}.crash-bet{display:flex;align-items:center;gap:.4rem}.crash-bet input{width:100%;padding:.62rem .5rem;border:1.5px solid var(--ol-v);border-radius:var(--sh-s);background:var(--bg);color:var(--on);font:inherit;text-align:center;outline:none}.crash-bet input:focus{border-color:var(--p)}.crash-quick{display:flex;gap:.3rem;margin-top:.4rem}.crash-quick button{flex:1;border:1px solid var(--ol-v);background:transparent;color:var(--on-sv);border-radius:var(--sh-full);padding:.35rem .2rem;font:500 .68rem var(--f)}
 .crash-live-info{text-align:center;font-size:.72rem;color:var(--on-sv);min-height:1.2rem;margin:.55rem 0}.crash-profit{color:var(--win);font-weight:700}.crash-loss{color:var(--e);font-weight:700}.crash-history{display:flex;gap:.35rem;overflow:hidden;margin-top:.65rem}.crash-history span{flex:0 0 auto;padding:.3rem .5rem;border-radius:var(--sh-full);background:var(--sc);font-size:.68rem;font-weight:700}.crash-history .low{color:var(--e)}.crash-history .mid{color:#FFC107}.crash-history .high{color:var(--win)}
@@ -219,6 +229,12 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .ni.on .mat{font-variation-settings:'FILL' 1}
 .nl{font-size:.6rem;font-weight:500}
 
+/* Settings / Themes */
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.theme-sw{display:flex;flex-direction:column;align-items:center;gap:.5rem;background:var(--sc);border:2px solid var(--ol-v);border-radius:var(--sh-l);padding:.8rem .6rem;cursor:pointer;font:500 .78rem var(--f);color:var(--on);transition:transform .12s var(--ease), border-color .2s}
+.theme-sw:active{transform:scale(.95)}
+.theme-sw.sel{border-color:var(--p);box-shadow:0 0 0 1px var(--p)}
+.theme-preview{width:100%;height:48px;border-radius:var(--sh-m);border:1px solid var(--ol-v)}
 .sn{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,16px);opacity:0;visibility:hidden;background:var(--on);color:var(--bg);border-radius:var(--sh-s);padding:.55rem 1rem;font-size:.85rem;transition:all .3s var(--ease);z-index:100;max-width:90vw;text-align:center;font-weight:500}
 .sn.on{transform:translate(-50%,0);opacity:1;visibility:visible}
   </style>
@@ -309,16 +325,17 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
       <div class="crash-stage" id="crashStage">
         <div class="crash-top"><div class="crash-mult live" id="crashMult">1.00×</div><div class="crash-status" id="crashStatus">Сделай ставку и запускай ракету</div></div>
         <canvas class="crash-canvas" id="crashCanvas"></canvas>
-        <div class="rocket" id="rocket"><span class="crash-flame"></span>🚀</div>
+        <div class="crash-point" id="crashPoint"></div>
+        <div class="crash-burst" id="crashBurst"></div>
         <div class="crash-grid"></div>
       </div>
       <div class="crash-controls">
         <div class="crash-panel"><div class="lbl">СТАВКА</div><div class="crash-bet"><button class="btn btn-s btn-sm" id="crashDn">−</button><input id="crashBet" type="number" value="50" min="10" step="10" inputmode="numeric"><button class="btn btn-s btn-sm" id="crashUp">+</button></div><div class="crash-quick"><button data-v="10">10</button><button data-v="50">50</button><button data-v="100">100</button><button data-v="250">250</button></div></div>
-        <div class="crash-panel"><div class="lbl">АВТОЗАБОР</div><div class="crash-value" id="crashAutoVal">2.00×</div><input id="crashAuto" type="range" min="110" max="1000" value="200" style="width:100%;margin-top:.5rem;accent-color:var(--p)"><div class="crash-live-info" style="margin:.25rem 0 0">Сработает только если ракета долетит</div></div>
+        <div class="crash-panel"><div class="lbl">АВТОЗАБОР</div><div class="crash-value" id="crashAutoVal">2.00×</div><input id="crashAuto" type="range" min="110" max="1000" value="200" style="width:100%;margin-top:.5rem;accent-color:var(--p)"><div class="crash-live-info" style="margin:.25rem 0 0">Сработает только если график доберётся до множителя</div></div>
       </div>
-      <div class="crash-live-info" id="crashInfo">RTP игры: 96% • Ракета может взорваться в любой момент</div>
-      <button class="btn btn-p btn-lg" id="crashGo"><span class="mat">rocket_launch</span> ЗАПУСТИТЬ</button>
-      <button class="btn btn-w btn-lg" id="crashCash" style="display:none"><span class="mat">flight_takeoff</span> ЗАБРАТЬ <span id="crashCashA">+0</span></button>
+      <div class="crash-live-info" id="crashInfo">RTP игры: 96% • График может оборваться в любой момент</div>
+      <button class="btn btn-p btn-lg" id="crashGo"><span class="mat">show_chart</span> ЗАПУСТИТЬ</button>
+      <button class="btn btn-w btn-lg" id="crashCash" style="display:none"><span class="mat">savings</span> ЗАБРАТЬ <span id="crashCashA">+0</span></button>
       <div class="crash-history" id="crashHistory"></div>
     </div>
   </section>
@@ -401,18 +418,32 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
     <div class="card"><div class="lbl">ИСТОРИЯ</div><div class="hist-list" id="hL"><div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">Пусто</div></div></div>
     <button class="btn btn-o btn-lg" id="rst"><span class="mat">restart_alt</span> Сбросить</button>
   </section>
+
+  <!-- SETTINGS -->
+  <section class="scr" id="s-settings">
+    <div class="card">
+      <div class="lbl">ТЕМА ОФОРМЛЕНИЯ</div>
+      <div class="theme-grid" id="themeGrid">
+        <button class="theme-sw" data-theme="purple"><span class="theme-preview" style="background:linear-gradient(135deg,#D0BCFF,#4F378B)"></span>Фиолетовая</button>
+        <button class="theme-sw" data-theme="black"><span class="theme-preview" style="background:linear-gradient(135deg,#4D4D4D,#000000)"></span>Чёрная</button>
+        <button class="theme-sw" data-theme="white"><span class="theme-preview" style="background:linear-gradient(135deg,#FFFFFF,#EADDFF)"></span>Белая</button>
+        <button class="theme-sw" data-theme="red"><span class="theme-preview" style="background:linear-gradient(135deg,#FFB4AB,#690005)"></span>Красная</button>
+      </div>
+    </div>
+  </section>
 </main>
 
 <nav class="nav">
   <button class="ni on" data-s="slots"><span class="np"><span class="mat">casino</span></span><span class="nl">Слоты</span></button>
   <button class="ni" data-s="dice"><span class="np"><span class="mat">sports_esports</span></span><span class="nl">Кости</span></button>
   <button class="ni" data-s="roulette"><span class="np"><span class="mat">circle</span></span><span class="nl">Рулетка</span></button>
-  <button class="ni" data-s="crash"><span class="np"><span class="mat">rocket_launch</span></span><span class="nl">Crash</span></button>
+  <button class="ni" data-s="crash"><span class="np"><span class="mat">show_chart</span></span><span class="nl">Crash</span></button>
   <button class="ni" data-s="mines"><span class="np"><span class="mat">explosion</span></span><span class="nl">Мины</span></button>
   <button class="ni" data-s="coin"><span class="np"><span class="mat">monetization_on</span></span><span class="nl">Монета</span></button>
   <button class="ni" data-s="clicker"><span class="np"><span class="mat">ads_click</span></span><span class="nl">Кликер</span></button>
   <button class="ni" data-s="daily"><span class="np"><span class="mat">redeem</span></span><span class="nl">Вход</span></button>
   <button class="ni" data-s="stats"><span class="np"><span class="mat">bar_chart</span></span><span class="nl">Стата</span></button>
+  <button class="ni" data-s="settings"><span class="np"><span class="mat">settings</span></span><span class="nl">Настройки</span></button>
 </nav>
 
 <div class="sn" id="sn"></div>
@@ -579,8 +610,8 @@ function getUid(){
 // localStorage внутри WebView Telegram (особенно iOS/Desktop) не гарантированно
 // переживает перезапуск мини-аппа — используем его как мгновенный кэш, а
 // CloudStorage Telegram как основное надёжное хранилище прогресса.
-const SAVE_VERSION=6;
-const STORAGE_KEY='gapera_alpha5_v6_save_'+getUid();
+const SAVE_VERSION=7;
+const STORAGE_KEY='gapera_alpha5_v7_save_'+getUid();
 const BACKUP_KEY=STORAGE_KEY+'_backup';
 let S=defaultState();
 
@@ -611,6 +642,7 @@ function displayUid(){
 // Ключи прошлых версий — читаем их при первом запуске Alpha 5, чтобы
 // прогресс игрока (звёзды, улучшения кликера, стата) перенёсся автоматически.
 const LEGACY_KEYS=()=>[
+  'gapera_alpha5_v6_save_'+getUid(),
   'gapera_alpha4_v5_save_'+getUid(),
   'gapera_alpha3_v4_save_'+getUid(),
   'gapera_alpha3_save_'+getUid(),
@@ -630,9 +662,10 @@ function defaultState(){
     stats:{total:0,win:0,loss:0,won:0,bet:0},
     hist:[], lastBonus:null, clicks:0, slotMax:500, crashHist:[],
     clkWin:{used:0,start:Date.now()}, clkPower:1, clkAuto:0, clkTurbo:0,
-    daily:{lastClaim:null,streak:0}, savedAt:0
+    daily:{lastClaim:null,streak:0}, savedAt:0, theme:'purple'
   };
 }
+const THEMES=['purple','black','white','red'];
 function normalizeState(x){
   const d=defaultState(), v=(x&&typeof x==='object')?x:{};
   d.bal=Number.isFinite(+v.bal)&&+v.bal>=0?Math.floor(+v.bal):d.bal;
@@ -653,6 +686,7 @@ function normalizeState(x){
   d.daily.lastClaim=Number.isFinite(+d.daily.lastClaim)?+d.daily.lastClaim:null;
   d.daily.streak=Math.max(0,Math.min(7,Math.floor(+d.daily.streak||0)));
   d.savedAt=Number.isFinite(+v.savedAt)?+v.savedAt:0;
+  d.theme=THEMES.includes(v.theme)?v.theme:d.theme;
   d.version=SAVE_VERSION;
   return d;
 }
@@ -697,6 +731,7 @@ function save(immediate=false){
 }
 function applyLoadedState(raw){
   S=normalizeState(raw||defaultState());
+  applyTheme(S.theme);
 }
 function renderAll(){
   try{rBal()}catch(e){}
@@ -704,7 +739,32 @@ function renderAll(){
   try{rClk()}catch(e){}
   try{rSlotMax()}catch(e){}
   try{dailyTick()}catch(e){}
+  try{rTheme()}catch(e){}
 }
+
+// ===== Темы оформления =====
+function applyTheme(name){
+  const t=THEMES.includes(name)?name:'purple';
+  document.documentElement.setAttribute('data-theme',t);
+  if(TG&&typeof TG.setHeaderColor==='function'){
+    try{
+      const bg=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+      if(bg)TG.setHeaderColor(bg);
+      if(bg&&typeof TG.setBackgroundColor==='function')TG.setBackgroundColor(bg);
+    }catch(e){}
+  }
+}
+function rTheme(){
+  document.querySelectorAll('.theme-sw').forEach(b=>b.classList.toggle('sel',b.dataset.theme===S.theme));
+}
+document.querySelectorAll('.theme-sw').forEach(b=>b.addEventListener('click',()=>{
+  Sound.click();
+  S.theme=b.dataset.theme;
+  applyTheme(S.theme);
+  rTheme();
+  save();
+  sn('Тема применена');
+}));
 function load(){
   // 1) Мгновенно поднимаем локальный кэш, чтобы UI не мигал пустым состоянием
   let raw=null;
@@ -740,6 +800,7 @@ function load(){
   }
 }
 load();
+rTheme();
 function flushSave(){save(true)}
 window.addEventListener('pagehide',flushSave);
 window.addEventListener('beforeunload',flushSave);
@@ -1004,29 +1065,62 @@ $('rGo').addEventListener('click',()=>{
 });
 
 
-// ===== CRASH / ROCKET =====
-const CRASH_RTP=0.96;
+// ===== CRASH (растущий график) =====
+// Модель честности: точка обрыва задаётся один раз при старте раунда по
+// стандартной crash-формуле point = (1-houseEdge)/(1-u), u — равномерная
+// случайная величина. Это даёт математически строгий RTP = 1-CRASH_HOUSE_EDGE
+// независимо от поведения игрока (когда он заберёт выигрыш).
+const CRASH_HOUSE_EDGE=0.04;      // 4% преимущество казино → 96% RTP
+const CRASH_MAX_MULT=1000;        // потолок множителя
+const CRASH_INSTA_CHANCE=CRASH_HOUSE_EDGE; // доля раундов с обрывом сразу на 1.00×
 let crashLock=false, crashRunning=false, crashRAF=0, crashStart=0, crashPoint=1, crashBetValue=0, crashCurrent=1, crashAutoValue=2;
 const crashStage=$('crashStage'), crashCanvas=$('crashCanvas'), crashCtx=crashCanvas.getContext('2d');
+const crashPointEl=$('crashPoint'), crashBurstEl=$('crashBurst');
+
 function crashFairPoint(){
   const u=Math.random();
-  return Math.min(1000,Math.max(1,Math.floor((CRASH_RTP/(1-u))*100)/100));
+  let point=(1-CRASH_HOUSE_EDGE)/(1-u);
+  point=Math.floor(point*100)/100;
+  return Math.min(CRASH_MAX_MULT,Math.max(1,point));
 }
 function crashResize(){const r=crashStage.getBoundingClientRect();const d=Math.min(2,window.devicePixelRatio||1);crashCanvas.width=Math.floor(r.width*d);crashCanvas.height=Math.floor(r.height*d);crashCtx.setTransform(d,0,0,d,0,0);}
 window.addEventListener('resize',()=>{if(document.getElementById('s-crash').classList.contains('on'))crashResize()});
-function crashDraw(mult){
-  const r=crashStage.getBoundingClientRect(),w=r.width,h=r.height;crashCtx.clearRect(0,0,w,h);
-  const t=Math.max(0,Math.min(1,(mult-1)/Math.max(1,Math.log10(Math.max(10,mult))*7)));
-  crashCtx.beginPath();crashCtx.moveTo(w*.08,h*.86);
-  const pts=[];for(let i=0;i<=40;i++){const x=w*.08+(w*.84)*(i/40);const y=h*.86-(h*.62)*Math.pow(i/40,1.65)*(0.55+0.45*Math.min(1,t+0.15));pts.push([x,y])}
-  pts.forEach(p=>crashCtx.lineTo(p[0],p[1]));crashCtx.lineTo(w*.92,h*.86);crashCtx.closePath();crashCtx.fillStyle='rgba(208,188,255,.06)';crashCtx.fill();
-  crashCtx.beginPath();pts.forEach((p,i)=>i?crashCtx.lineTo(p[0],p[1]):crashCtx.moveTo(p[0],p[1]));crashCtx.strokeStyle='rgba(208,188,255,.7)';crashCtx.lineWidth=2;crashCtx.stroke();
+
+// Доля пройденного пути графика по горизонтали — растёт по логарифму множителя,
+// поэтому кривая ускоряется визуально по мере роста ставки на кону.
+function crashProgress(mult){
+  return Math.min(1,Math.log(Math.max(1,mult))/Math.log(CRASH_MAX_MULT)*1.55);
 }
-function crashRocketPos(mult){
-  const r=crashStage.getBoundingClientRect();const progress=Math.min(.82,Math.log(Math.max(1,mult))/Math.log(50)*.78);
-  const x=10+progress*72,y=18+progress*62;
-  $('rocket').style.left=x+'%';$('rocket').style.bottom=(18+progress*48)+'%';
-  $('rocket').style.transform='rotate(-18deg)';
+// Рисует растущую линию графика от начала координат до текущего прогресса и
+// возвращает пиксельные координаты конца линии — туда ставится точка/разрыв.
+function crashDraw(mult,crashed){
+  const r=crashStage.getBoundingClientRect(),w=r.width,h=r.height;
+  crashCtx.clearRect(0,0,w,h);
+  const f=crashProgress(mult);
+  const steps=44;
+  const pts=[];
+  for(let i=0;i<=steps;i++){
+    const ff=f*(i/steps);
+    const x=w*.08+(w*.84)*ff;
+    const y=h*.86-(h*.62)*Math.pow(ff,1.65);
+    pts.push({x,y});
+  }
+  crashCtx.beginPath();crashCtx.moveTo(w*.08,h*.86);
+  pts.forEach(p=>crashCtx.lineTo(p.x,p.y));
+  crashCtx.lineTo(pts[pts.length-1].x,h*.86);crashCtx.closePath();
+  crashCtx.fillStyle=crashed?'rgba(242,184,181,.08)':'rgba(208,188,255,.08)';crashCtx.fill();
+  crashCtx.beginPath();
+  pts.forEach((p,i)=>i?crashCtx.lineTo(p.x,p.y):crashCtx.moveTo(p.x,p.y));
+  crashCtx.strokeStyle=crashed?'rgba(242,184,181,.95)':'rgba(208,188,255,.85)';
+  crashCtx.lineWidth=2.5;crashCtx.lineCap='round';crashCtx.stroke();
+  return pts[pts.length-1];
+}
+// Ставит точку графика мгновенно, без анимации перемещения — координаты
+// всегда синхронны с последним нарисованным кадром линии.
+function crashPlacePoint(pos,crashed){
+  crashPointEl.style.left=pos.x+'px';crashPointEl.style.top=pos.y+'px';
+  crashPointEl.classList.toggle('live',!crashed);
+  crashPointEl.classList.toggle('dead',!!crashed);
 }
 function crashRenderHistory(){
   const el=$('crashHistory');el.innerHTML='';(S.crashHist||[]).slice(0,8).forEach(n=>{const sp=document.createElement('span');sp.textContent=n.toFixed(2)+'×';sp.className=n<1.5?'low':n<3?'mid':'high';el.appendChild(sp)})
@@ -1041,28 +1135,47 @@ function crashFinish(crashed){
   crashRunning=false;cancelAnimationFrame(crashRAF);$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;
   const final=crashed?crashPoint:crashCurrent;
   S.crashHist.unshift(final);S.crashHist=S.crashHist.slice(0,12);save();crashRenderHistory();
-  if(crashed){aH('crash',0,crashBetValue);$('crashMult').textContent=final.toFixed(2)+'×';$('crashMult').className='crash-mult dead';$('crashStatus').textContent='💥 РАКЕТА ВЗОРВАЛАСЬ';$('rocket').classList.remove('live');$('rocket').classList.add('crashed');$('crashInfo').innerHTML='<span class="crash-loss">−'+crashBetValue+' ⭐</span> • точка взрыва '+final.toFixed(2)+'×';bz('loss');}
+  if(crashed){
+    aH('crash',0,crashBetValue);
+    $('crashMult').textContent=final.toFixed(2)+'×';$('crashMult').className='crash-mult dead';
+    $('crashStatus').textContent='📉 ГРАФИК ОБОРВАЛСЯ';
+    $('crashInfo').innerHTML='<span class="crash-loss">−'+crashBetValue+' ⭐</span> • точка обрыва '+final.toFixed(2)+'×';
+    // Разрыв происходит мгновенно на месте последней точки — без затяжной
+    // анимации улёта, просто короткая разлетающаяся вспышка один раз.
+    crashBurstEl.style.left=crashPointEl.style.left;crashBurstEl.style.top=crashPointEl.style.top;
+    crashBurstEl.classList.remove('on');void crashBurstEl.offsetWidth;crashBurstEl.classList.add('on');
+    bz('loss');
+  }
 }
 function crashFrame(now){
   if(!crashRunning)return;
   const elapsed=now-crashStart;crashCurrent=Math.max(1,Math.exp(elapsed*0.00013));
-  if(crashCurrent>=crashPoint){crashCurrent=crashPoint;crashDraw(crashCurrent);crashRocketPos(crashCurrent);crashFinish(true);return}
-  $('crashMult').textContent=crashCurrent.toFixed(2)+'×';$('crashMult').className='crash-mult '+(crashCurrent>=3?'danger':'live');$('crashStatus').textContent='Ракета летит • забери до взрыва';crashDraw(crashCurrent);crashRocketPos(crashCurrent);
+  if(crashCurrent>=crashPoint){
+    crashCurrent=crashPoint;
+    const pos=crashDraw(crashCurrent,true);crashPlacePoint(pos,true);
+    crashFinish(true);return;
+  }
+  $('crashMult').textContent=crashCurrent.toFixed(2)+'×';$('crashMult').className='crash-mult '+(crashCurrent>=3?'danger':'live');$('crashStatus').textContent='График растёт • забери до обрыва';
+  const pos=crashDraw(crashCurrent,false);crashPlacePoint(pos,false);
   const payout=Math.floor(crashBetValue*crashCurrent);$('crashCashA').textContent='+'+payout;
   if(crashCurrent>=crashAutoValue){crashCashout(true);return}
   crashRAF=requestAnimationFrame(crashFrame);
 }
 function crashCashout(auto=false){
   if(!crashRunning)return;const mult=crashCurrent;const payout=Math.floor(crashBetValue*mult);if(payout<crashBetValue)return;
-  crashRunning=false;cancelAnimationFrame(crashRAF);S.bal+=payout;save();rBal();$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;$('crashMult').textContent=mult.toFixed(2)+'×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=auto?'⚡ АВТОЗАБОР':'🚀 УСПЕШНЫЙ ЗАБОР';$('crashInfo').innerHTML='<span class="crash-profit">+'+payout+' ⭐</span> • ставка '+crashBetValue+' × '+mult.toFixed(2);$('rocket').classList.remove('live');aH('crash',payout,crashBetValue);bz('win');const rr=$('crashCash').getBoundingClientRect();confetti(rr.left+rr.width/2,rr.top,Math.min(26,8+Math.floor(mult)));
+  crashRunning=false;cancelAnimationFrame(crashRAF);S.bal+=payout;save();rBal();$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;$('crashMult').textContent=mult.toFixed(2)+'×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=auto?'⚡ АВТОЗАБОР':'📈 УСПЕШНЫЙ ЗАБОР';$('crashInfo').innerHTML='<span class="crash-profit">+'+payout+' ⭐</span> • ставка '+crashBetValue+' × '+mult.toFixed(2);crashPointEl.classList.remove('live');aH('crash',payout,crashBetValue);bz('win');const rr=$('crashCash').getBoundingClientRect();confetti(rr.left+rr.width/2,rr.top,Math.min(26,8+Math.floor(mult)));
 }
 $('crashCash').addEventListener('click',()=>{Sound.click();crashCashout(false)});
 $('crashGo').addEventListener('click',()=>{
   if(crashLock||crashRunning)return;Sound.click();const bet=Math.floor(Number($('crashBet').value)||10);if(!ok(bet)){sn('Не хватает звёзд');return}
   crashLock=true;crashBetValue=bet;crashPoint=crashFairPoint();crashCurrent=1;S.bal-=bet;save();rBal();crashResize();
-  $('rocket').classList.remove('crashed');$('rocket').classList.add('live');$('rocket').style.left='11%';$('rocket').style.bottom='18%';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='🚀 Взлёт...';$('crashInfo').textContent='Забери выигрыш до точки взрыва • авто: '+crashAutoValue.toFixed(2)+'×';$('crashGo').style.display='none';$('crashCash').style.display='';crashRunning=true;crashStart=performance.now();crashLock=false;crashRAF=requestAnimationFrame(crashFrame);
+  crashBurstEl.classList.remove('on');
+  const pos=crashDraw(1,false);crashPlacePoint(pos,false);
+  $('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='📈 Рост начался...';$('crashInfo').textContent='Забери выигрыш до обрыва графика • авто: '+crashAutoValue.toFixed(2)+'×';$('crashGo').style.display='none';$('crashCash').style.display='';crashRunning=true;crashStart=performance.now();crashLock=false;crashRAF=requestAnimationFrame(crashFrame);
 });
-crashSetAuto(200);crashResize();crashRenderHistory();
+crashSetAuto(200);crashResize();
+(function crashInitDraw(){const pos=crashDraw(1,false);crashPlacePoint(pos,false)})();
+crashRenderHistory();
 
 // ===== MINES =====
 let mOn=false,mB=[],mR=[],mBt=0,mM=1;const mT=25;
