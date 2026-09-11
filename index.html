@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Gapera Alpha 5</title>
+  <title>Gapera Alpha 5 — merged</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -51,7 +51,7 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .btn .mat{font-size:20px;line-height:1}
 .btn:disabled{opacity:.45;cursor:default}.btn:disabled::after{display:none}
 .btn-p{background:var(--p);color:var(--on-p)}.btn-s{background:var(--s2-c);color:var(--on-s2)}
-.btn-o{background:transparent;color:var(--p);border-color:var(--ol)}.btn-w{background:var(--win);color:var(--on-win)}
+.btn-o{background:transparent;color:var(--p);border-color:var(--ol)}.btn-t{background:transparent;color:var(--p)}.btn-w{background:var(--win);color:var(--on-win)}
 .btn-lg{width:100%;padding:1rem;font-size:1rem}.btn-sm{padding:.5rem .9rem;font-size:.8rem}
 
 /* Bet */
@@ -161,20 +161,15 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 @keyframes spaceDrift{from{background-position:0 0}to{background-position:0 96px}}
 .crash-top{position:absolute;left:0;right:0;top:16px;text-align:center;z-index:4}.crash-mult{font-size:3.1rem;font-weight:700;letter-spacing:-1px;text-shadow:0 0 20px rgba(208,188,255,.28);transition:transform .12s var(--ease),color .2s}.crash-mult.live{color:var(--p)}.crash-mult.danger{color:#FFC107;animation:multPulse .55s ease-in-out infinite}.crash-mult.dead{color:var(--e)}
 @keyframes multPulse{50%{transform:scale(1.035)}}
-.crash-status{font-size:.72rem;color:var(--on-sv);margin-top:.15rem}.crash-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
-/* Точка на конце растущего графика — никакого движения-перелёта, только мгновенная смена состояния */
-.crash-point{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--p);box-shadow:0 0 12px color-mix(in srgb,var(--p) 70%,transparent);z-index:3;left:8%;top:86%}
-.crash-point.live{animation:pointPulse .5s ease-in-out infinite alternate}
-.crash-point.dead{background:var(--e);box-shadow:0 0 16px color-mix(in srgb,var(--e) 75%,transparent);animation:none}
-@keyframes pointPulse{to{transform:scale(1.35)}}
-/* Разлетающийся разрыв в точке краха — появляется мгновенно, без анимации перемещения линии */
-.crash-burst{position:absolute;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;border:3px solid var(--e);z-index:2;left:8%;top:86%;opacity:0;pointer-events:none}
-.crash-burst.on{animation:crashBurstPop .5s ease-out forwards}
-@keyframes crashBurstPop{0%{transform:scale(.3);opacity:1}100%{transform:scale(6);opacity:0}}
+.crash-status{font-size:.72rem;color:var(--on-sv);margin-top:.15rem}.crash-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}.rocket{position:absolute;left:11%;bottom:18%;font-size:2.9rem;z-index:3;filter:drop-shadow(0 0 10px rgba(255,193,7,.4));transform:rotate(-18deg);transition:transform .08s linear}.rocket.live{animation:rocketBob .34s ease-in-out infinite alternate}.rocket.crashed{animation:rocketCrash .55s ease-in forwards}
+@keyframes rocketBob{to{transform:translateY(-4px) rotate(-18deg) scale(1.04)}}
+@keyframes rocketCrash{0%{transform:translate(0,0) rotate(-18deg);opacity:1}100%{transform:translate(95px,95px) rotate(28deg) scale(.65);opacity:0}}
+.crash-flame{position:absolute;left:-14px;top:30px;width:12px;height:34px;border-radius:50%;background:linear-gradient(180deg,#FFC107,#FF7043,transparent);filter:blur(1px);transform:rotate(8deg);animation:flame .12s infinite alternate}.rocket.crashed .crash-flame{animation:none}
+@keyframes flame{to{height:43px;transform:rotate(-5deg) scaleX(.8)}}
 .crash-grid{position:absolute;left:8%;right:8%;bottom:11%;height:1px;background:linear-gradient(90deg,transparent,var(--p),transparent);opacity:.38;box-shadow:0 0 12px rgba(208,188,255,.4)}
 .crash-controls{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}.crash-panel{background:var(--sc);border-radius:var(--sh-l);padding:.8rem}.crash-panel .lbl{margin-bottom:.3rem}.crash-value{font-weight:700;font-size:1.1rem}.crash-bet{display:flex;align-items:center;gap:.4rem}.crash-bet input{width:100%;padding:.62rem .5rem;border:1.5px solid var(--ol-v);border-radius:var(--sh-s);background:var(--bg);color:var(--on);font:inherit;text-align:center;outline:none}.crash-bet input:focus{border-color:var(--p)}.crash-quick{display:flex;gap:.3rem;margin-top:.4rem}.crash-quick button{flex:1;border:1px solid var(--ol-v);background:transparent;color:var(--on-sv);border-radius:var(--sh-full);padding:.35rem .2rem;font:500 .68rem var(--f)}
 .crash-live-info{text-align:center;font-size:.72rem;color:var(--on-sv);min-height:1.2rem;margin:.55rem 0}.crash-profit{color:var(--win);font-weight:700}.crash-loss{color:var(--e);font-weight:700}.crash-history{display:flex;gap:.35rem;overflow:hidden;margin-top:.65rem}.crash-history span{flex:0 0 auto;padding:.3rem .5rem;border-radius:var(--sh-full);background:var(--sc);font-size:.68rem;font-weight:700}.crash-history .low{color:var(--e)}.crash-history .mid{color:#FFC107}.crash-history .high{color:var(--win)}
-@media(max-width:390px){.crash-stage{height:285px}.crash-mult{font-size:2.65rem}.crash-controls{grid-template-columns:1fr}.crash-panel:nth-child(2){display:none}}
+@media(max-width:390px){.crash-stage{height:285px}.crash-mult{font-size:2.65rem}.crash-controls{grid-template-columns:1fr}}
 
 /* Stats */
 .stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.8rem}
@@ -207,23 +202,35 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .up-lvl{font-size:.7rem;color:var(--on-sv)}
 .up-btn{white-space:nowrap;flex-shrink:0}
 
-/* Daily */
-.daily-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:.8rem}
-.day-card{background:var(--sc);border-radius:var(--sh-l);padding:.6rem .3rem;text-align:center;border:2px solid transparent;transition:all .2s var(--ease)}
-.day-card.done{background:var(--p-c);border-color:var(--p)}
-.day-card.cur{border-color:var(--win);animation:dayPulse 1.6s ease-in-out infinite}
-@keyframes dayPulse{0%,100%{box-shadow:0 0 0 0 rgba(129,199,132,.5)}50%{box-shadow:0 0 0 6px rgba(129,199,132,0)}}
-.day-card .dn{font-size:.62rem;color:var(--on-sv);margin-bottom:.2rem}
-.day-card .dv{font-weight:700;font-size:.8rem}
-.day-card .di{font-size:1.25rem;margin-top:.1rem}
-.daily-cd{text-align:center;font-size:.85rem;color:var(--on-sv);margin-top:.6rem}
+/* Rewards — дизайн из обычного Index, поверх полупрозрачных карт под обои */
+.daily{max-width:560px;margin:.7rem auto 0;padding:0 1rem}
+.daily-card{display:flex;align-items:center;gap:.8rem;background:linear-gradient(135deg,var(--p-c),var(--p));color:var(--on-p-c);border-radius:var(--sh-xl);padding:.9rem 1rem}
+.daily-left{flex:1;min-width:0}
+.daily-title{font:700 .9rem var(--f);display:flex;align-items:center;gap:.35rem}
+.daily-sub{font:400 .7rem var(--f);opacity:.9;margin-top:.15rem}
+.daily-dots{display:flex;gap:.25rem;margin-top:.4rem}
+.daily-dot{width:18px;height:6px;border-radius:var(--sh-full);background:color-mix(in srgb,var(--on-p-c) 28%,transparent)}
+.daily-dot.on{background:var(--on-p-c)}
+.daily-dot.cur{outline:2px solid var(--on-p-c);outline-offset:1px}
+.daily-btn{white-space:nowrap;flex-shrink:0}
+.reward-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.4rem;margin:.8rem 0}
+.reward-cell{background:var(--sc);border:1px solid var(--ol-v);border-radius:var(--sh-m);padding:.6rem .2rem;text-align:center;transition:all .2s}
+.reward-cell.on{border-color:var(--p);background:color-mix(in srgb,var(--p) 18%,var(--sc))}
+.reward-cell.cur{outline:2px solid var(--p);outline-offset:1px}
+.reward-cell .rw-day{font:500 .65rem var(--f);color:var(--on-sv)}
+.reward-cell .rw-val{font:700 .85rem var(--f);margin-top:.2rem}
+.reward-cell.claimed{opacity:.45}
+.rewards-timer{font:700 1.4rem var(--f);text-align:center;color:var(--p);margin:.4rem 0}
+.rewards-sub{font:400 .75rem var(--f);color:var(--on-sv);text-align:center}
+@media(max-width:420px){.reward-grid{gap:.3rem}.reward-cell .rw-val{font-size:.72rem}}
 
-/* Nav */
-.nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;justify-content:center;background:color-mix(in srgb,var(--sc) 78%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--ol-v);padding-bottom:env(safe-area-inset-bottom);overflow-x:auto;scrollbar-width:none}
+/* Nav — дизайн из обычного Index: горизонтальный скролл под 10 вкладок */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;justify-content:flex-start;gap:0;background:color-mix(in srgb,var(--sc) 78%,transparent);backdrop-filter:blur(16px);border-top:1px solid var(--ol-v);padding-bottom:env(safe-area-inset-bottom);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
 .nav::-webkit-scrollbar{display:none}
-.ni{flex:1 1 0;min-width:52px;max-width:94px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:.5rem 0 .4rem;color:var(--on-sv);font-family:inherit}
+.nav .ni{flex:0 0 auto;min-width:68px}
+.ni{flex:1;max-width:120px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;padding:.5rem 0 .4rem;color:var(--on-sv);font-family:inherit}
 .ni .mat{font-size:22px}
-.np{display:grid;place-items:center;width:48px;height:28px;border-radius:var(--sh-full);transition:background .2s, transform .15s}
+.np{display:grid;place-items:center;width:56px;height:30px;border-radius:var(--sh-full);transition:background .2s, transform .15s}
 .ni:active .np{transform:scale(.92)}
 .ni.on{color:var(--on)}.ni.on .np{background:var(--s2-c);color:var(--on-s2)}
 .ni.on .mat{font-variation-settings:'FILL' 1}
@@ -249,6 +256,9 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
   <div class="bal" id="balBox"><span class="mat">star</span><span id="bal">1000</span><span class="bonus" id="btxt"></span></div>
 </div>
 
+<div class="daily" id="dailyWrap" style="display:none"><div class="daily-card"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">card_giftcard</span> Ежедневный бонус</div><div class="daily-sub" id="dailySub"></div><div class="daily-dots" id="dailyDots"></div></div><button class="btn btn-p btn-sm daily-btn" id="dailyBtnTop">Забрать</button></div></div>
+<div class="daily" id="bonusWrap" style="display:none"><div class="daily-card" style="background:linear-gradient(135deg,#2E7D32,var(--win));color:#fff"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">payments</span> Бонус готов!</div><div class="daily-sub">+500 звёзд</div></div><button class="btn btn-p btn-sm daily-btn" id="bonusBtnTop" style="background:#fff;color:#2E7D32">Забрать</button></div></div>
+
 <main>
   <!-- SLOTS -->
   <section class="scr on" id="s-slots">
@@ -262,9 +272,9 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
     </div>
     <div class="card">
       <div class="lbl">ВЫПЛАТА ЗА 3 В РЯД</div>
-      <div class="pay-grid"><div>🍋🍋🍋 <b>×2</b></div><div>🍒🍒🍒 <b>×3</b></div><div>🔔🔔🔔 <b>×4</b></div><div>⭐⭐⭐ <b>×5</b></div><div>💎💎💎 <b>×10</b></div><div>7️⃣7️⃣7️⃣ <b>×20</b></div></div>
+      <div class="pay-grid"><div>🍋🍋🍋 <b>×2.2</b></div><div>🍒🍒🍒 <b>×3.2</b></div><div>🔔🔔🔔 <b>×4.5</b></div><div>⭐⭐⭐ <b>×6</b></div><div>💎💎💎 <b>×12</b></div><div>7️⃣7️⃣7️⃣ <b>×25</b></div></div>
       <div class="lbl" style="margin-top:.8rem">2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА</div>
-      <div class="pay-grid"><div>🍋🍋 <b>×0.6</b></div><div>🍒🍒 <b>×0.9</b></div><div>🔔🔔 <b>×1.4</b></div><div>⭐⭐ <b>×1.8</b></div><div>💎💎 <b>×2.6</b></div><div>7️⃣7️⃣ <b>×3.4</b></div></div>
+      <div class="pay-grid"><div>🍋🍋 <b>×1.05</b></div><div>🍒🍒 <b>×1.2</b></div><div>🔔🔔 <b>×1.55</b></div><div>⭐⭐ <b>×2</b></div><div>💎💎 <b>×2.8</b></div><div>7️⃣7️⃣ <b>×4</b></div></div>
     </div>
   </section>
 
@@ -319,23 +329,22 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
   </section>
 
 
-  <!-- CRASH / ROCKET -->
+  <!-- CRASH / ROCKET — полностью из обычного Index -->
   <section class="scr" id="s-crash">
     <div class="card">
       <div class="crash-stage" id="crashStage">
         <div class="crash-top"><div class="crash-mult live" id="crashMult">1.00×</div><div class="crash-status" id="crashStatus">Сделай ставку и запускай ракету</div></div>
         <canvas class="crash-canvas" id="crashCanvas"></canvas>
-        <div class="crash-point" id="crashPoint"></div>
-        <div class="crash-burst" id="crashBurst"></div>
+        <div class="rocket" id="rocket"><span class="crash-flame"></span>🚀</div>
         <div class="crash-grid"></div>
       </div>
       <div class="crash-controls">
         <div class="crash-panel"><div class="lbl">СТАВКА</div><div class="crash-bet"><button class="btn btn-s btn-sm" id="crashDn">−</button><input id="crashBet" type="number" value="50" min="10" step="10" inputmode="numeric"><button class="btn btn-s btn-sm" id="crashUp">+</button></div><div class="crash-quick"><button data-v="10">10</button><button data-v="50">50</button><button data-v="100">100</button><button data-v="250">250</button></div></div>
-        <div class="crash-panel"><div class="lbl">АВТОЗАБОР</div><div class="crash-value" id="crashAutoVal">2.00×</div><input id="crashAuto" type="range" min="110" max="1000" value="200" style="width:100%;margin-top:.5rem;accent-color:var(--p)"><div class="crash-live-info" style="margin:.25rem 0 0">Сработает только если график доберётся до множителя</div></div>
+        <div class="crash-panel"><div class="lbl">АВТОЗАБОР</div><div class="m3-slider" id="m3crSl"><input type="range" min="110" max="1000" value="200" id="crashAuto" aria-label="Автозабор" /><div class="m3-slider__label" id="crashAutoLabel" style="font-size:.68rem">2.00×</div><div class="m3-slider__track"><div class="m3-slider__inactive"></div><div class="m3-slider__active" id="crashAutoFill"></div><div class="m3-slider__handle" id="crashAutoThumb"></div></div></div><div class="dice-target"><span>1.10×</span><span>10×</span></div><div class="crash-live-info" style="margin:.25rem 0 0">Сработает только если ракета долетит</div></div>
       </div>
-      <div class="crash-live-info" id="crashInfo">RTP игры: 96% • График может оборваться в любой момент</div>
-      <button class="btn btn-p btn-lg" id="crashGo"><span class="mat">show_chart</span> ЗАПУСТИТЬ</button>
-      <button class="btn btn-w btn-lg" id="crashCash" style="display:none"><span class="mat">savings</span> ЗАБРАТЬ <span id="crashCashA">+0</span></button>
+      <div class="crash-live-info" id="crashInfo">RTP игры: 96% • Ракета может взорваться в любой момент</div>
+      <button class="btn btn-p btn-lg" id="crashGo"><span class="mat">rocket_launch</span> ЗАПУСТИТЬ</button>
+      <button class="btn btn-w btn-lg" id="crashCash" style="display:none"><span class="mat">flight_takeoff</span> ЗАБРАТЬ <span id="crashCashA">+0</span></button>
       <div class="crash-history" id="crashHistory"></div>
     </div>
   </section>
@@ -390,13 +399,22 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
     </div>
   </section>
 
-  <!-- DAILY -->
-  <section class="scr" id="s-daily">
+  <!-- REWARDS — дизайн из обычного Index, логика локальная из Alpha 5 -->
+  <section class="scr" id="s-rewards">
     <div class="card">
-      <div class="lbl" style="text-align:center">ЕЖЕДНЕВНЫЙ ВХОД</div>
-      <div class="daily-grid" id="dailyGrid"></div>
-      <button class="btn btn-p btn-lg" id="dailyGo"><span class="mat">redeem</span> ЗАБРАТЬ НАГРАДУ</button>
-      <div class="daily-cd" id="dailyCd"></div>
+      <div class="lbl">ЕЖЕДНЕВНЫЕ НАГРАДЫ</div>
+      <div class="reward-grid" id="rewardGrid"></div>
+      <div class="rewards-timer" id="rewardTimer">--:--:--</div>
+      <div class="rewards-sub" id="rewardSub">Загрузка...</div>
+      <button class="btn btn-p btn-lg" id="rewardBtn" style="margin-top:.8rem"><span class="mat">card_giftcard</span> Забрать</button>
+    </div>
+    <div class="card">
+      <div class="lbl">БОНУС КАЖДУЮ МИНУТУ</div>
+      <div style="text-align:center;padding:.4rem 0">
+        <div class="rewards-timer" id="bonusTimer">01:00</div>
+        <div class="rewards-sub" id="bonusSub">До бонуса</div>
+        <button class="btn btn-p btn-lg" id="bonusBtn" style="margin-top:.6rem"><span class="mat">payments</span> Забрать +500</button>
+      </div>
     </div>
   </section>
 
@@ -437,11 +455,11 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
   <button class="ni on" data-s="slots"><span class="np"><span class="mat">casino</span></span><span class="nl">Слоты</span></button>
   <button class="ni" data-s="dice"><span class="np"><span class="mat">sports_esports</span></span><span class="nl">Кости</span></button>
   <button class="ni" data-s="roulette"><span class="np"><span class="mat">circle</span></span><span class="nl">Рулетка</span></button>
-  <button class="ni" data-s="crash"><span class="np"><span class="mat">show_chart</span></span><span class="nl">Crash</span></button>
+  <button class="ni" data-s="crash"><span class="np"><span class="mat">rocket_launch</span></span><span class="nl">Краш</span></button>
   <button class="ni" data-s="mines"><span class="np"><span class="mat">explosion</span></span><span class="nl">Мины</span></button>
   <button class="ni" data-s="coin"><span class="np"><span class="mat">monetization_on</span></span><span class="nl">Монета</span></button>
   <button class="ni" data-s="clicker"><span class="np"><span class="mat">ads_click</span></span><span class="nl">Кликер</span></button>
-  <button class="ni" data-s="daily"><span class="np"><span class="mat">redeem</span></span><span class="nl">Вход</span></button>
+  <button class="ni" data-s="rewards"><span class="np"><span class="mat">card_giftcard</span></span><span class="nl">Награды</span></button>
   <button class="ni" data-s="stats"><span class="np"><span class="mat">bar_chart</span></span><span class="nl">Стата</span></button>
   <button class="ni" data-s="settings"><span class="np"><span class="mat">settings</span></span><span class="nl">Настройки</span></button>
 </nav>
@@ -808,23 +826,36 @@ window.addEventListener('beforeunload',flushSave);
 // приложения — visibilitychange надёжнее ловит уход пользователя из мини-аппа.
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave()});
 
-// ===== Bonus System (быстрый бонус раз в минуту) =====
+// ===== Bonus System (локальный, дизайн из обычного Index) =====
+// Бонус +500 раз в минуту выдаётся локально и сохраняется как в Alpha 5.
+// Выдача по кнопке, как в обычном Index: таймер в шапке (btxt), карточка
+// в «Наградах» и зелёный топ-баннер показывают одно и то же состояние.
 const BONUS_AMOUNT=500;
 const BONUS_MS=60000;
+function fmtBonus(s){if(s<=0)return 'Готово!';const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
+function bonusRemain(){if(!S.lastBonus)return BONUS_MS;return Math.max(0,BONUS_MS-(Date.now()-S.lastBonus))}
+function bonusCanClaim(){return bonusRemain()<=0}
+function claimBonus(){
+  Sound.click();
+  if(!bonusCanClaim()){sn('Подожди '+Math.ceil(bonusRemain()/1000)+'с');return}
+  S.bal+=BONUS_AMOUNT;S.lastBonus=Date.now();save();rBal();
+  Sound.win();bz('win');sn('+'+BONUS_AMOUNT+' звёзд!');
+  try{const b=$('bonusBtn').getBoundingClientRect();confetti(b.left+b.width/2,b.top,22)}catch(e){}
+  tickBonus();
+}
 function tickBonus(){
   const now=Date.now();
   if(!S.lastBonus){S.lastBonus=now;save()}
-  const elapsed=now-S.lastBonus;
-  if(elapsed>=BONUS_MS){
-    S.bal+=BONUS_AMOUNT;
-    S.lastBonus=now;
-    save();rBal();
-    Sound.win();
-    sn('+'+BONUS_AMOUNT+' звёзд!');
-  }
-  const remain=Math.max(0,BONUS_MS-(now-S.lastBonus));
-  $('btxt').textContent='+'+BONUS_AMOUNT+' через '+Math.ceil(remain/1000)+'с';
+  const remain=bonusRemain(),can=bonusCanClaim();
+  const btxt=$('btxt');if(btxt)btxt.textContent=can?'бонус готов!':'+'+BONUS_AMOUNT+' через '+Math.ceil(remain/1000)+'с';
+  const timer=$('bonusTimer'),sub=$('bonusSub'),btn=$('bonusBtn'),top=$('bonusWrap');
+  if(timer){timer.textContent=can?'Готово!':fmtBonus(Math.ceil(remain/1000));timer.style.color=can?'var(--win)':'var(--p)'}
+  if(sub)sub.textContent=can?'Нажми «Забрать»':'До бонуса';
+  if(btn){btn.disabled=!can;btn.innerHTML=can?'<span class="mat">payments</span> Забрать +'+BONUS_AMOUNT:'<span class="mat">payments</span> Жди '+Math.ceil(remain/1000)+'с'}
+  if(top)top.style.display=can?'block':'none';
 }
+$('bonusBtn').addEventListener('click',claimBonus);
+$('bonusBtnTop').addEventListener('click',claimBonus);
 tickBonus();
 setInterval(tickBonus,1000);
 
@@ -888,18 +919,27 @@ function explodeAt(cx,cy){
   }
 }
 
-// Nav
+// Nav — дизайн из обычного Index (скролл к активной вкладке)
 document.querySelectorAll('.ni').forEach(b=>b.addEventListener('click',()=>{
   Sound.click();
   document.querySelectorAll('.ni').forEach(x=>x.classList.remove('on'));
   b.classList.add('on');
   document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
   $('s-'+b.dataset.s).classList.add('on');
+  try{b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}catch(e){}
   window.scrollTo({top:0});
   if(b.dataset.s==='stats')rSt();
-  if(b.dataset.s==='daily')dailyTick();
+  if(b.dataset.s==='rewards'){dailyTick();tickBonus();if(typeof crashResize==='function')crashResize()}
   if(b.dataset.s==='clicker')rClk();
+  if(b.dataset.s==='crash'&&typeof crashResize==='function')crashResize();
 }));
+(function(){
+  const nav=document.querySelector('.nav');
+  if(!nav)return;
+  nav.addEventListener('wheel',e=>{
+    if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){e.preventDefault();nav.scrollLeft+=e.deltaY}
+  },{passive:false});
+})();
 
 // Bet helpers
 function sBet(inp,dn,up){
@@ -1065,67 +1105,36 @@ $('rGo').addEventListener('click',()=>{
 });
 
 
-// ===== CRASH (растущий график) =====
-// Модель честности: точка обрыва задаётся один раз при старте раунда по
-// стандартной crash-формуле point = (1-houseEdge)/(1-u), u — равномерная
-// случайная величина. Это даёт математически строгий RTP = 1-CRASH_HOUSE_EDGE
-// независимо от поведения игрока (когда он заберёт выигрыш).
-const CRASH_HOUSE_EDGE=0.04;      // 4% преимущество казино → 96% RTP
-const CRASH_MAX_MULT=1000;        // потолок множителя
-const CRASH_INSTA_CHANCE=CRASH_HOUSE_EDGE; // доля раундов с обрывом сразу на 1.00×
+// ===== CRASH / ROCKET — полностью из обычного Index (локально, без сервера) =====
+// Точка взрыва задаётся формулой point = RTP/(1-u), RTP 96%.
+// История хранится в S.crashHist и сохраняется локально, как в Alpha 5.
+const CRASH_RTP=0.96;
 let crashLock=false, crashRunning=false, crashRAF=0, crashStart=0, crashPoint=1, crashBetValue=0, crashCurrent=1, crashAutoValue=2;
 const crashStage=$('crashStage'), crashCanvas=$('crashCanvas'), crashCtx=crashCanvas.getContext('2d');
-const crashPointEl=$('crashPoint'), crashBurstEl=$('crashBurst');
-
 function crashFairPoint(){
   const u=Math.random();
-  let point=(1-CRASH_HOUSE_EDGE)/(1-u);
-  point=Math.floor(point*100)/100;
-  return Math.min(CRASH_MAX_MULT,Math.max(1,point));
+  return Math.min(1000,Math.max(1,Math.floor((CRASH_RTP/(1-u))*100)/100));
 }
 function crashResize(){const r=crashStage.getBoundingClientRect();const d=Math.min(2,window.devicePixelRatio||1);crashCanvas.width=Math.floor(r.width*d);crashCanvas.height=Math.floor(r.height*d);crashCtx.setTransform(d,0,0,d,0,0);}
 window.addEventListener('resize',()=>{if(document.getElementById('s-crash').classList.contains('on'))crashResize()});
-
-// Доля пройденного пути графика по горизонтали — растёт по логарифму множителя,
-// поэтому кривая ускоряется визуально по мере роста ставки на кону.
-function crashProgress(mult){
-  return Math.min(1,Math.log(Math.max(1,mult))/Math.log(CRASH_MAX_MULT)*1.55);
-}
-// Рисует растущую линию графика от начала координат до текущего прогресса и
-// возвращает пиксельные координаты конца линии — туда ставится точка/разрыв.
-function crashDraw(mult,crashed){
-  const r=crashStage.getBoundingClientRect(),w=r.width,h=r.height;
-  crashCtx.clearRect(0,0,w,h);
-  const f=crashProgress(mult);
-  const steps=44;
-  const pts=[];
-  for(let i=0;i<=steps;i++){
-    const ff=f*(i/steps);
-    const x=w*.08+(w*.84)*ff;
-    const y=h*.86-(h*.62)*Math.pow(ff,1.65);
-    pts.push({x,y});
-  }
+function crashDraw(mult){
+  const r=crashStage.getBoundingClientRect(),w=r.width,h=r.height;crashCtx.clearRect(0,0,w,h);
+  const t=Math.max(0,Math.min(1,(mult-1)/Math.max(1,Math.log10(Math.max(10,mult))*7)));
   crashCtx.beginPath();crashCtx.moveTo(w*.08,h*.86);
-  pts.forEach(p=>crashCtx.lineTo(p.x,p.y));
-  crashCtx.lineTo(pts[pts.length-1].x,h*.86);crashCtx.closePath();
-  crashCtx.fillStyle=crashed?'rgba(242,184,181,.08)':'rgba(208,188,255,.08)';crashCtx.fill();
-  crashCtx.beginPath();
-  pts.forEach((p,i)=>i?crashCtx.lineTo(p.x,p.y):crashCtx.moveTo(p.x,p.y));
-  crashCtx.strokeStyle=crashed?'rgba(242,184,181,.95)':'rgba(208,188,255,.85)';
-  crashCtx.lineWidth=2.5;crashCtx.lineCap='round';crashCtx.stroke();
-  return pts[pts.length-1];
+  const pts=[];for(let i=0;i<=40;i++){const x=w*.08+(w*.84)*(i/40);const y=h*.86-(h*.62)*Math.pow(i/40,1.65)*(0.55+0.45*Math.min(1,t+0.15));pts.push([x,y])}
+  pts.forEach(p=>crashCtx.lineTo(p[0],p[1]));crashCtx.lineTo(w*.92,h*.86);crashCtx.closePath();crashCtx.fillStyle='rgba(208,188,255,.06)';crashCtx.fill();
+  crashCtx.beginPath();pts.forEach((p,i)=>i?crashCtx.lineTo(p[0],p[1]):crashCtx.moveTo(p[0],p[1]));crashCtx.strokeStyle='rgba(208,188,255,.7)';crashCtx.lineWidth=2;crashCtx.stroke();
 }
-// Ставит точку графика мгновенно, без анимации перемещения — координаты
-// всегда синхронны с последним нарисованным кадром линии.
-function crashPlacePoint(pos,crashed){
-  crashPointEl.style.left=pos.x+'px';crashPointEl.style.top=pos.y+'px';
-  crashPointEl.classList.toggle('live',!crashed);
-  crashPointEl.classList.toggle('dead',!!crashed);
+function crashRocketPos(mult){
+  const progress=Math.min(.82,Math.log(Math.max(1,mult))/Math.log(50)*.78);
+  $('rocket').style.left=(10+progress*72)+'%';$('rocket').style.bottom=(18+progress*48)+'%';
+  $('rocket').style.transform='rotate(-18deg)';
 }
 function crashRenderHistory(){
-  const el=$('crashHistory');el.innerHTML='';(S.crashHist||[]).slice(0,8).forEach(n=>{const sp=document.createElement('span');sp.textContent=n.toFixed(2)+'×';sp.className=n<1.5?'low':n<3?'mid':'high';el.appendChild(sp)})
+  const el=$('crashHistory');el.innerHTML='';(S.crashHist||[]).slice(0,8).forEach(n=>{const sp=document.createElement('span');sp.textContent=n.toFixed(2)+'×';sp.className=n<1.5?'low':n<3?'mid':'high';el.appendChild(sp)});
 }
-function crashSetAuto(v){crashAutoValue=v/100;$('crashAutoVal').textContent=crashAutoValue.toFixed(2)+'×'}
+function crAutoUpd(){const el=$('crashAuto');const p=((el.value-el.min)/(el.max-el.min))*100;const f=$('crashAutoFill');f.style.width='calc('+p+'% - 3px)';f.style.borderRadius=p>97?'8px':'8px 2px 2px 8px';$('crashAutoThumb').style.left=p+'%';const lab=$('crashAutoLabel');lab.style.left=p+'%';lab.textContent=(el.value/100).toFixed(2)+'×'}
+function crashSetAuto(v){crashAutoValue=v/100;crAutoUpd()}
 $('crashAuto').addEventListener('input',e=>crashSetAuto(+e.target.value));
 $('crashBet').addEventListener('input',()=>{let v=Math.floor(Number($('crashBet').value)||10);v=Math.max(10,Math.min(Math.max(10,S.bal),v));$('crashBet').value=v});
 $('crashDn').addEventListener('click',()=>{Sound.click();$('crashBet').value=Math.max(10,(parseInt($('crashBet').value)||10)-10)});
@@ -1135,47 +1144,28 @@ function crashFinish(crashed){
   crashRunning=false;cancelAnimationFrame(crashRAF);$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;
   const final=crashed?crashPoint:crashCurrent;
   S.crashHist.unshift(final);S.crashHist=S.crashHist.slice(0,12);save();crashRenderHistory();
-  if(crashed){
-    aH('crash',0,crashBetValue);
-    $('crashMult').textContent=final.toFixed(2)+'×';$('crashMult').className='crash-mult dead';
-    $('crashStatus').textContent='📉 ГРАФИК ОБОРВАЛСЯ';
-    $('crashInfo').innerHTML='<span class="crash-loss">−'+crashBetValue+' ⭐</span> • точка обрыва '+final.toFixed(2)+'×';
-    // Разрыв происходит мгновенно на месте последней точки — без затяжной
-    // анимации улёта, просто короткая разлетающаяся вспышка один раз.
-    crashBurstEl.style.left=crashPointEl.style.left;crashBurstEl.style.top=crashPointEl.style.top;
-    crashBurstEl.classList.remove('on');void crashBurstEl.offsetWidth;crashBurstEl.classList.add('on');
-    bz('loss');
-  }
+  if(crashed){aH('crash',0,crashBetValue);$('crashMult').textContent=final.toFixed(2)+'×';$('crashMult').className='crash-mult dead';$('crashStatus').textContent='💥 РАКЕТА ВЗОРВАЛАСЬ';$('rocket').classList.remove('live');$('rocket').classList.add('crashed');$('crashInfo').innerHTML='<span class="crash-loss">−'+crashBetValue+' ⭐</span> • точка взрыва '+final.toFixed(2)+'×';bz('error');}
 }
 function crashFrame(now){
   if(!crashRunning)return;
   const elapsed=now-crashStart;crashCurrent=Math.max(1,Math.exp(elapsed*0.00013));
-  if(crashCurrent>=crashPoint){
-    crashCurrent=crashPoint;
-    const pos=crashDraw(crashCurrent,true);crashPlacePoint(pos,true);
-    crashFinish(true);return;
-  }
-  $('crashMult').textContent=crashCurrent.toFixed(2)+'×';$('crashMult').className='crash-mult '+(crashCurrent>=3?'danger':'live');$('crashStatus').textContent='График растёт • забери до обрыва';
-  const pos=crashDraw(crashCurrent,false);crashPlacePoint(pos,false);
+  if(crashCurrent>=crashPoint){crashCurrent=crashPoint;crashDraw(crashCurrent);crashRocketPos(crashCurrent);crashFinish(true);return}
+  $('crashMult').textContent=crashCurrent.toFixed(2)+'×';$('crashMult').className='crash-mult '+(crashCurrent>=3?'danger':'live');$('crashStatus').textContent='Ракета летит • забери до взрыва';crashDraw(crashCurrent);crashRocketPos(crashCurrent);
   const payout=Math.floor(crashBetValue*crashCurrent);$('crashCashA').textContent='+'+payout;
   if(crashCurrent>=crashAutoValue){crashCashout(true);return}
   crashRAF=requestAnimationFrame(crashFrame);
 }
 function crashCashout(auto=false){
   if(!crashRunning)return;const mult=crashCurrent;const payout=Math.floor(crashBetValue*mult);if(payout<crashBetValue)return;
-  crashRunning=false;cancelAnimationFrame(crashRAF);S.bal+=payout;save();rBal();$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;$('crashMult').textContent=mult.toFixed(2)+'×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=auto?'⚡ АВТОЗАБОР':'📈 УСПЕШНЫЙ ЗАБОР';$('crashInfo').innerHTML='<span class="crash-profit">+'+payout+' ⭐</span> • ставка '+crashBetValue+' × '+mult.toFixed(2);crashPointEl.classList.remove('live');aH('crash',payout,crashBetValue);bz('win');const rr=$('crashCash').getBoundingClientRect();confetti(rr.left+rr.width/2,rr.top,Math.min(26,8+Math.floor(mult)));
+  crashRunning=false;cancelAnimationFrame(crashRAF);S.bal+=payout;save();rBal();$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;$('crashMult').textContent=mult.toFixed(2)+'×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=auto?'⚡ АВТОЗАБОР':'🚀 УСПЕШНЫЙ ЗАБОР';$('crashInfo').innerHTML='<span class="crash-profit">+'+payout+' ⭐</span> • ставка '+crashBetValue+' × '+mult.toFixed(2);$('rocket').classList.remove('live');aH('crash',payout,crashBetValue);bz('success');
 }
 $('crashCash').addEventListener('click',()=>{Sound.click();crashCashout(false)});
 $('crashGo').addEventListener('click',()=>{
   if(crashLock||crashRunning)return;Sound.click();const bet=Math.floor(Number($('crashBet').value)||10);if(!ok(bet)){sn('Не хватает звёзд');return}
   crashLock=true;crashBetValue=bet;crashPoint=crashFairPoint();crashCurrent=1;S.bal-=bet;save();rBal();crashResize();
-  crashBurstEl.classList.remove('on');
-  const pos=crashDraw(1,false);crashPlacePoint(pos,false);
-  $('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='📈 Рост начался...';$('crashInfo').textContent='Забери выигрыш до обрыва графика • авто: '+crashAutoValue.toFixed(2)+'×';$('crashGo').style.display='none';$('crashCash').style.display='';crashRunning=true;crashStart=performance.now();crashLock=false;crashRAF=requestAnimationFrame(crashFrame);
+  $('rocket').classList.remove('crashed');$('rocket').classList.add('live');$('rocket').style.left='11%';$('rocket').style.bottom='18%';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='🚀 Взлёт...';$('crashInfo').textContent='Забери выигрыш до точки взрыва • авто: '+crashAutoValue.toFixed(2)+'×';$('crashGo').style.display='none';$('crashCash').style.display='';crashRunning=true;crashStart=performance.now();crashLock=false;crashRAF=requestAnimationFrame(crashFrame);
 });
-crashSetAuto(200);crashResize();
-(function crashInitDraw(){const pos=crashDraw(1,false);crashPlacePoint(pos,false)})();
-crashRenderHistory();
+crashSetAuto(200);crashResize();crashRenderHistory();
 
 // ===== MINES =====
 let mOn=false,mB=[],mR=[],mBt=0,mM=1;const mT=25;
@@ -1292,59 +1282,72 @@ $('upTurboBtn').addEventListener('click',()=>{
   Sound.click();S.bal-=cost;S.clkTurbo++;save();rBal();rClk();sn('Турбо улучшено!');
 });
 
-// ===== DAILY LOGIN =====
+// ===== DAILY LOGIN (локально, суммы и стрик из Alpha 5, дизайн из обычного Index) =====
 const DAILY_REWARDS=[100,150,200,300,400,500,1000];
 const DAY_MS=86400000;
-function dailyBuild(){
-  const g=$('dailyGrid');g.innerHTML='';
-  const curStreak=S.daily.streak||0;
+function fmtHMS(s){const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
+function localDayKey(ts){if(ts===undefined)ts=Date.now();const d=new Date(ts);return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate()}
+function dailyCanClaim(){return !S.daily.lastClaim||localDayKey(S.daily.lastClaim)!==localDayKey()}
+function dailyNextStreak(){
+  let streak=S.daily.streak||0;
+  if(!S.daily.lastClaim)return 1;
+  const cur=new Date(Date.now()),yesterday=new Date(cur);yesterday.setDate(cur.getDate()-1);
+  if(localDayKey(S.daily.lastClaim)!==localDayKey(yesterday.getTime()))return 1;
+  return streak>=7?1:streak+1;
+}
+function dailyBuild(next){
+  const g=$('rewardGrid');if(!g)return;g.innerHTML='';
+  const curStreak=S.daily.streak||0,can=dailyCanClaim();
   for(let i=0;i<7;i++){
-    const d=document.createElement('div');
-    const dayNum=i+1;
-    d.className='day-card'+(dayNum<=curStreak?' done':'')+(dayNum===curStreak+1?' cur':'');
-    d.innerHTML='<div class="dn">День '+dayNum+'</div><div class="di">⭐</div><div class="dv">+'+DAILY_REWARDS[i]+'</div>';
-    g.appendChild(d);
+    const day=i+1,c=document.createElement('div');
+    let cls='reward-cell';
+    if(day<=curStreak)cls+=' on claimed';
+    if(can&&day===next)cls+=' cur';
+    if(!can&&day===curStreak)cls+=' cur';
+    c.className=cls;
+    c.innerHTML='<div class="rw-day">День '+day+'</div><div class="rw-val">+'+DAILY_REWARDS[i]+'</div>';
+    g.appendChild(c);
+  }
+  const top=$('dailyWrap');
+  if(top){
+    if(can){
+      top.style.display='block';
+      const dots=$('dailyDots');
+      if(dots){dots.innerHTML='';for(let i=0;i<7;i++){const d=document.createElement('div');d.className='daily-dot'+(i<curStreak?' on':'')+((i+1)===next?' cur':'');dots.appendChild(d)}}
+      const sub=$('dailySub');if(sub)sub.textContent='День '+next+' — +'+DAILY_REWARDS[next-1]+' звёзд';
+      const tb=$('dailyBtnTop');if(tb)tb.textContent='Забрать '+DAILY_REWARDS[next-1];
+    }else{top.style.display='none'}
   }
 }
-function localDayKey(ts=Date.now()){
-  const d=new Date(ts);return d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();
-}
-function dailyCanClaim(){return !S.daily.lastClaim || localDayKey(S.daily.lastClaim)!==localDayKey();}
-
 function dailyTick(){
-  dailyBuild();
-  const btn=$('dailyGo');
-  if(dailyCanClaim()){
-    btn.disabled=false;$('dailyCd').textContent=S.daily.streak>0?'Награда готова!':'Забери первую награду!';
+  const can=dailyCanClaim(),next=dailyNextStreak();
+  try{dailyBuild(next)}catch(e){}
+  const btn=$('rewardBtn'),timer=$('rewardTimer'),sub=$('rewardSub');
+  if(!btn||!timer||!sub)return;
+  if(can){
+    btn.disabled=false;btn.innerHTML='<span class="mat">card_giftcard</span> Забрать +'+DAILY_REWARDS[next-1];
+    timer.textContent='Готово!';timer.style.color='var(--win)';
+    sub.textContent='День '+next+' из 7 — награда ждёт!';
   }else{
-    btn.disabled=true;
-    const remain=DAY_MS-(Date.now()-S.daily.lastClaim);
-    const hh=Math.floor(remain/3600000),mm=Math.floor((remain%3600000)/60000),ss=Math.floor((remain%60000)/1000);
-    $('dailyCd').textContent='Следующая награда через '+hh+'ч '+mm+'м '+ss+'с';
+    btn.disabled=true;btn.innerHTML='<span class="mat">check</span> Получено';
+    const remain=Math.max(0,DAY_MS-(Date.now()-S.daily.lastClaim));
+    timer.textContent=fmtHMS(Math.floor(remain/1000));timer.style.color='var(--p)';
+    sub.textContent='Стрик '+S.daily.streak+'/7 • следующая награда завтра';
   }
 }
-dailyTick();
-setInterval(dailyTick,1000);
-$('dailyGo').addEventListener('click',()=>{
+function claimDaily(){
   if(!dailyCanClaim())return;
   Sound.click();
-  const now=Date.now();
-  let streak=S.daily.streak||0;
-  if(!S.daily.lastClaim){streak=1}
-  else{
-    const prev=new Date(S.daily.lastClaim), cur=new Date(now);
-    const prevKey=localDayKey(S.daily.lastClaim), curKey=localDayKey(now);
-    const yesterday=new Date(cur);yesterday.setDate(cur.getDate()-1);
-    if(prevKey!==localDayKey(yesterday)){streak=1}
-    else{streak=streak>=7?1:streak+1}
-  }
-  const reward=DAILY_REWARDS[streak-1];
+  const now=Date.now(),streak=dailyNextStreak(),reward=DAILY_REWARDS[streak-1];
   S.bal+=reward;S.daily.lastClaim=now;S.daily.streak=streak;save();rBal();
-  Sound.win();bz('win');
-  sn('+'+reward+' звёзд! День '+streak);
-  const r=$('dailyGo').getBoundingClientRect();confetti(r.left+r.width/2,r.top,24);
+  Sound.win();bz('win');sn('+'+reward+' звёзд! День '+streak);
+  try{const r=$('rewardBtn').getBoundingClientRect();confetti(r.left+r.width/2,r.top,24)}catch(e){}
   dailyTick();
-});
+}
+$('rewardBtn').addEventListener('click',claimDaily);
+$('dailyBtnTop').addEventListener('click',claimDaily);
+dailyTick();
+setInterval(dailyTick,1000);
 
 // ===== STATS =====
 function rSt(){$('xT').textContent=S.stats.total;$('xW').textContent=S.stats.win;$('xL').textContent=S.stats.loss;$('xWo').textContent=S.stats.won;$('xB').textContent=S.stats.bet;$('xP').textContent=S.stats.won-S.stats.bet;$('xP').style.color=S.stats.won-S.stats.bet>=0?'var(--win)':'var(--e)';const el=$('hL');if(!S.hist.length){el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">Пусто</div>';return}el.innerHTML='';S.hist.slice(0,30).forEach(h=>{const d=document.createElement('div');d.className='h-item';const t=new Date(h.t);const ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');const safeGame=String(h.g).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1352,14 +1355,17 @@ d.innerHTML='<span>'+safeGame+' • '+ts+'</span><span>'+(h.r>0?'<span class="w"
 rSt();
 
 $('rst').addEventListener('click',()=>{
-  Sound.click();S=defaultState();save(true);rBal();rSt();rClk();rSlotMax();
+  Sound.click();S=defaultState();save(true);applyTheme(S.theme);rTheme();rBal();rSt();rClk();rSlotMax();
   sLock=false;$('sGo').disabled=false;
   dLock=false;$('dGo').disabled=false;
   rLock=false;$('rGo').disabled=false;rSel=null;document.querySelectorAll('.rr-b').forEach(x=>x.classList.remove('sel'));
   mOn=false;$('mGo').style.display='';$('mCa').style.display='none';$('mInf').textContent='Выбери клетки и выигрывай!';$('mInf').style.color='';mGr();
   cFlip=false;$('cGo').disabled=false;$('cC').textContent='🪙';$('cR').textContent='';
-  crashRunning=false;cancelAnimationFrame(crashRAF);crashLock=false;$('crashGo').style.display='';$('crashGo').disabled=false;$('crashCash').style.display='none';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='Сделай ставку и запускай ракету';$('crashInfo').textContent='RTP игры: 96% • Ракета может взорваться в любой момент';$('rocket').classList.remove('live','crashed');crashRenderHistory();
-  dailyTick();
+  crashRunning=false;cancelAnimationFrame(crashRAF);crashLock=false;$('crashGo').style.display='';$('crashGo').disabled=false;$('crashCash').style.display='none';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='Сделай ставку и запускай ракету';$('crashInfo').textContent='RTP игры: 96% • Ракета может взорваться в любой момент';
+  try{$('rocket').classList.remove('live','crashed');$('rocket').style.left='11%';$('rocket').style.bottom='18%'}catch(e){}
+  try{crashResize()}catch(e){}
+  crashRenderHistory();
+  dailyTick();tickBonus();
   sn('Сброшено');
 });
 rBal();
