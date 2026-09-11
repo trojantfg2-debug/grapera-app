@@ -149,6 +149,23 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .coin-ch button:active{transform:scale(.95)}
 .coin-ch button.on{border-color:var(--p);background:var(--p-c);color:var(--on-p-c)}
 
+
+/* ===== CRASH ROCKET ===== */
+.crash-stage{position:relative;height:310px;overflow:hidden;border-radius:22px;background:radial-gradient(circle at 50% 100%,rgba(79,55,139,.34),transparent 52%),linear-gradient(180deg,rgba(10,8,24,.9),rgba(28,27,31,.55));border:1px solid var(--ol-v);margin:.2rem 0 .8rem}
+.crash-stage::before{content:"";position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.72) 1px,transparent 1.5px);background-size:48px 48px;opacity:.16;animation:spaceDrift 8s linear infinite}
+@keyframes spaceDrift{from{background-position:0 0}to{background-position:0 96px}}
+.crash-top{position:absolute;left:0;right:0;top:16px;text-align:center;z-index:4}.crash-mult{font-size:3.1rem;font-weight:700;letter-spacing:-1px;text-shadow:0 0 20px rgba(208,188,255,.28);transition:transform .12s var(--ease),color .2s}.crash-mult.live{color:var(--p)}.crash-mult.danger{color:#FFC107;animation:multPulse .55s ease-in-out infinite}.crash-mult.dead{color:var(--e)}
+@keyframes multPulse{50%{transform:scale(1.035)}}
+.crash-status{font-size:.72rem;color:var(--on-sv);margin-top:.15rem}.crash-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}.rocket{position:absolute;left:11%;bottom:18%;font-size:2.9rem;z-index:3;filter:drop-shadow(0 0 10px rgba(255,193,7,.4));transform:rotate(-18deg);transition:transform .08s linear}.rocket.live{animation:rocketBob .34s ease-in-out infinite alternate}.rocket.crashed{animation:rocketCrash .55s ease-in forwards}
+@keyframes rocketBob{to{transform:translateY(-4px) rotate(-18deg) scale(1.04)}}
+@keyframes rocketCrash{0%{transform:translate(0,0) rotate(-18deg);opacity:1}100%{transform:translate(95px,95px) rotate(28deg) scale(.65);opacity:0}}
+.crash-flame{position:absolute;left:-14px;top:30px;width:12px;height:34px;border-radius:50%;background:linear-gradient(180deg,#FFC107,#FF7043,transparent);filter:blur(1px);transform:rotate(8deg);animation:flame .12s infinite alternate}.rocket.crashed .crash-flame{animation:none}
+@keyframes flame{to{height:43px;transform:rotate(-5deg) scaleX(.8)}}
+.crash-grid{position:absolute;left:8%;right:8%;bottom:11%;height:1px;background:linear-gradient(90deg,transparent,var(--p),transparent);opacity:.38;box-shadow:0 0 12px rgba(208,188,255,.4)}
+.crash-controls{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}.crash-panel{background:var(--sc);border-radius:var(--sh-l);padding:.8rem}.crash-panel .lbl{margin-bottom:.3rem}.crash-value{font-weight:700;font-size:1.1rem}.crash-bet{display:flex;align-items:center;gap:.4rem}.crash-bet input{width:100%;padding:.62rem .5rem;border:1.5px solid var(--ol-v);border-radius:var(--sh-s);background:var(--bg);color:var(--on);font:inherit;text-align:center;outline:none}.crash-bet input:focus{border-color:var(--p)}.crash-quick{display:flex;gap:.3rem;margin-top:.4rem}.crash-quick button{flex:1;border:1px solid var(--ol-v);background:transparent;color:var(--on-sv);border-radius:var(--sh-full);padding:.35rem .2rem;font:500 .68rem var(--f)}
+.crash-live-info{text-align:center;font-size:.72rem;color:var(--on-sv);min-height:1.2rem;margin:.55rem 0}.crash-profit{color:var(--win);font-weight:700}.crash-loss{color:var(--e);font-weight:700}.crash-history{display:flex;gap:.35rem;overflow:hidden;margin-top:.65rem}.crash-history span{flex:0 0 auto;padding:.3rem .5rem;border-radius:var(--sh-full);background:var(--sc);font-size:.68rem;font-weight:700}.crash-history .low{color:var(--e)}.crash-history .mid{color:#FFC107}.crash-history .high{color:var(--win)}
+@media(max-width:390px){.crash-stage{height:285px}.crash-mult{font-size:2.65rem}.crash-controls{grid-template-columns:1fr}.crash-panel:nth-child(2){display:none}}
+
 /* Stats */
 .stat-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.8rem}
 .stat{background:var(--sc-h);border-radius:var(--sh-l);padding:.7rem;text-align:center}
@@ -285,6 +302,27 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
     </div>
   </section>
 
+
+  <!-- CRASH / ROCKET -->
+  <section class="scr" id="s-crash">
+    <div class="card">
+      <div class="crash-stage" id="crashStage">
+        <div class="crash-top"><div class="crash-mult live" id="crashMult">1.00×</div><div class="crash-status" id="crashStatus">Сделай ставку и запускай ракету</div></div>
+        <canvas class="crash-canvas" id="crashCanvas"></canvas>
+        <div class="rocket" id="rocket"><span class="crash-flame"></span>🚀</div>
+        <div class="crash-grid"></div>
+      </div>
+      <div class="crash-controls">
+        <div class="crash-panel"><div class="lbl">СТАВКА</div><div class="crash-bet"><button class="btn btn-s btn-sm" id="crashDn">−</button><input id="crashBet" type="number" value="50" min="10" step="10" inputmode="numeric"><button class="btn btn-s btn-sm" id="crashUp">+</button></div><div class="crash-quick"><button data-v="10">10</button><button data-v="50">50</button><button data-v="100">100</button><button data-v="250">250</button></div></div>
+        <div class="crash-panel"><div class="lbl">АВТОЗАБОР</div><div class="crash-value" id="crashAutoVal">2.00×</div><input id="crashAuto" type="range" min="110" max="1000" value="200" style="width:100%;margin-top:.5rem;accent-color:var(--p)"><div class="crash-live-info" style="margin:.25rem 0 0">Сработает только если ракета долетит</div></div>
+      </div>
+      <div class="crash-live-info" id="crashInfo">RTP игры: 96% • Ракета может взорваться в любой момент</div>
+      <button class="btn btn-p btn-lg" id="crashGo"><span class="mat">rocket_launch</span> ЗАПУСТИТЬ</button>
+      <button class="btn btn-w btn-lg" id="crashCash" style="display:none"><span class="mat">flight_takeoff</span> ЗАБРАТЬ <span id="crashCashA">+0</span></button>
+      <div class="crash-history" id="crashHistory"></div>
+    </div>
+  </section>
+
   <!-- MINES -->
   <section class="scr" id="s-mines">
     <div class="card">
@@ -369,6 +407,7 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
   <button class="ni on" data-s="slots"><span class="np"><span class="mat">casino</span></span><span class="nl">Слоты</span></button>
   <button class="ni" data-s="dice"><span class="np"><span class="mat">sports_esports</span></span><span class="nl">Кости</span></button>
   <button class="ni" data-s="roulette"><span class="np"><span class="mat">circle</span></span><span class="nl">Рулетка</span></button>
+  <button class="ni" data-s="crash"><span class="np"><span class="mat">rocket_launch</span></span><span class="nl">Crash</span></button>
   <button class="ni" data-s="mines"><span class="np"><span class="mat">explosion</span></span><span class="nl">Мины</span></button>
   <button class="ni" data-s="coin"><span class="np"><span class="mat">monetization_on</span></span><span class="nl">Монета</span></button>
   <button class="ni" data-s="clicker"><span class="np"><span class="mat">ads_click</span></span><span class="nl">Кликер</span></button>
@@ -589,7 +628,7 @@ function defaultState(){
   return {
     version:SAVE_VERSION, bal:1000,
     stats:{total:0,win:0,loss:0,won:0,bet:0},
-    hist:[], lastBonus:null, clicks:0, slotMax:500,
+    hist:[], lastBonus:null, clicks:0, slotMax:500, crashHist:[],
     clkWin:{used:0,start:Date.now()}, clkPower:1, clkAuto:0, clkTurbo:0,
     daily:{lastClaim:null,streak:0}, savedAt:0
   };
@@ -603,6 +642,7 @@ function normalizeState(x){
   d.stats=Object.assign(d.stats,v.stats||{});
   for(const k of Object.keys(d.stats)) d.stats[k]=Math.max(0,Math.floor(+d.stats[k]||0));
   d.hist=Array.isArray(v.hist)?v.hist.slice(0,50):[];
+  d.crashHist=Array.isArray(v.crashHist)?v.crashHist.slice(0,12).map(n=>Number(n)).filter(Number.isFinite):[];
   d.clkWin=Object.assign(d.clkWin,v.clkWin||{});
   d.clkWin.used=Math.max(0,Math.min(2000,Math.floor(+d.clkWin.used||0)));
   d.clkWin.start=Number.isFinite(+d.clkWin.start)?+d.clkWin.start:Date.now();
@@ -963,6 +1003,67 @@ $('rGo').addEventListener('click',()=>{
   },1000);
 });
 
+
+// ===== CRASH / ROCKET =====
+const CRASH_RTP=0.96;
+let crashLock=false, crashRunning=false, crashRAF=0, crashStart=0, crashPoint=1, crashBetValue=0, crashCurrent=1, crashAutoValue=2;
+const crashStage=$('crashStage'), crashCanvas=$('crashCanvas'), crashCtx=crashCanvas.getContext('2d');
+function crashFairPoint(){
+  const u=Math.random();
+  return Math.min(1000,Math.max(1,Math.floor((CRASH_RTP/(1-u))*100)/100));
+}
+function crashResize(){const r=crashStage.getBoundingClientRect();const d=Math.min(2,window.devicePixelRatio||1);crashCanvas.width=Math.floor(r.width*d);crashCanvas.height=Math.floor(r.height*d);crashCtx.setTransform(d,0,0,d,0,0);}
+window.addEventListener('resize',()=>{if(document.getElementById('s-crash').classList.contains('on'))crashResize()});
+function crashDraw(mult){
+  const r=crashStage.getBoundingClientRect(),w=r.width,h=r.height;crashCtx.clearRect(0,0,w,h);
+  const t=Math.max(0,Math.min(1,(mult-1)/Math.max(1,Math.log10(Math.max(10,mult))*7)));
+  crashCtx.beginPath();crashCtx.moveTo(w*.08,h*.86);
+  const pts=[];for(let i=0;i<=40;i++){const x=w*.08+(w*.84)*(i/40);const y=h*.86-(h*.62)*Math.pow(i/40,1.65)*(0.55+0.45*Math.min(1,t+0.15));pts.push([x,y])}
+  pts.forEach(p=>crashCtx.lineTo(p[0],p[1]));crashCtx.lineTo(w*.92,h*.86);crashCtx.closePath();crashCtx.fillStyle='rgba(208,188,255,.06)';crashCtx.fill();
+  crashCtx.beginPath();pts.forEach((p,i)=>i?crashCtx.lineTo(p[0],p[1]):crashCtx.moveTo(p[0],p[1]));crashCtx.strokeStyle='rgba(208,188,255,.7)';crashCtx.lineWidth=2;crashCtx.stroke();
+}
+function crashRocketPos(mult){
+  const r=crashStage.getBoundingClientRect();const progress=Math.min(.82,Math.log(Math.max(1,mult))/Math.log(50)*.78);
+  const x=10+progress*72,y=18+progress*62;
+  $('rocket').style.left=x+'%';$('rocket').style.bottom=(18+progress*48)+'%';
+  $('rocket').style.transform='rotate(-18deg)';
+}
+function crashRenderHistory(){
+  const el=$('crashHistory');el.innerHTML='';(S.crashHist||[]).slice(0,8).forEach(n=>{const sp=document.createElement('span');sp.textContent=n.toFixed(2)+'×';sp.className=n<1.5?'low':n<3?'mid':'high';el.appendChild(sp)})
+}
+function crashSetAuto(v){crashAutoValue=v/100;$('crashAutoVal').textContent=crashAutoValue.toFixed(2)+'×'}
+$('crashAuto').addEventListener('input',e=>crashSetAuto(+e.target.value));
+$('crashBet').addEventListener('input',()=>{let v=Math.floor(Number($('crashBet').value)||10);v=Math.max(10,Math.min(Math.max(10,S.bal),v));$('crashBet').value=v});
+$('crashDn').addEventListener('click',()=>{Sound.click();$('crashBet').value=Math.max(10,(parseInt($('crashBet').value)||10)-10)});
+$('crashUp').addEventListener('click',()=>{Sound.click();$('crashBet').value=Math.min(Math.max(10,S.bal),(parseInt($('crashBet').value)||10)+10)});
+document.querySelectorAll('.crash-quick button').forEach(b=>b.addEventListener('click',()=>{Sound.click();$('crashBet').value=Math.min(+b.dataset.v,Math.max(10,S.bal))}));
+function crashFinish(crashed){
+  crashRunning=false;cancelAnimationFrame(crashRAF);$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;
+  const final=crashed?crashPoint:crashCurrent;
+  S.crashHist.unshift(final);S.crashHist=S.crashHist.slice(0,12);save();crashRenderHistory();
+  if(crashed){aH('crash',0,crashBetValue);$('crashMult').textContent=final.toFixed(2)+'×';$('crashMult').className='crash-mult dead';$('crashStatus').textContent='💥 РАКЕТА ВЗОРВАЛАСЬ';$('rocket').classList.remove('live');$('rocket').classList.add('crashed');$('crashInfo').innerHTML='<span class="crash-loss">−'+crashBetValue+' ⭐</span> • точка взрыва '+final.toFixed(2)+'×';bz('loss');}
+}
+function crashFrame(now){
+  if(!crashRunning)return;
+  const elapsed=now-crashStart;crashCurrent=Math.max(1,Math.exp(elapsed*0.00013));
+  if(crashCurrent>=crashPoint){crashCurrent=crashPoint;crashDraw(crashCurrent);crashRocketPos(crashCurrent);crashFinish(true);return}
+  $('crashMult').textContent=crashCurrent.toFixed(2)+'×';$('crashMult').className='crash-mult '+(crashCurrent>=3?'danger':'live');$('crashStatus').textContent='Ракета летит • забери до взрыва';crashDraw(crashCurrent);crashRocketPos(crashCurrent);
+  const payout=Math.floor(crashBetValue*crashCurrent);$('crashCashA').textContent='+'+payout;
+  if(crashCurrent>=crashAutoValue){crashCashout(true);return}
+  crashRAF=requestAnimationFrame(crashFrame);
+}
+function crashCashout(auto=false){
+  if(!crashRunning)return;const mult=crashCurrent;const payout=Math.floor(crashBetValue*mult);if(payout<crashBetValue)return;
+  crashRunning=false;cancelAnimationFrame(crashRAF);S.bal+=payout;save();rBal();$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;$('crashMult').textContent=mult.toFixed(2)+'×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=auto?'⚡ АВТОЗАБОР':'🚀 УСПЕШНЫЙ ЗАБОР';$('crashInfo').innerHTML='<span class="crash-profit">+'+payout+' ⭐</span> • ставка '+crashBetValue+' × '+mult.toFixed(2);$('rocket').classList.remove('live');aH('crash',payout,crashBetValue);bz('win');const rr=$('crashCash').getBoundingClientRect();confetti(rr.left+rr.width/2,rr.top,Math.min(26,8+Math.floor(mult)));
+}
+$('crashCash').addEventListener('click',()=>{Sound.click();crashCashout(false)});
+$('crashGo').addEventListener('click',()=>{
+  if(crashLock||crashRunning)return;Sound.click();const bet=Math.floor(Number($('crashBet').value)||10);if(!ok(bet)){sn('Не хватает звёзд');return}
+  crashLock=true;crashBetValue=bet;crashPoint=crashFairPoint();crashCurrent=1;S.bal-=bet;save();rBal();crashResize();
+  $('rocket').classList.remove('crashed');$('rocket').classList.add('live');$('rocket').style.left='11%';$('rocket').style.bottom='18%';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='🚀 Взлёт...';$('crashInfo').textContent='Забери выигрыш до точки взрыва • авто: '+crashAutoValue.toFixed(2)+'×';$('crashGo').style.display='none';$('crashCash').style.display='';crashRunning=true;crashStart=performance.now();crashLock=false;crashRAF=requestAnimationFrame(crashFrame);
+});
+crashSetAuto(200);crashResize();crashRenderHistory();
+
 // ===== MINES =====
 let mOn=false,mB=[],mR=[],mBt=0,mM=1;const mT=25;
 (function(){const el=$('mCnt');for(let i=1;i<=10;i++){const b=document.createElement('button');b.textContent=i;b.addEventListener('click',()=>{Sound.click();el.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')});if(i===3)b.classList.add('on');el.appendChild(b)}})();
@@ -1144,6 +1245,7 @@ $('rst').addEventListener('click',()=>{
   rLock=false;$('rGo').disabled=false;rSel=null;document.querySelectorAll('.rr-b').forEach(x=>x.classList.remove('sel'));
   mOn=false;$('mGo').style.display='';$('mCa').style.display='none';$('mInf').textContent='Выбери клетки и выигрывай!';$('mInf').style.color='';mGr();
   cFlip=false;$('cGo').disabled=false;$('cC').textContent='🪙';$('cR').textContent='';
+  crashRunning=false;cancelAnimationFrame(crashRAF);crashLock=false;$('crashGo').style.display='';$('crashGo').disabled=false;$('crashCash').style.display='none';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='Сделай ставку и запускай ракету';$('crashInfo').textContent='RTP игры: 96% • Ракета может взорваться в любой момент';$('rocket').classList.remove('live','crashed');crashRenderHistory();
   dailyTick();
   sn('Сброшено');
 });
