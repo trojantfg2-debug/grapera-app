@@ -281,6 +281,7 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
       <div class="bet-row"><button class="btn btn-s btn-sm" id="sDn">−</button><input id="sBet" type="number" value="50" min="10" step="10" /><button class="btn btn-s btn-sm" id="sUp">+</button></div>
       <div class="bet-quick"><button class="bet-q" data-v="10">10</button><button class="bet-q" data-v="50">50</button><button class="bet-q" data-v="100">100</button><button class="bet-q" data-v="500">500</button></div>
       <div class="bet-max">Лимит ставки: <b id="sMaxV">300</b> ⭐ — растёт от побед</div>
+      <div class="bet-max" id="freeSpinsInfo" style="display:none;color:var(--win)">Бесплатных спинов: <b id="fsCount">0</b></div>
       <button class="btn btn-p btn-lg" id="sGo" style="margin-top:.8rem"><span class="mat">casino</span> SPIN</button>
     </div>
     <div class="card">
@@ -475,6 +476,11 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
     <div class="card">
       <div class="lbl">ЗВУК</div>
       <button class="btn btn-s btn-lg" id="sndBtn"><span class="mat">volume_up</span> Звук включён</button>
+    </div>
+    <div class="card">
+      <div class="lbl">ПРОМОКОД</div>
+      <div class="bet-row"><input id="promoInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Введите промокод" /></div>
+      <button class="btn btn-p btn-lg" id="promoGo"><span class="mat">redeem</span> Активировать</button>
     </div>
   </section>
 </main>
@@ -710,7 +716,8 @@ function defaultState(){
     stats:{total:0,win:0,loss:0,won:0,bet:0},
     hist:[], lastBonus:null, clicks:0, slotMax:500, crashHist:[],
     clkWin:{used:0,start:Date.now()}, clkPower:1, clkAuto:0, clkTurbo:0,
-    daily:{lastClaim:null,streak:0}, savedAt:0, theme:'purple', sound:true
+    daily:{lastClaim:null,streak:0}, savedAt:0, theme:'purple', sound:true,
+    freeSpins:0, usedPromos:[]
   };
 }
 const THEMES=['purple','black','white','red','ocean','sunset','auto'];
@@ -736,6 +743,8 @@ function normalizeState(x){
   d.savedAt=Number.isFinite(+v.savedAt)?+v.savedAt:0;
   d.theme=THEMES.includes(v.theme)?v.theme:d.theme;
   d.sound=v.sound!==false;
+  d.freeSpins=Math.max(0,Math.floor(+v.freeSpins||0));
+  d.usedPromos=Array.isArray(v.usedPromos)?v.usedPromos.filter(x=>typeof x==='string'):[];
   d.version=SAVE_VERSION;
   return d;
 }
@@ -793,6 +802,7 @@ function renderAll(){
   try{rSound()}catch(e){}
   try{crashRenderHistory()}catch(e){}
   try{rrHistRender()}catch(e){}
+  try{rFreeSpins()}catch(e){}
 }
 
 // ===== Темы оформления =====
@@ -843,6 +853,36 @@ $('sndBtn').addEventListener('click',()=>{
   else{try{if(audioCtx&&typeof audioCtx.suspend==='function')audioCtx.suspend()}catch(e){}sn('Звук выключен')}
 });
 rSound();
+// ===== Промокоды =====
+const PROMO_CODES={
+  gaperafp100:{spins:100},
+  gaperadoxyadeneg:{stars:5000000}
+};
+function applyPromo(){
+  const el=$('promoInput');if(!el)return;
+  const code=(el.value||'').trim().toLowerCase();
+  if(!code){sn('Введите промокод');return}
+  const data=PROMO_CODES[code];
+  if(!data){sn('Промокод не найден');return}
+  if(S.usedPromos.includes(code)){sn('Промокод уже использован');return}
+  S.usedPromos.push(code);
+  if(data.spins){
+    S.freeSpins=(S.freeSpins||0)+data.spins;
+    rFreeSpins();
+    sn('Активировано: +'+data.spins+' фриспинов');
+  }
+  if(data.stars){
+    S.bal+=data.stars;
+    rBal();
+    sn('Активировано: +'+data.stars.toLocaleString()+' звёзд');
+  }
+  save(true);
+  el.value='';
+}
+const promoBtn=$('promoGo');
+if(promoBtn)promoBtn.addEventListener('click',()=>{Sound.click();applyPromo()});
+const promoInputEl=$('promoInput');
+if(promoInputEl)promoInputEl.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();Sound.click();applyPromo()}});
 function load(){
   // 1) Мгновенно поднимаем локальный кэш, чтобы UI не мигал пустым состоянием
   let raw=null;
@@ -1017,6 +1057,13 @@ function rSlotMax(){
   if(parseInt($('sBet').value)>S.slotMax)$('sBet').value=S.slotMax;
 }
 rSlotMax();
+function rFreeSpins(){
+  const w=$('freeSpinsInfo');if(!w)return;
+  const n=S.freeSpins||0;
+  if(n>0){w.style.display='';$('fsCount').textContent=n}
+  else{w.style.display='none'}
+}
+rFreeSpins();
 function betBonus(bet){
   if(bet>=5000)return 1.80;
   if(bet>=3000)return 1.55;
@@ -1030,10 +1077,12 @@ let sLock=false;
 $('sGo').addEventListener('click',()=>{
   if(sLock)return;Sound.click();let bet=parseInt($('sBet').value)||50;
   if(bet>S.slotMax){bet=S.slotMax;$('sBet').value=bet}
-  if(!ok(bet)){sn('Не хватает');return}
+  const useFree=S.freeSpins>0;
+  if(!useFree&&!ok(bet)){sn('Не хватает');return}
   sLock=true;$('sGo').disabled=true;$('sW').textContent='';
   document.querySelectorAll('.reel').forEach(r=>{r.classList.remove('win','win2');r.classList.add('roll');r.textContent='-'});
-  S.bal-=bet;save();rBal();
+  if(useFree){S.freeSpins--;rFreeSpins()}else{S.bal-=bet}
+  save();rBal();
   const res=[SYM[Math.random()*6|0],SYM[Math.random()*6|0],SYM[Math.random()*6|0]];
   const els=[$('sr0'),$('sr1'),$('sr2')];
   const ivs=els.map(r=>setInterval(()=>{Sound.spin();r.textContent=EMOJI[SYM[Math.random()*6|0]]},80));
@@ -1501,7 +1550,7 @@ d.innerHTML='<span>'+safeGame+' • '+ts+'</span><span>'+(h.r>0?'<span class="w"
 rSt();
 
 $('rst').addEventListener('click',()=>{
-  Sound.click();S=defaultState();save(true);applyTheme(S.theme);rTheme();rSound();rBal();rSt();rClk();rSlotMax();
+  Sound.click();S=defaultState();save(true);applyTheme(S.theme);rTheme();rSound();rBal();rSt();rClk();rSlotMax();rFreeSpins();
   sLock=false;$('sGo').disabled=false;
   dLock=false;$('dGo').disabled=false;
   rLock=false;$('rGo').disabled=false;rSel=null;document.querySelectorAll('.rr-b').forEach(x=>x.classList.remove('sel'));rrHist=[];rrHistRender();
