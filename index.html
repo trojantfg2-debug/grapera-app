@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Gapera Alpha 6</title>
+  <title>Gapera Alpha 6.1</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -270,14 +270,14 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 
 <div class="topbar">
   <div class="topbar-left">
-    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta">АЛЬФА 6</span></div>
+    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta" id="verBadge">АЛЬФА 6.1</span></div>
     <span class="topbar-uid" id="uidTxt">ID: —</span>
   </div>
   <div class="bal" id="balBox"><span class="mat">star</span><span id="bal">1000</span><span class="bonus" id="btxt"></span></div>
 </div>
 
-<div class="daily" id="dailyWrap" style="display:none"><div class="daily-card"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">card_giftcard</span> Ежедневный бонус</div><div class="daily-sub" id="dailySub"></div><div class="daily-dots" id="dailyDots"></div></div><button class="btn btn-p btn-sm daily-btn" id="dailyBtnTop">Забрать</button></div></div>
-<div class="daily" id="bonusWrap" style="display:none"><div class="daily-card" style="background:linear-gradient(135deg,#2E7D32,var(--win));color:#fff"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">payments</span> Бонус готов!</div><div class="daily-sub">+500 звёзд</div></div><button class="btn btn-p btn-sm daily-btn" id="bonusBtnTop" style="background:#fff;color:#2E7D32">Забрать</button></div></div>
+<div class="daily" id="dailyWrap" style="display:none"><div class="daily-card"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">card_giftcard</span><span data-i18n="daily_bonus">Ежедневный бонус</span></div><div class="daily-sub" id="dailySub"></div><div class="daily-dots" id="dailyDots"></div></div><button class="btn btn-p btn-sm daily-btn" id="dailyBtnTop" data-i18n="claim">Забрать</button></div></div>
+<div class="daily" id="bonusWrap" style="display:none"><div class="daily-card" style="background:linear-gradient(135deg,#2E7D32,var(--win));color:#fff"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">payments</span><span data-i18n="bonus_ready_title">Бонус готов!</span></div><div class="daily-sub" id="bonusReadySub">+500 звёзд</div></div><button class="btn btn-p btn-sm daily-btn" id="bonusBtnTop" style="background:#fff;color:#2E7D32" data-i18n="claim">Забрать</button></div></div>
 
 <main>
   <!-- SLOTS -->
@@ -287,16 +287,16 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
       <div class="win-line" id="sW"></div>
       <div class="bet-row"><button class="btn btn-s btn-sm" id="sDn">−</button><input id="sBet" type="number" value="50" min="10" step="10" /><button class="btn btn-s btn-sm" id="sUp">+</button></div>
       <div class="bet-quick"><button class="bet-q" data-v="10">10</button><button class="bet-q" data-v="50">50</button><button class="bet-q" data-v="100">100</button><button class="bet-q" data-v="500">500</button></div>
-      <div class="bet-max">Лимит ставки: <b id="sMaxV">300</b> ⭐ — растёт от побед</div>
-      <div class="bet-max" id="freeSpinsInfo" style="display:none;color:var(--win)">Бесплатных спинов: <b id="fsCount">0</b></div>
-      <button class="btn btn-p btn-lg" id="sGo" style="margin-top:.8rem"><span class="mat">casino</span> КРУТИТЬ</button>
+      <div class="bet-max"><span data-i18n="bet_limit">Лимит ставки:</span> <b id="sMaxV">300</b> ⭐ <span data-i18n="bet_limit_grows">— растёт от побед</span></div>
+      <div class="bet-max" id="freeSpinsInfo" style="display:none;color:var(--win)"><span data-i18n="free_spins">Бесплатных спинов:</span> <b id="fsCount">0</b></div>
+      <button class="btn btn-p btn-lg" id="sGo" style="margin-top:.8rem"><span class="mat">casino</span><span data-i18n="spin">КРУТИТЬ</span></button>
     </div>
     <div class="card">
-      <div class="lbl">ВЫПЛАТА ЗА 3 В РЯД</div>
+      <div class="lbl" data-i18n="pay3">ВЫПЛАТА ЗА 3 В РЯД</div>
       <div class="pay-grid"><div>🍋🍋🍋 <b>×2.2</b></div><div>🍒🍒🍒 <b>×3.2</b></div><div>🔔🔔🔔 <b>×4.5</b></div><div>⭐⭐⭐ <b>×6</b></div><div>💎💎💎 <b>×12</b></div><div>7️⃣7️⃣7️⃣ <b>×25</b></div></div>
-      <div class="lbl" style="margin-top:.8rem">2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА</div>
+      <div class="lbl" style="margin-top:.8rem" data-i18n="pay2">2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА</div>
       <div class="pay-grid"><div>🍋🍋 <b>×1.05</b></div><div>🍒🍒 <b>×1.2</b></div><div>🔔🔔 <b>×1.55</b></div><div>⭐⭐ <b>×2</b></div><div>💎💎 <b>×2.8</b></div><div>7️⃣7️⃣ <b>×4</b></div></div>
-      <div class="rewards-sub" style="margin-top:.6rem">Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80</div>
+      <div class="rewards-sub" style="margin-top:.6rem" id="slotBonusNote">Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80</div>
     </div>
   </section>
 
@@ -305,7 +305,7 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
     <div class="card">
       <div class="dice-area"><div class="die" id="d0">⚀</div><div class="die" id="d1">⚀</div></div>
       <div class="dice-res" id="dR"></div>
-      <div class="lbl">СТАВКА НА: <span id="dOU">БОЛЬШЕ</span></div>
+      <div class="lbl"><span data-i18n="bet_on">СТАВКА НА:</span> <span id="dOU">БОЛЬШЕ</span></div>
       <div class="m3-slider" id="m3dSl">
         <input type="range" min="2" max="11" value="7" id="dSl" aria-label="Выбор значения" />
         <div class="m3-slider__label" id="dLabel">7</div>
@@ -317,13 +317,13 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
       </div>
       <div class="dice-target"><span>2</span><span id="dT">7</span><span>11</span></div>
       <div class="dice-chance">
-        <div class="ch-item"><div class="v" id="dCh">47%</div><div class="l">шанс</div></div>
-        <div class="ch-item"><div class="v" id="dMl">×2.13</div><div class="l">множитель</div></div>
+        <div class="ch-item"><div class="v" id="dCh">47%</div><div class="l" data-i18n="chance">шанс</div></div>
+        <div class="ch-item"><div class="v" id="dMl">×2.13</div><div class="l" data-i18n="multiplier">множитель</div></div>
       </div>
-      <div class="rewards-sub">Множитель уже включает комиссию 3% — возврат 97%</div>
+      <div class="rewards-sub" data-i18n="dice_fee">Множитель уже включает комиссию 3% — возврат 97%</div>
       <div class="bet-row"><button class="btn btn-s btn-sm" id="dDn">−</button><input id="dBet" type="number" value="50" min="10" step="10" /><button class="btn btn-s btn-sm" id="dUp">+</button></div>
       <div class="dice-risk" id="dRisk">Ставка в норме — шанс без штрафа</div>
-      <button class="btn btn-p btn-lg" id="dGo"><span class="mat">casino</span> БРОСИТЬ</button>
+      <button class="btn btn-p btn-lg" id="dGo"><span class="mat">casino</span><span data-i18n="throw">БРОСИТЬ</span></button>
     </div>
   </section>
 
@@ -340,15 +340,15 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
         <div class="rr-row" id="rr3"></div>
         <div class="rr-out">
           <button class="rr-b" data-v="1to18" style="background:var(--sc-hi);color:var(--on)">1-18</button>
-          <button class="rr-b" data-v="even" style="background:var(--sc-hi);color:var(--on)">Чёт</button>
+          <button class="rr-b" data-v="even" style="background:var(--sc-hi);color:var(--on)" data-i18n="even">Чёт</button>
           <button class="rr-b rr-r" data-v="red">🔴</button>
           <button class="rr-b rr-k" data-v="black">⚫</button>
-          <button class="rr-b" data-v="odd" style="background:var(--sc-hi);color:var(--on)">Нечёт</button>
+          <button class="rr-b" data-v="odd" style="background:var(--sc-hi);color:var(--on)" data-i18n="odd">Нечёт</button>
           <button class="rr-b" data-v="19to36" style="background:var(--sc-hi);color:var(--on)">19-36</button>
         </div>
       </div>
       <div class="bet-row"><button class="btn btn-s btn-sm" id="rDn">−</button><input id="rBet" type="number" value="50" min="10" step="10" /><button class="btn btn-s btn-sm" id="rUp">+</button></div>
-      <button class="btn btn-p btn-lg" id="rGo"><span class="mat">casino</span> КРУТИТЬ</button>
+      <button class="btn btn-p btn-lg" id="rGo"><span class="mat">casino</span><span data-i18n="spin">КРУТИТЬ</span></button>
       <div class="rewards-sub" style="margin-top:.6rem" id="rrOdds">Число ×35.89 • цвет, чёт/нечет, 1–18/19–36 ×1.99 • зеро бьёт всё, кроме прямого числа</div>
     </div>
   </section>
@@ -365,12 +365,12 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
         <div class="crash-grid"></div>
       </div>
       <div class="crash-controls">
-        <div class="crash-panel"><div class="lbl">СТАВКА</div><div class="crash-bet"><button class="btn btn-s btn-sm" id="crashDn">−</button><input id="crashBet" type="number" value="50" min="10" step="10" inputmode="numeric"><button class="btn btn-s btn-sm" id="crashUp">+</button></div><div class="crash-quick"><button data-v="10">10</button><button data-v="50">50</button><button data-v="100">100</button><button data-v="250">250</button></div></div>
-        <div class="crash-panel"><div class="lbl">АВТОЗАБОР</div><div class="crash-value" id="crashAutoVal">2.00×</div><input id="crashAuto" type="range" min="110" max="1000" value="200" style="width:100%;margin-top:.5rem;accent-color:var(--p)"><div class="crash-live-info" style="margin:.25rem 0 0">Сработает только если график доберётся до множителя</div></div>
+        <div class="crash-panel"><div class="lbl" data-i18n="bet">СТАВКА</div><div class="crash-bet"><button class="btn btn-s btn-sm" id="crashDn">−</button><input id="crashBet" type="number" value="50" min="10" step="10" inputmode="numeric"><button class="btn btn-s btn-sm" id="crashUp">+</button></div><div class="crash-quick"><button data-v="10">10</button><button data-v="50">50</button><button data-v="100">100</button><button data-v="250">250</button></div></div>
+        <div class="crash-panel"><div class="lbl" data-i18n="autocash">АВТОЗАБОР</div><div class="crash-value" id="crashAutoVal">2.00×</div><input id="crashAuto" type="range" min="110" max="1000" value="200" style="width:100%;margin-top:.5rem;accent-color:var(--p)"><div class="crash-live-info" style="margin:.25rem 0 0" data-i18n="auto_hint">Сработает только если график доберётся до множителя</div></div>
       </div>
       <div class="crash-live-info" id="crashInfo">RTP игры: 97% • График может оборваться в любой момент • макс. выплата 20 000 ⭐</div>
-      <button class="btn btn-p btn-lg" id="crashGo"><span class="mat">show_chart</span> ЗАПУСТИТЬ</button>
-      <button class="btn btn-w btn-lg" id="crashCash" style="display:none"><span class="mat">savings</span> ЗАБРАТЬ <span id="crashCashA">+0</span></button>
+      <button class="btn btn-p btn-lg" id="crashGo"><span class="mat">show_chart</span><span data-i18n="launch">ЗАПУСТИТЬ</span></button>
+      <button class="btn btn-w btn-lg" id="crashCash" style="display:none"><span class="mat">savings</span><span data-i18n="take">ЗАБРАТЬ</span> <span id="crashCashA">+0</span></button>
       <div class="crash-history" id="crashHistory"></div>
     </div>
   </section>
@@ -378,13 +378,13 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
   <!-- MINES -->
   <section class="scr" id="s-mines">
     <div class="card">
-      <div class="m-row"><span class="lbl" style="margin:0">МИНЫ:</span><div class="m-cnt" id="mCnt"></div></div>
+      <div class="m-row"><span class="lbl" style="margin:0" data-i18n="mines">МИНЫ:</span><div class="m-cnt" id="mCnt"></div></div>
       <div class="m-grid" id="mGr"></div>
       <div class="m-info" id="mInf">Выбери клетки и выигрывай!</div>
       <div class="bet-row"><button class="btn btn-s btn-sm" id="mDn">−</button><input id="mBet" type="number" value="50" min="10" step="10" /><button class="btn btn-s btn-sm" id="mUp">+</button></div>
-      <button class="btn btn-p btn-lg" id="mGo"><span class="mat">play_arrow</span> НАЧАТЬ</button>
-      <button class="btn btn-w btn-lg" id="mCa" style="display:none"><span class="mat">savings</span> ЗАБРАТЬ <span id="mCaA"></span></button>
-      <div class="rewards-sub" style="margin-top:.6rem">Множитель уже включает комиссию 4%</div>
+      <button class="btn btn-p btn-lg" id="mGo"><span class="mat">play_arrow</span><span data-i18n="start">НАЧАТЬ</span></button>
+      <button class="btn btn-w btn-lg" id="mCa" style="display:none"><span class="mat">savings</span><span data-i18n="take">ЗАБРАТЬ</span> <span id="mCaA"></span></button>
+      <div class="rewards-sub" style="margin-top:.6rem" data-i18n="mines_fee">Множитель уже включает комиссию 4%</div>
     </div>
   </section>
 
@@ -394,34 +394,34 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
       <div class="coin" id="cC">🪙</div>
       <div class="coin-res" id="cR"></div>
       <div class="coin-ch" id="cCh">
-        <button data-v="h" class="on">Орёл 🦅</button>
-        <button data-v="t">Решка 🔔</button>
+        <button data-v="h" class="on" data-i18n="heads">Орёл 🦅</button>
+        <button data-v="t" data-i18n="tails">Решка 🔔</button>
       </div>
       <div class="bet-row"><button class="btn btn-s btn-sm" id="cDn">−</button><input id="cBet" type="number" value="50" min="10" step="10" /><button class="btn btn-s btn-sm" id="cUp">+</button></div>
-      <button class="btn btn-p btn-lg" id="cGo"><span class="mat">casino</span> БРОСИТЬ</button>
-      <div class="rewards-sub" style="margin-top:.6rem">Угадал сторону — выплата ×1.92</div>
+      <button class="btn btn-p btn-lg" id="cGo"><span class="mat">casino</span><span data-i18n="throw">БРОСИТЬ</span></button>
+      <div class="rewards-sub" style="margin-top:.6rem" data-i18n="coin_note">Угадал сторону — выплата ×1.92</div>
     </div>
   </section>
 
   <!-- CLICKER -->
   <section class="scr" id="s-clicker">
     <div class="card">
-      <div class="lbl" style="text-align:center">КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ</div>
+      <div class="lbl" style="text-align:center" data-i18n="click_title">КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ</div>
       <div class="clk-wrap">
         <button class="clk-star" id="clkStar" aria-label="Кликни звезду"><span class="mat" style="color:#FFC107;font-variation-settings:'FILL' 1">star</span></button>
-        <div class="clk-count">За клик: <b id="clkPow">+1</b> ⭐ &nbsp;•&nbsp; Всего кликов: <b id="clkCount">0</b></div>
+        <div class="clk-count"><span data-i18n="per_click">За клик:</span> <b id="clkPow">+1</b> ⭐ &nbsp;•&nbsp; <span data-i18n="total_clicks">Всего кликов:</span> <b id="clkCount">0</b></div>
       </div>
       <div class="clk-bar"><div class="clk-bar-fill" id="clkBarFill" style="width:0%"></div></div>
       <div class="clk-limit" id="clkLimitTxt">0 / 2000 за 1 час</div>
     </div>
     <div class="card">
-      <div class="lbl">УЛУЧШЕНИЯ</div>
+      <div class="lbl" data-i18n="upgrades">УЛУЧШЕНИЯ</div>
       <div class="up-card">
-        <div class="up-info"><span class="up-name">⚡ Сила клика</span><span class="up-lvl" id="upPowLvl">Уровень 1 • +1 звезда/клик</span></div>
+        <div class="up-info"><span class="up-name" data-i18n="power_name">⚡ Сила клика</span><span class="up-lvl" id="upPowLvl">Уровень 1 • +1 звезда/клик</span></div>
         <button class="btn btn-p btn-sm up-btn" id="upPowBtn">Купить</button>
       </div>
       <div class="up-card">
-        <div class="up-info"><span class="up-name">🚀 Турбо</span><span class="up-lvl" id="upTurboLvl">Уровень 0 • +0% к силе</span></div>
+        <div class="up-info"><span class="up-name" data-i18n="turbo_name">🚀 Турбо</span><span class="up-lvl" id="upTurboLvl">Уровень 0 • +0% к силе</span></div>
         <button class="btn btn-p btn-sm up-btn" id="upTurboBtn">Купить</button>
       </div>
     </div>
@@ -430,18 +430,18 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
   <!-- REWARDS — дизайн из обычного Index, логика локальная из Alpha 5 -->
   <section class="scr" id="s-rewards">
     <div class="card">
-      <div class="lbl">ЕЖЕДНЕВНЫЕ НАГРАДЫ</div>
+      <div class="lbl" data-i18n="daily_rewards">ЕЖЕДНЕВНЫЕ НАГРАДЫ</div>
       <div class="reward-grid" id="rewardGrid"></div>
       <div class="rewards-timer" id="rewardTimer">--:--:--</div>
       <div class="rewards-sub" id="rewardSub">Загрузка...</div>
-      <button class="btn btn-p btn-lg" id="rewardBtn" style="margin-top:.8rem"><span class="mat">card_giftcard</span> Забрать</button>
+      <button class="btn btn-p btn-lg" id="rewardBtn" style="margin-top:.8rem"><span class="mat">card_giftcard</span><span data-i18n="claim">Забрать</span></button>
     </div>
     <div class="card">
-      <div class="lbl">БОНУС КАЖДУЮ МИНУТУ</div>
+      <div class="lbl" data-i18n="per_minute">БОНУС КАЖДУЮ МИНУТУ</div>
       <div style="text-align:center;padding:.4rem 0">
         <div class="rewards-timer" id="bonusTimer">01:00</div>
         <div class="rewards-sub" id="bonusSub">До бонуса</div>
-        <button class="btn btn-p btn-lg" id="bonusBtn" style="margin-top:.6rem"><span class="mat">payments</span> Забрать +500</button>
+        <button class="btn btn-p btn-lg" id="bonusBtn" style="margin-top:.6rem"><span class="mat">payments</span><span data-i18n="claim">Забрать</span></button>
       </div>
     </div>
   </section>
@@ -449,68 +449,68 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
   <!-- STATS -->
   <section class="scr" id="s-stats">
     <div class="card">
-      <div class="lbl">СТАТИСТИКА</div>
+      <div class="lbl" data-i18n="stats">СТАТИСТИКА</div>
       <div class="stat-row">
-        <div class="stat"><div class="v" id="xT">0</div><div class="l">ставок</div></div>
-        <div class="stat"><div class="v" id="xW">0</div><div class="l">побед</div></div>
-        <div class="stat"><div class="v" id="xL">0</div><div class="l">проигрышей</div></div>
+        <div class="stat"><div class="v" id="xT">0</div><div class="l" data-i18n="bets">ставок</div></div>
+        <div class="stat"><div class="v" id="xW">0</div><div class="l" data-i18n="wins">побед</div></div>
+        <div class="stat"><div class="v" id="xL">0</div><div class="l" data-i18n="losses">проигрышей</div></div>
       </div>
       <div class="stat-row">
-        <div class="stat"><div class="v" id="xWo">0</div><div class="l">выиграно</div></div>
-        <div class="stat"><div class="v" id="xB">0</div><div class="l">поставлено</div></div>
-        <div class="stat"><div class="v" id="xP">0</div><div class="l">профит</div></div>
+        <div class="stat"><div class="v" id="xWo">0</div><div class="l" data-i18n="won">выиграно</div></div>
+        <div class="stat"><div class="v" id="xB">0</div><div class="l" data-i18n="betted">поставлено</div></div>
+        <div class="stat"><div class="v" id="xP">0</div><div class="l" data-i18n="profit">профит</div></div>
       </div>
     </div>
-    <div class="card"><div class="lbl">ИСТОРИЯ</div><div class="hist-list" id="hL"><div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">Пусто</div></div></div>
-    <button class="btn btn-o btn-lg" id="rst"><span class="mat">restart_alt</span> Сбросить</button>
+    <div class="card"><div class="lbl" data-i18n="history">ИСТОРИЯ</div><div class="hist-list" id="hL"><div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">Пусто</div></div></div>
+    <button class="btn btn-o btn-lg" id="rst"><span class="mat">restart_alt</span><span data-i18n="reset">Сбросить</span></button>
   </section>
 
   <!-- SETTINGS -->
   <section class="scr" id="s-settings">
     <div class="card">
-      <div class="lbl">ЯЗЫК</div>
+      <div class="lbl" data-i18n="language">ЯЗЫК</div>
       <div class="lang-grid" id="langGrid">
-        <button class="lang-sw sel" data-lang="ru"><span class="lang-flag">🇷🇺</span>Русский</button>
-        <button class="lang-sw lang-soon" data-lang="uk"><span class="lang-soon-badge">в разработке</span><span class="lang-flag">🇺🇦</span>Українська</button>
-        <button class="lang-sw lang-soon" data-lang="en"><span class="lang-soon-badge">in development</span><span class="lang-flag">🇬🇧</span>English</button>
+        <button class="lang-sw sel" data-lang="ru"><span class="lang-flag">🇷🇺</span><span data-i18n="lang_ru">Русский</span></button>
+        <button class="lang-sw" data-lang="uk"><span class="lang-flag">🇺🇦</span><span data-i18n="lang_uk">Українська</span></button>
+        <button class="lang-sw" data-lang="en"><span class="lang-flag">🇬🇧</span><span data-i18n="lang_en">English</span></button>
       </div>
     </div>
     <div class="card">
-      <div class="lbl">ТЕМА ОФОРМЛЕНИЯ</div>
+      <div class="lbl" data-i18n="theme">ТЕМА ОФОРМЛЕНИЯ</div>
       <div class="theme-grid" id="themeGrid">
-        <button class="theme-sw" data-theme="purple"><span class="theme-preview" style="background:linear-gradient(135deg,#D0BCFF,#4F378B)"></span>Фиолетовая</button>
-        <button class="theme-sw" data-theme="black"><span class="theme-preview" style="background:linear-gradient(135deg,#4D4D4D,#000000)"></span>Чёрная</button>
-        <button class="theme-sw" data-theme="white"><span class="theme-preview" style="background:linear-gradient(135deg,#FFFFFF,#EADDFF)"></span>Белая</button>
-        <button class="theme-sw" data-theme="red"><span class="theme-preview" style="background:linear-gradient(135deg,#FFB4AB,#690005)"></span>Красная</button>
-        <button class="theme-sw" data-theme="auto"><span class="theme-preview" style="background:linear-gradient(135deg,#161616 50%,#F7F2FA 50%)"></span>Авто</button>
-        <button class="theme-sw" data-theme="ocean"><span class="theme-beta">бета</span><span class="theme-preview" style="background:linear-gradient(135deg,#A8C7FA,#1B3A6B)"></span>Океан</button>
-        <button class="theme-sw" data-theme="sunset"><span class="theme-beta">бета</span><span class="theme-preview" style="background:linear-gradient(135deg,#FFB68F,#7A2E12)"></span>Закат</button>
+        <button class="theme-sw" data-theme="purple"><span class="theme-preview" style="background:linear-gradient(135deg,#D0BCFF,#4F378B)"></span><span data-i18n="th_purple">Фиолетовая</span></button>
+        <button class="theme-sw" data-theme="black"><span class="theme-preview" style="background:linear-gradient(135deg,#4D4D4D,#000000)"></span><span data-i18n="th_black">Чёрная</span></button>
+        <button class="theme-sw" data-theme="white"><span class="theme-preview" style="background:linear-gradient(135deg,#FFFFFF,#EADDFF)"></span><span data-i18n="th_white">Белая</span></button>
+        <button class="theme-sw" data-theme="red"><span class="theme-preview" style="background:linear-gradient(135deg,#FFB4AB,#690005)"></span><span data-i18n="th_red">Красная</span></button>
+        <button class="theme-sw" data-theme="auto"><span class="theme-preview" style="background:linear-gradient(135deg,#161616 50%,#F7F2FA 50%)"></span><span data-i18n="th_auto">Авто</span></button>
+        <button class="theme-sw" data-theme="ocean"><span class="theme-beta" data-i18n="beta">бета</span><span class="theme-preview" style="background:linear-gradient(135deg,#A8C7FA,#1B3A6B)"></span><span data-i18n="th_ocean">Океан</span></button>
+        <button class="theme-sw" data-theme="sunset"><span class="theme-beta" data-i18n="beta">бета</span><span class="theme-preview" style="background:linear-gradient(135deg,#FFB68F,#7A2E12)"></span><span data-i18n="th_sunset">Закат</span></button>
       </div>
-      <div class="rewards-sub" style="margin-top:.6rem">Авто — подстраивается под тёмную/светлую тему телефона</div>
+      <div class="rewards-sub" style="margin-top:.6rem" data-i18n="auto_note">Авто — подстраивается под тёмную/светлую тему телефона</div>
     </div>
     <div class="card">
-      <div class="lbl">ЗВУК</div>
+      <div class="lbl" data-i18n="sound">ЗВУК</div>
       <button class="btn btn-s btn-lg" id="sndBtn"><span class="mat">volume_up</span> Звук включён</button>
     </div>
     <div class="card">
-      <div class="lbl">ПРОМОКОД</div>
+      <div class="lbl" data-i18n="promo">ПРОМОКОД</div>
       <div class="bet-row"><input id="promoInput" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Введите промокод" /></div>
-      <button class="btn btn-p btn-lg" id="promoGo"><span class="mat">redeem</span> Активировать</button>
+      <button class="btn btn-p btn-lg" id="promoGo"><span class="mat">redeem</span><span data-i18n="activate">Активировать</span></button>
     </div>
   </section>
 </main>
 
 <nav class="nav">
-  <button class="ni on" data-s="slots"><span class="np"><span class="mat">casino</span></span><span class="nl">Слоты</span></button>
-  <button class="ni" data-s="dice"><span class="np"><span class="mat">sports_esports</span></span><span class="nl">Кости</span></button>
-  <button class="ni" data-s="roulette"><span class="np"><span class="mat">circle</span></span><span class="nl">Рулетка</span></button>
-  <button class="ni" data-s="crash"><span class="np"><span class="mat">show_chart</span></span><span class="nl">Ракетка</span></button>
-  <button class="ni" data-s="mines"><span class="np"><span class="mat">explosion</span></span><span class="nl">Мины</span></button>
-  <button class="ni" data-s="coin"><span class="np"><span class="mat">monetization_on</span></span><span class="nl">Монета</span></button>
-  <button class="ni" data-s="clicker"><span class="np"><span class="mat">ads_click</span></span><span class="nl">Кликер</span></button>
-  <button class="ni" data-s="rewards"><span class="np"><span class="mat">card_giftcard</span></span><span class="nl">Награды</span></button>
-  <button class="ni" data-s="stats"><span class="np"><span class="mat">bar_chart</span></span><span class="nl">Стата</span></button>
-  <button class="ni" data-s="settings"><span class="np"><span class="mat">settings</span></span><span class="nl">Настройки</span></button>
+  <button class="ni on" data-s="slots"><span class="np"><span class="mat">casino</span></span><span class="nl" data-i18n="nav_slots">Слоты</span></button>
+  <button class="ni" data-s="dice"><span class="np"><span class="mat">sports_esports</span></span><span class="nl" data-i18n="nav_dice">Кости</span></button>
+  <button class="ni" data-s="roulette"><span class="np"><span class="mat">circle</span></span><span class="nl" data-i18n="nav_roulette">Рулетка</span></button>
+  <button class="ni" data-s="crash"><span class="np"><span class="mat">show_chart</span></span><span class="nl" data-i18n="nav_crash">Ракетка</span></button>
+  <button class="ni" data-s="mines"><span class="np"><span class="mat">explosion</span></span><span class="nl" data-i18n="nav_mines">Мины</span></button>
+  <button class="ni" data-s="coin"><span class="np"><span class="mat">monetization_on</span></span><span class="nl" data-i18n="nav_coin">Монета</span></button>
+  <button class="ni" data-s="clicker"><span class="np"><span class="mat">ads_click</span></span><span class="nl" data-i18n="nav_clicker">Кликер</span></button>
+  <button class="ni" data-s="rewards"><span class="np"><span class="mat">card_giftcard</span></span><span class="nl" data-i18n="nav_rewards">Награды</span></button>
+  <button class="ni" data-s="stats"><span class="np"><span class="mat">bar_chart</span></span><span class="nl" data-i18n="nav_stats">Стата</span></button>
+  <button class="ni" data-s="settings"><span class="np"><span class="mat">settings</span></span><span class="nl" data-i18n="nav_settings">Настройки</span></button>
 </nav>
 
 <div class="sn" id="sn"></div>
@@ -669,7 +669,7 @@ const R_OUTSIDE_MULT=ROULETTE_EDGE/(18/rNums.length);
 const R_STRAIGHT_MULT=ROULETTE_EDGE/(1/rNums.length);
 (function(){const el=$('rrOdds');if(el)el.textContent='Число ×'+R_STRAIGHT_MULT.toFixed(2)+' • цвет, чёт/нечет, 1–18/19–36 ×'+R_OUTSIDE_MULT.toFixed(2)+' • зеро бьёт всё, кроме прямого числа'})();
 
-// ===== Local Storage Alpha 6 Изоляция =====
+// ===== Local Storage Alpha 6.1 Изоляция =====
 function getUid(){
   try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user&&TG.initDataUnsafe.user.id)return 'tg'+TG.initDataUnsafe.user.id}catch(e){}
   try{
@@ -682,8 +682,8 @@ function getUid(){
 // localStorage внутри WebView Telegram (особенно iOS/Desktop) не гарантированно
 // переживает перезапуск мини-аппа — используем его как мгновенный кэш, а
 // CloudStorage Telegram как основное надёжное хранилище прогресса.
-const SAVE_VERSION=8;
-const STORAGE_KEY='gapera_alpha6_v8_save_'+getUid();
+const SAVE_VERSION=9;
+const STORAGE_KEY='gapera_alpha61_v9_save_'+getUid();
 const BACKUP_KEY=STORAGE_KEY+'_backup';
 let S=defaultState();
 
@@ -705,15 +705,16 @@ function displayUid(){
     Sound.click();
     try{
       if(navigator.clipboard&&navigator.clipboard.writeText){
-        navigator.clipboard.writeText(uid);sn('ID скопирован: '+uid);
+        navigator.clipboard.writeText(uid);sn(t('id_copied',{uid:uid}));
       }else{sn('ID: '+uid)}
     }catch(e){sn('ID: '+uid)}
   });
 })();
 
-// Ключи прошлых версий — читаем их при первом запуске Alpha 6, чтобы
+// Ключи прошлых версий — читаем их при первом запуске Alpha 6.1, чтобы
 // прогресс игрока (звёзды, улучшения кликера, стата) перенёсся автоматически.
 const LEGACY_KEYS=()=>[
+  'gapera_alpha6_v8_save_'+getUid(),
   'gapera_alpha5_v7_save_'+getUid(),
   'gapera_alpha5_v6_save_'+getUid(),
   'gapera_alpha4_v5_save_'+getUid(),
@@ -736,7 +737,7 @@ function defaultState(){
     hist:[], lastBonus:null, clicks:0, slotMax:500, crashHist:[],
     clkWin:{used:0,start:Date.now()}, clkPower:1, clkAuto:0, clkTurbo:0,
     daily:{lastClaim:null,streak:0}, savedAt:0, theme:'purple', sound:true,
-    freeSpins:0, usedPromos:[], lang:'ru'
+    freeSpins:0, usedPromos:[], lang:'ru', bonusX2Until:0
   };
 }
 const THEMES=['purple','black','white','red','ocean','sunset','auto'];
@@ -766,6 +767,7 @@ function normalizeState(x){
   d.freeSpins=Math.max(0,Math.floor(+v.freeSpins||0));
   d.usedPromos=Array.isArray(v.usedPromos)?v.usedPromos.filter(x=>typeof x==='string'):[];
   d.lang=LANGS.includes(v.lang)?v.lang:'ru';
+  d.bonusX2Until=Number.isFinite(+v.bonusX2Until)?Math.max(0,+v.bonusX2Until):0;
   d.version=SAVE_VERSION;
   return d;
 }
@@ -825,9 +827,41 @@ function renderAll(){
   try{crashRenderHistory()}catch(e){}
   try{rrHistRender()}catch(e){}
   try{rFreeSpins()}catch(e){}
+  try{applyI18n()}catch(e){}
 }
 
+// ===== Локализация Alpha 6.1 (RU/EN/UK) =====
+const I18N={
+ru:{ver_badge:'АЛЬФА 6.1',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'— растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% — возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме — шанс без штрафа',risk1:'Повышенная ставка — шанс −6%',risk2:'Крупная ставка — шанс −13%',risk3:'Высокий риск — шанс −20%',risk4:'Очень высокий риск — шанс −28%',risk5:'Экстремальный риск — шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1–18/19–36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент • макс. выплата 20 000 ⭐',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону — выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} из 7 — награда ждёт!',received:'Получено',streak_next:'Стрик {s}/7 • следующая награда завтра',daily_reward_for:'День {d} — +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто — подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+en:{ver_badge:'ALPHA 6.1',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'— grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND — PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee — 97% return',throw:'ROLL',risk0:'Normal bet — no chance penalty',risk1:'Raised bet — chance −6%',risk2:'Big bet — chance −13%',risk3:'High risk — chance −20%',risk4:'Very high risk — chance −28%',risk5:'Extreme risk — chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1–18/19–36 ×{outside} • zero beats everything except straight-up',bet:'BET',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment • max payout 20,000 ⭐',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side — payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} of 7 — reward is waiting!',received:'Claimed',streak_next:'Streak {s}/7 • next reward tomorrow',daily_reward_for:'Day {d} — +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto — follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+uk:{ver_badge:'АЛЬФА 6.1',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'— зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ — ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% — повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі — шанс без штрафу',risk1:'Підвищена ставка — шанс −6%',risk2:'Велика ставка — шанс −13%',risk3:'Високий ризик — шанс −20%',risk4:'Дуже високий ризик — шанс −28%',risk5:'Екстремальний ризик — шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1–18/19–36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті • макс. виплата 20 000 ⭐',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону — виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} із 7 — нагорода чекає!',received:'Отримано',streak_next:'Стрік {s}/7 • наступна нагорода завтра',daily_reward_for:'День {d} — +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто — підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
+};
+function curLang(){return LANGS.includes(S.lang)?S.lang:'ru'}
+function t(key,params){var L=curLang();var d=I18N[L]||{};var v=(key in d)?d[key]:(((I18N.ru||{})[key]!==undefined)?I18N.ru[key]:key);if(params){for(var k in params){if(Object.prototype.hasOwnProperty.call(params,k)){v=String(v).split('{'+k+'}').join(params[k])}}}return v}
+function gameName(g){var m={slots:'game_slots',dice:'game_dice',roulette:'game_roulette',crash:'game_crash',mines:'game_mines',coin:'game_coin'};return t(m[g]||g)}
+function rrOddsRender(){var el=$('rrOdds');if(!el)return;el.textContent=t('rr_odds',{straight:R_STRAIGHT_MULT.toFixed(2),outside:R_OUTSIDE_MULT.toFixed(2)})}
+function applyI18n(){
+  try{document.documentElement.lang=curLang()}catch(e){}
+  try{document.title='Gapera Alpha 6.1'}catch(e){}
+  try{document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');el.textContent=t(k)})}catch(e){}
+  try{var vb=$('verBadge');if(vb)vb.textContent=t('ver_badge')}catch(e){}
+  try{var pi=$('promoInput');if(pi)pi.placeholder=t('promo_ph')}catch(e){}
+  try{var dou=$('dOU');if(dou)dou.textContent=t('over')}catch(e){}
+  try{var sbn=$('slotBonusNote');if(sbn)sbn.textContent=t('slot_bonus_note')}catch(e){}
+  try{rrOddsRender()}catch(e){}
+  try{rSound()}catch(e){}
+  try{rSlotMax()}catch(e){}
+  try{rFreeSpins()}catch(e){}
+  try{uDC()}catch(e){}
+  try{rClk()}catch(e){}
+  try{dailyTick()}catch(e){}
+  try{tickBonus()}catch(e){}
+  try{rSt()}catch(e){}
+  try{if(typeof crashRunning!=='undefined'&&!crashRunning){var cs=$('crashStatus');if(cs)cs.textContent=t('crash_make_bet');var ci=$('crashInfo');if(ci)ci.textContent=t('crash_info_idle')}}catch(e){}
+  try{if(typeof mOn!=='undefined'&&!mOn&&typeof mR!=='undefined'&&mR.length===0){var mi=$('mInf');if(mi){mi.textContent=t('mines_hint');mi.style.color=''}}}catch(e){}
+}
 // ===== Темы оформления =====
+
 // 'auto' — адаптивная: светлая тема телефона → белая, тёмная → фиолетовая.
 function resolveTheme(name){
   if(name==='auto'){
@@ -856,7 +890,7 @@ document.querySelectorAll('.theme-sw').forEach(b=>b.addEventListener('click',()=
   applyTheme(S.theme);
   rTheme();
   save();
-  sn('Тема применена');
+  sn(t('theme_applied'));
 }));
 try{
   const mq=window.matchMedia&&matchMedia('(prefers-color-scheme: light)');
@@ -869,55 +903,65 @@ function rLang(){
 document.querySelectorAll('.lang-sw').forEach(b=>b.addEventListener('click',()=>{
   Sound.click();
   const lang=b.dataset.lang;
-  if(b.classList.contains('lang-soon')){
-    sn(lang==='en'?'This language is in development':'Ця мова в розробці');
-    return;
-  }
+  if(!LANGS.includes(lang))return;
   S.lang=lang;
   rLang();
   save();
-  sn('Язык применён');
+  try{if(typeof applyI18n==='function')applyI18n()}catch(e){}
+  sn(t('lang_applied'));
 }));
 rLang();
 // ===== Звук =====
 function rSound(){
   const b=$('sndBtn');if(!b)return;
   const on=S.sound!==false;
-  b.innerHTML=on?'<span class="mat">volume_up</span> Звук включён':'<span class="mat">volume_off</span> Звук выключен';
+  b.innerHTML=on?'<span class="mat">volume_up</span> '+t('sound_on'):'<span class="mat">volume_off</span> '+t('sound_off');
 }
 $('sndBtn').addEventListener('click',()=>{
   S.sound=S.sound===false?true:false;
   save();rSound();
-  if(S.sound){Sound.click();sn('Звук включён')}
-  else{try{if(audioCtx&&typeof audioCtx.suspend==='function')audioCtx.suspend()}catch(e){}sn('Звук выключен')}
+  if(S.sound){Sound.click();sn(t('sound_on'))}
+  else{try{if(audioCtx&&typeof audioCtx.suspend==='function')audioCtx.suspend()}catch(e){}sn(t('sound_off'))}
 });
 rSound();
 // ===== Промокоды =====
 const PROMO_CODES={
   gaperafp100:{spins:100,expires:new Date(2026,8,19,23,59,59).getTime()},
-  gaperadoxyadeneg:{stars:5000000,expires:new Date(2026,8,19,23,59,59).getTime()}
+  gaperadoxyadeneg:{stars:5000000,expires:new Date(2026,8,19,23,59,59).getTime()},
+  gaperabonus10:{stars:10000,bonusX2Minutes:30}
 };
 function applyPromo(){
   const el=$('promoInput');if(!el)return;
   const code=(el.value||'').trim().toLowerCase();
-  if(!code){sn('Введите промокод');return}
+  const T=(typeof t==='function')?t:function(k,p){return k};
+  if(!code){sn(T('promo_enter'));return}
   const data=PROMO_CODES[code];
-  if(!data){sn('Промокод не найден');return}
-  if(data.expires&&Date.now()>data.expires){sn('Срок действия промокода истёк');return}
-  if(S.usedPromos.includes(code)){sn('Промокод уже использован');return}
+  if(!data){sn(T('promo_not_found'));return}
+  if(data.expires&&Date.now()>data.expires){sn(T('promo_expired'));return}
+  if(S.usedPromos.includes(code)){sn(T('promo_used'));return}
   S.usedPromos.push(code);
+  const parts=[];
   if(data.spins){
     S.freeSpins=(S.freeSpins||0)+data.spins;
-    rFreeSpins();
-    sn('Активировано: +'+data.spins+' фриспинов');
+    try{rFreeSpins()}catch(e){}
+    parts.push('+'+data.spins+' '+T('promo_freespins'));
   }
   if(data.stars){
     S.bal+=data.stars;
-    rBal();
-    sn('Активировано: +'+data.stars.toLocaleString()+' звёзд');
+    try{rBal()}catch(e){}
+    parts.push('+'+Number(data.stars).toLocaleString()+' '+T('stars_many'));
+  }
+  if(data.bonusX2Minutes){
+    const now=Date.now();
+    const base=Math.max(now,S.bonusX2Until||0);
+    S.bonusX2Until=base+data.bonusX2Minutes*60000;
+    parts.push(T('promo_x2',{min:data.bonusX2Minutes}));
   }
   save(true);
+  try{tickBonus()}catch(e){}
   el.value='';
+  if(parts.length){sn(T('promo_ok',{parts:parts.join(' • ')}));Sound.win();try{bz('win')}catch(e){}}
+  else{sn(T('promo_ok',{parts:code}))}
 }
 const promoBtn=$('promoGo');
 if(promoBtn)promoBtn.addEventListener('click',()=>{Sound.click();applyPromo()});
@@ -972,26 +1016,37 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 // в «Наградах» и зелёный топ-баннер показывают одно и то же состояние.
 const BONUS_AMOUNT=500;
 const BONUS_MS=60000;
-function fmtBonus(s){if(s<=0)return 'Готово!';const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
+function bonusX2Active(){return !!(S&&S.bonusX2Until&&Date.now()<S.bonusX2Until)}
+function bonusAmount(){return BONUS_AMOUNT*(bonusX2Active()?2:1)}
+function bonusX2Left(){if(!bonusX2Active())return 0;return Math.max(0,(S.bonusX2Until||0)-Date.now())}
+function fmtBonus(s){const T=(typeof t==='function')?t:function(k){return k};if(s<=0)return T('ready');const m=Math.floor(s/60),sec=s%60;return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0')}
 function bonusRemain(){if(!S.lastBonus)return BONUS_MS;return Math.max(0,BONUS_MS-(Date.now()-S.lastBonus))}
 function bonusCanClaim(){return bonusRemain()<=0}
 function claimBonus(){
   Sound.click();
-  if(!bonusCanClaim()){sn('Подожди '+Math.ceil(bonusRemain()/1000)+'с');return}
-  S.bal+=BONUS_AMOUNT;S.lastBonus=Date.now();save();rBal();
-  Sound.win();bz('win');sn('+'+BONUS_AMOUNT+' звёзд!');
+  const T=(typeof t==='function')?t:function(k,p){return k};
+  if(!bonusCanClaim()){sn(T('wait_s',{s:Math.ceil(bonusRemain()/1000)}));return}
+  const amt=bonusAmount();S.bal+=amt;S.lastBonus=Date.now();save();rBal();
+  Sound.win();bz('win');sn('+'+amt+' '+T('stars_many')+'!');
   try{const b=$('bonusBtn').getBoundingClientRect();confetti(b.left+b.width/2,b.top,22)}catch(e){}
   tickBonus();
 }
 function tickBonus(){
   const now=Date.now();
   if(!S.lastBonus){S.lastBonus=now;save()}
+  const T=(typeof t==='function')?t:function(k,p){return k};
+  const amt=bonusAmount(),x2=bonusX2Active();
   const remain=bonusRemain(),can=bonusCanClaim();
-  const btxt=$('btxt');if(btxt)btxt.textContent=can?'бонус готов!':'+'+BONUS_AMOUNT+' через '+Math.ceil(remain/1000)+'с';
-  const timer=$('bonusTimer'),sub=$('bonusSub'),btn=$('bonusBtn'),top=$('bonusWrap');
-  if(timer){timer.textContent=can?'Готово!':fmtBonus(Math.ceil(remain/1000));timer.style.color=can?'var(--win)':'var(--p)'}
-  if(sub)sub.textContent=can?'Нажми «Забрать»':'До бонуса';
-  if(btn){btn.disabled=!can;btn.innerHTML=can?'<span class="mat">payments</span> Забрать +'+BONUS_AMOUNT:'<span class="mat">payments</span> Жди '+Math.ceil(remain/1000)+'с'}
+  const btxt=$('btxt');if(btxt)btxt.textContent=can?T('bonus_ready')+(x2?' ×2':''):('+'+amt+' '+T('bonus_in',{s:Math.ceil(remain/1000)}));
+  const timer=$('bonusTimer'),sub=$('bonusSub'),btn=$('bonusBtn'),top=$('bonusWrap'),readySub=$('bonusReadySub');
+  if(readySub)readySub.textContent='+'+amt+' '+T('stars_many')+(x2?' • ×2':'');
+  if(timer){timer.textContent=can?T('ready'):fmtBonus(Math.ceil(remain/1000));timer.style.color=can?'var(--win)':'var(--p)'}
+  if(sub){
+    if(can)sub.textContent=T('press_claim');
+    else if(x2)sub.textContent=T('to_bonus')+' • '+T('x2_left',{t:fmtBonus(Math.ceil(bonusX2Left()/1000))});
+    else sub.textContent=T('to_bonus');
+  }
+  if(btn){btn.disabled=!can;btn.innerHTML=can?'<span class="mat">payments</span> '+T('claim_for',{n:amt}):'<span class="mat">payments</span> '+T('wait_btn',{s:Math.ceil(remain/1000)})}
   if(top)top.style.display=can?'block':'none';
 }
 $('bonusBtn').addEventListener('click',claimBonus);
@@ -1118,7 +1173,7 @@ $('sGo').addEventListener('click',()=>{
   if(sLock)return;Sound.click();let bet=parseInt($('sBet').value)||50;
   if(bet>S.slotMax){bet=S.slotMax;$('sBet').value=bet}
   const useFree=S.freeSpins>0;
-  if(!useFree&&!ok(bet)){sn('Не хватает');return}
+  if(!useFree&&!ok(bet)){sn(t('not_enough'));return}
   sLock=true;$('sGo').disabled=true;$('sW').textContent='';
   document.querySelectorAll('.reel').forEach(r=>{r.classList.remove('win','win2');r.classList.add('roll');r.textContent='-'});
   if(useFree){S.freeSpins--;rFreeSpins()}else{S.bal-=bet}
@@ -1138,14 +1193,14 @@ $('sGo').addEventListener('click',()=>{
     const w=mult>0?Math.floor(bet*mult*bb):0;
     S.bal+=w;save();rBal();
     if(tier===3){
-      els.forEach(r=>r.classList.add('win'));$('sW').textContent='ДЖЕКПОТ +'+w;$('sW').style.color='var(--win)';bz('win');
+      els.forEach(r=>r.classList.add('win'));$('sW').textContent=t('jackpot',{w:w});$('sW').style.color='var(--win)';bz('win');
       const r=$('sW').getBoundingClientRect();confetti(r.left+r.width/2,r.top,28);
-      const newMax=Math.min(10000,S.slotMax+250);if(newMax>S.slotMax){S.slotMax=newMax;save();rSlotMax();sn('Лимит ставки увеличен до '+S.slotMax+' ⭐')}
+      const newMax=Math.min(10000,S.slotMax+250);if(newMax>S.slotMax){S.slotMax=newMax;save();rSlotMax();sn(t('limit_up',{n:S.slotMax}))}
     } else if(tier===2){
-      els.forEach(r=>r.classList.add('win2'));$('sW').textContent='2 В РЯД +'+w;$('sW').style.color='#FFC107';bz('win');
-      const newMax=Math.min(10000,S.slotMax+100);if(newMax>S.slotMax){S.slotMax=newMax;save();rSlotMax();sn('Лимит ставки увеличен до '+S.slotMax+' ⭐')}
+      els.forEach(r=>r.classList.add('win2'));$('sW').textContent=t('two_in_row',{w:w});$('sW').style.color='#FFC107';bz('win');
+      const newMax=Math.min(10000,S.slotMax+100);if(newMax>S.slotMax){S.slotMax=newMax;save();rSlotMax();sn(t('limit_up',{n:S.slotMax}))}
     } else{
-      $('sW').textContent='Мимо';$('sW').style.color='var(--e)';bz('loss')
+      $('sW').textContent=t('miss');$('sW').style.color='var(--e)';bz('loss')
     }
     aH('slots',w,bet);sLock=false;$('sGo').disabled=false;
   },600+2*350+300);
@@ -1177,12 +1232,12 @@ function diceOdds(t){
 // так что то, что видит игрок, и то, что реально считается при броске —
 // одно и то же число.
 const DICE_RISK_TIERS=[
-  {min:0,    pen:0,    label:'Ставка в норме — шанс без штрафа'},
-  {min:250,  pen:0.06, label:'Повышенная ставка — шанс −6%'},
-  {min:600,  pen:0.13, label:'Крупная ставка — шанс −13%'},
-  {min:1200, pen:0.20, label:'Высокий риск — шанс −20%'},
-  {min:2500, pen:0.28, label:'Очень высокий риск — шанс −28%'},
-  {min:5000, pen:0.38, label:'Экстремальный риск — шанс −38%'}
+  {min:0,    pen:0,    key:'risk0'},
+  {min:250,  pen:0.06, key:'risk1'},
+  {min:600,  pen:0.13, key:'risk2'},
+  {min:1200, pen:0.20, key:'risk3'},
+  {min:2500, pen:0.28, key:'risk4'},
+  {min:5000, pen:0.38, key:'risk5'}
 ];
 function diceRisk(bet){
   let cur=DICE_RISK_TIERS[0];
@@ -1190,16 +1245,16 @@ function diceRisk(bet){
   return cur;
 }
 function uDC(){
-  const t=parseInt($('dSl').value);
+  const th=parseInt($('dSl').value);
   const bet=parseInt($('dBet').value)||50;
-  const {ch,ml}=diceOdds(t);
+  const {ch,ml}=diceOdds(th);
   const risk=diceRisk(bet);
   const chEff=ch*(1-risk.pen);
-  $('dT').textContent=t;
+  $('dT').textContent=th;
   $('dCh').textContent=Math.round(chEff*100)+'%';
   $('dMl').textContent=ml?'×'+ml.toFixed(2):'—';
   const riskEl=$('dRisk');
-  riskEl.textContent=risk.label;
+  riskEl.textContent=t(risk.key);
   riskEl.classList.toggle('pen',risk.pen>0);
   slUpd();
 }
@@ -1209,9 +1264,9 @@ $('dDn').addEventListener('click',uDC);
 $('dUp').addEventListener('click',uDC);
 uDC();
 $('dGo').addEventListener('click',()=>{
-  if(dLock)return;Sound.click();const bet=parseInt($('dBet').value)||50;if(!ok(bet)){sn('Не хватает');return}
+  if(dLock)return;Sound.click();const bet=parseInt($('dBet').value)||50;if(!ok(bet)){sn(t('not_enough'));return}
   dLock=true;$('dGo').disabled=true;$('dR').textContent='';S.bal-=bet;save();rBal();
-  const t=parseInt($('dSl').value);
+  const th=parseInt($('dSl').value);
   const risk=diceRisk(bet);
   const d0=$('d0'),d1=$('d1');
   d0.classList.add('rolling');d1.classList.add('rolling');
@@ -1220,8 +1275,8 @@ $('dGo').addEventListener('click',()=>{
     clearInterval(iv);d0.classList.remove('rolling');d1.classList.remove('rolling');
     const a=Math.random()*6|0;const b=Math.random()*6|0;const tot=a+b+2;
     d0.textContent=FACES[a];d1.textContent=FACES[b];
-    const {ml}=diceOdds(t);
-    let isOv=tot>t;
+    const {ml}=diceOdds(th);
+    let isOv=tot>th;
     // Штраф крупной ставки: часть формально выигрышных бросков «сгорает»,
     // так что реальный шанс победы точно совпадает с тем, что показано в dCh.
     if(isOv&&risk.pen>0&&Math.random()<risk.pen) isOv=false;
@@ -1237,7 +1292,7 @@ let rLock=false,rSel=null,rrHist=[];
 function rrHistRender(){const el=$('rrHist');if(!el)return;el.innerHTML='';rrHist.slice(0,10).forEach(n=>{const s=document.createElement('span');s.textContent=n;s.className=RED.has(n)?'hz-r':n===0?'hz-g':'hz-k';el.appendChild(s)})}
 document.querySelectorAll('.rr-b').forEach(b=>b.addEventListener('click',()=>{Sound.click();document.querySelectorAll('.rr-b').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rSel=b.dataset.v}));
 $('rGo').addEventListener('click',()=>{
-  if(rLock)return;if(!rSel){sn('Выбери ставку');return}Sound.click();const bet=parseInt($('rBet').value)||50;if(!ok(bet)){sn('Не хватает');return}
+  if(rLock)return;if(!rSel){sn(t('choose_bet'));return}Sound.click();const bet=parseInt($('rBet').value)||50;if(!ok(bet)){sn(t('not_enough'));return}
   rLock=true;$('rGo').disabled=true;$('rR').textContent='';S.bal-=bet;save();rBal();
   const rn=$('rN');rn.classList.add('spin');
   const iv=setInterval(()=>{Sound.spin();const rv=rNums[Math.random()*rNums.length|0];rn.textContent=rv;rn.style.background=RED.has(rv)?'#E53935':rv===0?'#2E7D32':'#212121';rn.style.color='#fff'},70);
@@ -1265,7 +1320,7 @@ $('rGo').addEventListener('click',()=>{
 const CRASH_HOUSE_EDGE=0.03;      // 3% преимущество казино → 97% RTP
 const CRASH_MAX_MULT=1000;        // потолок множителя
 const CRASH_INSTA_CHANCE=CRASH_HOUSE_EDGE; // доля раундов с обрывом сразу на 1.00×
-const CRASH_MAX_PAYOUT=20000;     // потолок выплаты за один раунд — защита экономики (Альфа 6)
+const CRASH_MAX_PAYOUT=20000;     // потолок выплаты за один раунд — защита экономики (Альфа 6.1)
 let crashLock=false, crashRunning=false, crashRAF=0, crashStart=0, crashPoint=1, crashBetValue=0, crashCurrent=1, crashAutoValue=2;
 const crashStage=$('crashStage'), crashCanvas=$('crashCanvas'), crashCtx=crashCanvas.getContext('2d');
 const crashPointEl=$('crashPoint'), crashBurstEl=$('crashBurst');
@@ -1360,8 +1415,8 @@ function crashFinish(crashed){
   if(crashed){
     aH('crash',0,crashBetValue);
     $('crashMult').textContent=final.toFixed(2)+'×';$('crashMult').className='crash-mult dead';
-    $('crashStatus').textContent='📉 ГРАФИК ОБОРВАЛСЯ';
-    $('crashInfo').innerHTML='<span class="crash-loss">−'+crashBetValue+' ⭐</span> • точка обрыва '+final.toFixed(2)+'×';
+    $('crashStatus').textContent=t('crash_crashed');
+    $('crashInfo').innerHTML='<span class="crash-loss">−'+crashBetValue+' ⭐</span> • '+t('crash_crash_point')+' '+final.toFixed(2)+'×';
     // Разрыв происходит мгновенно на месте последней точки — без затяжной
     // анимации улёта: рваный срез линии, короткая вспышка, тряска стейджа.
     crashBurstEl.style.left=crashPointEl.style.left;crashBurstEl.style.top=crashPointEl.style.top;
@@ -1380,7 +1435,7 @@ function crashFrame(now){
     const pos=crashDraw(crashCurrent,true);crashPlacePoint(pos,true);
     crashFinish(true);return;
   }
-  $('crashMult').textContent=crashCurrent.toFixed(2)+'×';$('crashMult').className='crash-mult '+(crashCurrent>=3?'danger':'live');$('crashStatus').textContent='График растёт • забери до обрыва';
+  $('crashMult').textContent=crashCurrent.toFixed(2)+'×';$('crashMult').className='crash-mult '+(crashCurrent>=3?'danger':'live');$('crashStatus').textContent=t('crash_growing');
   const pos=crashDraw(crashCurrent,false);crashPlacePoint(pos,false);
   const payout=Math.min(Math.floor(crashBetValue*crashCurrent),CRASH_MAX_PAYOUT);$('crashCashA').textContent='+'+payout;
   if(crashCurrent>=crashAutoValue){crashCashout(true);return}
@@ -1388,15 +1443,15 @@ function crashFrame(now){
 }
 function crashCashout(auto=false){
   if(!crashRunning)return;const mult=crashCurrent;let payout=Math.min(Math.floor(crashBetValue*mult),CRASH_MAX_PAYOUT);if(payout<crashBetValue)return;
-  crashRunning=false;cancelAnimationFrame(crashRAF);S.bal+=payout;save();rBal();$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;$('crashMult').textContent=mult.toFixed(2)+'×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=auto?'⚡ АВТОЗАБОР':'📈 УСПЕШНЫЙ ЗАБОР';$('crashInfo').innerHTML='<span class="crash-profit">+'+payout+' ⭐</span> • ставка '+crashBetValue+' × '+mult.toFixed(2);crashPointEl.classList.remove('live');aH('crash',payout,crashBetValue);bz('win');const rr=$('crashCash').getBoundingClientRect();confetti(rr.left+rr.width/2,rr.top,Math.min(26,8+Math.floor(mult)));
+  crashRunning=false;cancelAnimationFrame(crashRAF);S.bal+=payout;save();rBal();$('crashCash').style.display='none';$('crashGo').style.display='';$('crashGo').disabled=false;$('crashMult').textContent=mult.toFixed(2)+'×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=auto?t('crash_auto'):t('crash_took');$('crashInfo').innerHTML='<span class="crash-profit">+'+payout+' ⭐</span> • '+t('crash_bet_word')+' '+crashBetValue+' × '+mult.toFixed(2);crashPointEl.classList.remove('live');aH('crash',payout,crashBetValue);bz('win');const rr=$('crashCash').getBoundingClientRect();confetti(rr.left+rr.width/2,rr.top,Math.min(26,8+Math.floor(mult)));
 }
 $('crashCash').addEventListener('click',()=>{Sound.click();crashCashout(false)});
 $('crashGo').addEventListener('click',()=>{
-  if(crashLock||crashRunning)return;Sound.click();const bet=Math.floor(Number($('crashBet').value)||10);if(!ok(bet)){sn('Не хватает звёзд');return}
+  if(crashLock||crashRunning)return;Sound.click();const bet=Math.floor(Number($('crashBet').value)||10);if(!ok(bet)){sn(t('not_enough_stars'));return}
   crashLock=true;crashBetValue=bet;crashPoint=crashFairPoint();crashCurrent=1;S.bal-=bet;save();rBal();crashResize();
   crashBurstEl.classList.remove('on');crashStage.classList.remove('shake');
   const pos=crashDraw(1,false);crashPlacePoint(pos,false);
-  $('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='📈 Рост начался...';$('crashInfo').textContent='Забери выигрыш до обрыва графика • авто: '+crashAutoValue.toFixed(2)+'×';$('crashGo').style.display='none';$('crashCash').style.display='';crashRunning=true;crashStart=performance.now();crashLock=false;crashRAF=requestAnimationFrame(crashFrame);
+  $('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=t('crash_started');$('crashInfo').textContent=t('crash_info_live',{auto:crashAutoValue.toFixed(2)});$('crashGo').style.display='none';$('crashCash').style.display='';crashRunning=true;crashStart=performance.now();crashLock=false;crashRAF=requestAnimationFrame(crashFrame);
 });
 crashSetAuto(200);crashResize();
 (function crashInitDraw(){const pos=crashDraw(1,false);crashPlacePoint(pos,false)})();
@@ -1418,23 +1473,23 @@ function mCl(i){
     const scr=$('s-mines');scr.classList.add('shake-scr');setTimeout(()=>scr.classList.remove('shake-scr'),400);
     if(TG&&TG.HapticFeedback)try{TG.HapticFeedback.impactOccurred('heavy')}catch(e){}
     document.querySelectorAll('.m-cell').forEach((c,x)=>{c.classList.add('rev');c.textContent=mB.includes(x)?'💣':'💎';if(mB.includes(x))c.classList.add('bomb');else c.classList.add('gem')});
-    $('mInf').innerHTML='💥 Мина! −'+mBt;$('mInf').style.color='var(--e)';$('mGo').style.display='';$('mCa').style.display='none';aH('mines',0,mBt);bz('loss');return;
+    $('mInf').innerHTML=t('mines_hit',{n:mBt});$('mInf').style.color='var(--e)';$('mGo').style.display='';$('mCa').style.display='none';aH('mines',0,mBt);bz('loss');return;
   }
   Sound.gem();
   mR.push(i);const c=document.querySelectorAll('.m-cell')[i];c.classList.add('rev','gem');c.textContent='💎';
   const safe=mT-mB.length;let survival=1;for(let j=0;j<mR.length;j++) survival*=((safe-j)/(mT-j));mM=survival>0?(1/survival*.97):0;mM=Number(mM.toFixed(2));
-  const co=Math.floor(mBt*mM);$('mInf').innerHTML='Множитель: <span class="mult">×'+mM+'</span> | Забрать: <b>'+co+'</b>';$('mInf').style.color='var(--on)';$('mCaA').textContent=co;
+  const co=Math.floor(mBt*mM);$('mInf').innerHTML=t('mines_mult')+' <span class="mult">×'+mM+'</span> | '+t('mines_take_word')+' <b>'+co+'</b>';$('mInf').style.color='var(--on)';$('mCaA').textContent=co;
 }
 $('mGo').addEventListener('click',()=>{
-  Sound.click();const bet=parseInt($('mBet').value)||50;if(!ok(bet)){sn('Не хватает');return}
+  Sound.click();const bet=parseInt($('mBet').value)||50;if(!ok(bet)){sn(t('not_enough'));return}
   const mc=parseInt(document.querySelector('.m-cnt .on')?.textContent||'3');S.bal-=bet;save();rBal();
   mBt=bet;mOn=true;mR=[];mM=1;mB=[];while(mB.length<mc){const i=Math.random()*mT|0;if(!mB.includes(i))mB.push(i)}
-  mGr();$('mInf').innerHTML='Открывай клетки! Мины: '+mc;$('mInf').style.color='var(--on)';$('mGo').style.display='none';$('mCa').style.display='';
+  mGr();$('mInf').innerHTML=t('mines_open',{n:mc});$('mInf').style.color='var(--on)';$('mGo').style.display='none';$('mCa').style.display='';
 });
 $('mCa').addEventListener('click',()=>{
   if(!mOn)return;Sound.win();const co=Math.floor(mBt*mM);S.bal+=co;save();rBal();mOn=false;
   document.querySelectorAll('.m-cell').forEach((c,x)=>{c.classList.add('rev');if(mB.includes(x)){c.classList.add('bomb');c.textContent='💣'}});
-  $('mInf').innerHTML='✅ Забрал <b>'+co+'</b> (×'+mM+')';$('mInf').style.color='var(--win)';$('mGo').style.display='';$('mCa').style.display='none';aH('mines',co,mBt);bz('win');
+  $('mInf').innerHTML=t('mines_took',{c:co,m:mM});$('mInf').style.color='var(--win)';$('mGo').style.display='';$('mCa').style.display='none';aH('mines',co,mBt);bz('win');
   const r=$('mInf').getBoundingClientRect();confetti(r.left+r.width/2,r.top,Math.min(26,8+Math.floor(co/mBt)));
 });
 
@@ -1442,10 +1497,10 @@ $('mCa').addEventListener('click',()=>{
 let cCh='h',cFlip=false;
 document.querySelectorAll('#cCh button').forEach(b=>b.addEventListener('click',()=>{Sound.click();document.querySelectorAll('#cCh button').forEach(x=>x.classList.remove('on'));b.classList.add('on');cCh=b.dataset.v}));
 $('cGo').addEventListener('click',()=>{
-  if(cFlip)return;Sound.coin();const bet=parseInt($('cBet').value)||50;if(!ok(bet)){sn('Не хватает');return}
+  if(cFlip)return;Sound.coin();const bet=parseInt($('cBet').value)||50;if(!ok(bet)){sn(t('not_enough'));return}
   cFlip=true;$('cGo').disabled=true;$('cR').textContent='';S.bal-=bet;save();rBal();
   const r=Math.random()<.5?'h':'t';const c=$('cC');c.classList.add('flip');
-  setTimeout(()=>{c.classList.remove('flip');const rn=r==='h'?'🦅':'🔔';c.textContent=rn;const w=r===cCh?Math.floor(bet*1.94):0;const rl=cCh==='h'?'Орёл':'Решка';S.bal+=w;save();rBal();$('cR').innerHTML=(w>0?'✅ '+rl+' — +'+w:'❌ '+rl+' — −'+bet);$('cR').style.color=w>0?'var(--win)':'var(--e)';aH('coin',w,bet);cFlip=false;$('cGo').disabled=false;bz(w?'win':'loss');if(w>0){const rc=c.getBoundingClientRect();confetti(rc.left+rc.width/2,rc.top+rc.height/2,16)}},650);
+  setTimeout(()=>{c.classList.remove('flip');const rn=r==='h'?'🦅':'🔔';c.textContent=rn;const w=r===cCh?Math.floor(bet*1.94):0;const rl=cCh==='h'?t('heads_name'):t('tails_name');S.bal+=w;save();rBal();$('cR').innerHTML=(w>0?'✅ '+rl+' — +'+w:'❌ '+rl+' — −'+bet);$('cR').style.color=w>0?'var(--win)':'var(--e)';aH('coin',w,bet);cFlip=false;$('cGo').disabled=false;bz(w?'win':'loss');if(w>0){const rc=c.getBoundingClientRect();confetti(rc.left+rc.width/2,rc.top+rc.height/2,16)}},650);
 });
 
 // ===== CLICKER =====
@@ -1472,23 +1527,23 @@ function rClk(){
   if(left<=0){
     const remain=Math.max(0,CLK_WINDOW-(Date.now()-S.clkWin.start));
     const mm=Math.floor(remain/60000),ss=Math.floor((remain%60000)/1000);
-    $('clkLimitTxt').textContent='Лимит исчерпан. Сброс через '+mm+'м '+ss+'с';
+    $('clkLimitTxt').textContent=t('clk_limit_out',{m:mm,s:ss});
     $('clkStar').disabled=true;
   }else{
-    $('clkLimitTxt').textContent=S.clkWin.used+' / '+CLK_LIMIT+' за 1 час';
+    $('clkLimitTxt').textContent=t('clk_limit',{used:S.clkWin.used,limit:CLK_LIMIT});
     $('clkStar').disabled=false;
   }
-  $('upPowLvl').textContent='Уровень '+S.clkPower+' • +'+S.clkPower+' звезда/клик';
-  $('upPowBtn').textContent='Купить ('+powCost()+')';
-  $('upTurboLvl').textContent='Уровень '+S.clkTurbo+' • +'+(S.clkTurbo*10)+'% к силе';
-  $('upTurboBtn').textContent='Купить ('+turboCost()+')';
+  $('upPowLvl').textContent=t('power_lvl',{lvl:S.clkPower,p:S.clkPower});
+  $('upPowBtn').textContent=t('buy')+' ('+powCost()+')';
+  $('upTurboLvl').textContent=t('turbo_lvl',{lvl:S.clkTurbo,p:S.clkTurbo*10});
+  $('upTurboBtn').textContent=t('buy')+' ('+turboCost()+')';
 }
 rClk();
 setInterval(rClk,1000);
 
 $('clkStar').addEventListener('click',()=>{
   clkCheckWindow();
-  if(S.clkWin.used>=CLK_LIMIT){sn('Лимит кликов исчерпан, жди сброса');return}
+  if(S.clkWin.used>=CLK_LIMIT){sn(t('click_limit_out'));return}
   Sound.click();
   $('clkStar').classList.remove('pop');void $('clkStar').offsetWidth;$('clkStar').classList.add('pop');
   const clickReward=Math.max(1,Math.floor(S.clkPower*(1+S.clkTurbo*0.1)));
@@ -1506,15 +1561,15 @@ $('clkStar').addEventListener('click',()=>{
 
 $('upPowBtn').addEventListener('click',()=>{
   const cost=powCost();
-  if(S.bal<cost){sn('Не хватает звёзд');return}
-  Sound.click();S.bal-=cost;S.clkPower++;save();rBal();rClk();sn('Сила клика повышена!');
+  if(S.bal<cost){sn(t('not_enough_stars'));return}
+  Sound.click();S.bal-=cost;S.clkPower++;save();rBal();rClk();sn(t('power_up'));
 });
 
 $('upTurboBtn').addEventListener('click',()=>{
   const cost=turboCost();
-  if(S.clkTurbo>=20){sn('Турбо достиг максимального уровня');return}
-  if(S.bal<cost){sn('Не хватает звёзд');return}
-  Sound.click();S.bal-=cost;S.clkTurbo++;save();rBal();rClk();sn('Турбо улучшено!');
+  if(S.clkTurbo>=20){sn(t('turbo_max'));return}
+  if(S.bal<cost){sn(t('not_enough_stars'));return}
+  Sound.click();S.bal-=cost;S.clkTurbo++;save();rBal();rClk();sn(t('turbo_up'));
 });
 
 // ===== DAILY LOGIN (локально, суммы и стрик из Alpha 5, дизайн из обычного Index) =====
@@ -1540,7 +1595,7 @@ function dailyBuild(next){
     if(can&&day===next)cls+=' cur';
     if(!can&&day===curStreak)cls+=' cur';
     c.className=cls;
-    c.innerHTML='<div class="rw-day">День '+day+'</div><div class="rw-val">+'+DAILY_REWARDS[i]+'</div>';
+    c.innerHTML='<div class="rw-day">'+t('day')+' '+day+'</div><div class="rw-val">+'+DAILY_REWARDS[i]+'</div>';
     g.appendChild(c);
   }
   const top=$('dailyWrap');
@@ -1549,8 +1604,8 @@ function dailyBuild(next){
       top.style.display='block';
       const dots=$('dailyDots');
       if(dots){dots.innerHTML='';for(let i=0;i<7;i++){const d=document.createElement('div');d.className='daily-dot'+(i<curStreak?' on':'')+((i+1)===next?' cur':'');dots.appendChild(d)}}
-      const sub=$('dailySub');if(sub)sub.textContent='День '+next+' — +'+DAILY_REWARDS[next-1]+' звёзд';
-      const tb=$('dailyBtnTop');if(tb)tb.textContent='Забрать '+DAILY_REWARDS[next-1];
+      const sub=$('dailySub');if(sub)sub.textContent=t('daily_reward_for',{d:next,r:DAILY_REWARDS[next-1]});
+      const tb=$('dailyBtnTop');if(tb)tb.textContent=t('daily_claim_btn',{r:DAILY_REWARDS[next-1]});
     }else{top.style.display='none'}
   }
 }
@@ -1560,14 +1615,14 @@ function dailyTick(){
   const btn=$('rewardBtn'),timer=$('rewardTimer'),sub=$('rewardSub');
   if(!btn||!timer||!sub)return;
   if(can){
-    btn.disabled=false;btn.innerHTML='<span class="mat">card_giftcard</span> Забрать +'+DAILY_REWARDS[next-1];
-    timer.textContent='Готово!';timer.style.color='var(--win)';
-    sub.textContent='День '+next+' из 7 — награда ждёт!';
+    btn.disabled=false;btn.innerHTML='<span class="mat">card_giftcard</span> '+t('daily_claim_btn',{r:DAILY_REWARDS[next-1]});
+    timer.textContent=t('ready');timer.style.color='var(--win)';
+    sub.textContent=t('day_n_of_7',{d:next});
   }else{
-    btn.disabled=true;btn.innerHTML='<span class="mat">check</span> Получено';
+    btn.disabled=true;btn.innerHTML='<span class="mat">check</span> '+t('received');
     const remain=Math.max(0,DAY_MS-(Date.now()-S.daily.lastClaim));
     timer.textContent=fmtHMS(Math.floor(remain/1000));timer.style.color='var(--p)';
-    sub.textContent='Стрик '+S.daily.streak+'/7 • следующая награда завтра';
+    sub.textContent=t('streak_next',{s:S.daily.streak});
   }
 }
 function claimDaily(){
@@ -1575,7 +1630,7 @@ function claimDaily(){
   Sound.click();
   const now=Date.now(),streak=dailyNextStreak(),reward=DAILY_REWARDS[streak-1];
   S.bal+=reward;S.daily.lastClaim=now;S.daily.streak=streak;save();rBal();
-  Sound.win();bz('win');sn('+'+reward+' звёзд! День '+streak);
+  Sound.win();bz('win');sn(t('daily_claimed_msg',{r:reward,d:streak}));
   try{const r=$('rewardBtn').getBoundingClientRect();confetti(r.left+r.width/2,r.top,24)}catch(e){}
   dailyTick();
 }
@@ -1586,7 +1641,8 @@ setInterval(dailyTick,1000);
 
 // ===== STATS =====
 const GAME_NAMES={slots:'Слоты',dice:'Кости',roulette:'Рулетка',crash:'Ракетка',mines:'Мины',coin:'Монета'};
-function rSt(){$('xT').textContent=S.stats.total;$('xW').textContent=S.stats.win;$('xL').textContent=S.stats.loss;$('xWo').textContent=S.stats.won;$('xB').textContent=S.stats.bet;$('xP').textContent=S.stats.won-S.stats.bet;$('xP').style.color=S.stats.won-S.stats.bet>=0?'var(--win)':'var(--e)';const el=$('hL');if(!S.hist.length){el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">Пусто</div>';return}el.innerHTML='';S.hist.slice(0,30).forEach(h=>{const d=document.createElement('div');d.className='h-item';const t=new Date(h.t);const ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');const safeGame=String(GAME_NAMES[h.g]||h.g).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// GAME_NAMES оставлен для совместимости старых сейвов; отображение — через gameName() (i18n).
+function rSt(){$('xT').textContent=S.stats.total;$('xW').textContent=S.stats.win;$('xL').textContent=S.stats.loss;$('xWo').textContent=S.stats.won;$('xB').textContent=S.stats.bet;$('xP').textContent=S.stats.won-S.stats.bet;$('xP').style.color=S.stats.won-S.stats.bet>=0?'var(--win)':'var(--e)';const el=$('hL');if(!S.hist.length){el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">'+t('empty')+'</div>';return}el.innerHTML='';S.hist.slice(0,30).forEach(h=>{const d=document.createElement('div');d.className='h-item';const t=new Date(h.t);const ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');const safeGame=String(gameName(h.g)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 d.innerHTML='<span>'+safeGame+' • '+ts+'</span><span>'+(h.r>0?'<span class="w">+'+h.r+'</span>':'<span class="l">−'+h.a+'</span>')+'</span>';el.appendChild(d)})}
 rSt();
 
@@ -1595,19 +1651,20 @@ $('rst').addEventListener('click',()=>{
   sLock=false;$('sGo').disabled=false;
   dLock=false;$('dGo').disabled=false;
   rLock=false;$('rGo').disabled=false;rSel=null;document.querySelectorAll('.rr-b').forEach(x=>x.classList.remove('sel'));rrHist=[];rrHistRender();
-  mOn=false;$('mGo').style.display='';$('mCa').style.display='none';$('mInf').textContent='Выбери клетки и выигрывай!';$('mInf').style.color='';mGr();
+  mOn=false;$('mGo').style.display='';$('mCa').style.display='none';$('mInf').textContent=t('mines_hint');$('mInf').style.color='';mGr();
   cFlip=false;$('cGo').disabled=false;$('cC').textContent='🪙';$('cR').textContent='';
   ['sBet','dBet','rBet','mBet','cBet','crashBet'].forEach(id=>{try{$(id).value=50}catch(e){}});
   try{$('dSl').value=7;uDC()}catch(e){}
   try{crashSetAuto(200)}catch(e){}
-  crashRunning=false;cancelAnimationFrame(crashRAF);crashLock=false;$('crashGo').style.display='';$('crashGo').disabled=false;$('crashCash').style.display='none';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent='Сделай ставку и запускай ракету';$('crashInfo').textContent='RTP игры: 97% • График может оборваться в любой момент • макс. выплата 20 000 ⭐';
+  crashRunning=false;cancelAnimationFrame(crashRAF);crashLock=false;$('crashGo').style.display='';$('crashGo').disabled=false;$('crashCash').style.display='none';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=t('crash_make_bet');$('crashInfo').textContent=t('crash_info_idle');
   try{const pos=crashDraw(1,false);crashPlacePoint(pos,false)}catch(e){}
   try{crashBurstEl.classList.remove('on')}catch(e){}
   try{crashResize()}catch(e){}
   crashRenderHistory();
-  dailyTick();tickBonus();
-  sn('Сброшено');
+  try{if(typeof applyI18n==='function')applyI18n()}catch(e){try{dailyTick()}catch(_){}try{tickBonus()}catch(_){}}
+  sn(t('reset_done'));
 });
+try{applyI18n()}catch(e){}
 rBal();
 })();
 </script>
