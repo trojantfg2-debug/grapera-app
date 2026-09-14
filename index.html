@@ -845,6 +845,8 @@ function applyI18n(){
   try{document.title='Gapera Alpha 6.1'}catch(e){}
   try{document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');el.textContent=t(k)})}catch(e){}
   try{var vb=$('verBadge');if(vb)vb.textContent=t('ver_badge')}catch(e){}
+  try{rLang()}catch(e){}
+  try{rTheme()}catch(e){}
   try{var pi=$('promoInput');if(pi)pi.placeholder=t('promo_ph')}catch(e){}
   try{var dou=$('dOU');if(dou)dou.textContent=t('over')}catch(e){}
   try{var sbn=$('slotBonusNote');if(sbn)sbn.textContent=t('slot_bonus_note')}catch(e){}
