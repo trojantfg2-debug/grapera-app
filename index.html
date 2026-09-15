@@ -3,8 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Gapera Alpha 7.2</title>
+  <title>Gapera Alpha 7.3</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -428,13 +429,32 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
 .ach .n{font-size:.58rem;font-weight:600;margin-top:.25rem;line-height:1.2}
 @media(max-width:420px){.ach-grid{grid-template-columns:repeat(3,1fr)}}
 #s-profile .btn .mat{transform:translateY(1px)}
+/* ===== DUEL (онлайн-дуэль, бета) ===== */
+.duel-status{text-align:center;font-size:.8rem;font-weight:600;min-height:1.4rem;margin:.2rem 0 .6rem;color:var(--on-sv)}
+.bj-side{background:var(--sc);border:2px solid var(--ol-v);border-radius:var(--sh-l);padding:.6rem;margin-bottom:.5rem;transition:border-color .2s,box-shadow .2s}
+.bj-side.bj-turn{border-color:var(--p);box-shadow:0 0 12px color-mix(in srgb,var(--p) 35%,transparent)}
+.bj-who{display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem}
+.bj-ava{width:30px;height:30px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem;background:var(--p-c);color:var(--on-p-c)}
+.bj-who b{flex:1;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bj-total{font-weight:700;font-size:1rem;color:var(--p);min-width:1.5rem;text-align:right}
+.bj-hand{display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap;min-height:62px}
+.bj-card{width:44px;height:62px;border-radius:8px;background:var(--sc-hi);border:1px solid var(--ol-v);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;line-height:1.1;animation:bjIn .25s var(--ease)}
+.bj-card span{font-size:1.05rem}
+.bj-card.red{color:#E53935}
+@keyframes bjIn{from{transform:translateY(-10px) scale(.8);opacity:0}to{transform:none;opacity:1}}
+.bj-row{display:flex;gap:.5rem;margin-top:.2rem}
+.bj-row .btn{flex:1}
+.duel-result{text-align:center;font-weight:700;font-size:1rem;min-height:1.4rem;margin-top:.5rem}
+.duel-result.win{color:var(--win)}
+.duel-result.lose{color:var(--e)}
+.duel-result.push{color:#FFC107}
   </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="topbar-left">
-    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta" id="verBadge">АЛЬФА 7.2</span></div>
+    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta" id="verBadge">АЛЬФА 7.3</span></div>
     <span class="topbar-uid" id="uidTxt">ID: —</span>
   </div>
   <div class="bal" id="balBox"><span class="mat">star</span><span id="bal">1000</span><span class="bonus" id="btxt"></span></div>
@@ -644,6 +664,45 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
     </div>
   </section>
 
+  <!-- DUEL — онлайн-дуэль блэкджек 1 на 1 (бета) -->
+  <section class="scr" id="s-duel">
+    <div class="card">
+      <div class="lbl"><span data-i18n="duel_title">ОНЛАЙН-ДУЭЛЬ • БЛЭКДЖЕК</span> <span class="topbar-beta" data-i18n="duel_test">ТЕСТ</span></div>
+      <div class="duel-status" id="duelStatus"></div>
+      <div id="duelLobby">
+        <div class="lbl"><span data-i18n="bet">СТАВКА</span></div>
+        <div class="bet-row"><button class="btn btn-s btn-sm" id="duelDn">−</button><input id="duelStakeIn" type="number" value="50" min="1" step="10" /><button class="btn btn-s btn-sm" id="duelUp">+</button></div>
+        <div class="pf-ava-row">
+          <button class="btn btn-p btn-sm" id="duelCreate"><span class="mat">add</span><span data-i18n="duel_create">Создать стол</span></button>
+          <button class="btn btn-s btn-sm" id="duelCopy" style="display:none"><span class="mat">content_copy</span><span data-i18n="duel_copy">Копировать код</span></button>
+          <button class="btn btn-s btn-sm" id="duelInvite" style="display:none"><span class="mat">send</span><span data-i18n="duel_invite">Пригласить</span></button>
+        </div>
+        <div class="lbl" style="margin-top:.7rem" data-i18n="duel_code">КОД СТОЛА</div>
+        <div class="bet-row"><input id="duelCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXXX" style="text-transform:uppercase" /><button class="btn btn-p btn-sm" id="duelJoin"><span data-i18n="duel_join">Войти</span></button></div>
+        <div class="pf-ava-row">
+          <button class="btn btn-s btn-sm" id="duelLeave" style="display:none"><span class="mat">logout</span><span data-i18n="duel_leave">Покинуть</span></button>
+          <button class="btn btn-w btn-sm" id="duelAgain" style="display:none"><span class="mat">replay</span><span data-i18n="duel_again">Ещё раз</span></button>
+        </div>
+        <div class="rewards-sub" style="margin-top:.6rem" data-i18n="duel_hint">Победа ×1.9 • ничья — возврат ставки</div>
+      </div>
+    </div>
+    <div class="card" id="duelTable" style="display:none">
+      <div class="bj-side" id="duelOppBox">
+        <div class="bj-who"><span class="bj-ava" id="duelOppAva">?</span><b id="duelOppName">…</b><span class="bj-total" id="duelOppTotal"></span></div>
+        <div class="bj-hand" id="duelOppHand"></div>
+      </div>
+      <div class="bj-side" id="duelMyBox">
+        <div class="bj-who"><span class="bj-ava" id="duelMyAva">?</span><b id="duelMyName">…</b><span class="bj-total" id="duelMyTotal"></span></div>
+        <div class="bj-hand" id="duelMyHand"></div>
+      </div>
+      <div class="bj-row">
+        <button class="btn btn-p" id="duelHit"><span data-i18n="duel_hit">Ещё</span></button>
+        <button class="btn btn-s" id="duelStand"><span data-i18n="duel_stand">Хватит</span></button>
+      </div>
+      <div class="duel-result" id="duelResult"></div>
+    </div>
+  </section>
+
 <!-- PROFILE — уровень, своя аватарка, достижения -->
   <section class="scr" id="s-profile">
     <div class="card">
@@ -737,6 +796,7 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
   <button class="ni" data-s="tower"><span class="np"><span class="mat">stairs</span></span><span class="nl" data-i18n="nav_tower">Башня</span></button>
   <button class="ni" data-s="coin"><span class="np"><span class="mat">monetization_on</span></span><span class="nl" data-i18n="nav_coin">Монета</span></button>
   <button class="ni" data-s="clicker"><span class="np"><span class="mat">ads_click</span></span><span class="nl" data-i18n="nav_clicker">Кликер</span></button>
+  <button class="ni" data-s="duel"><span class="np"><span class="mat">group</span></span><span class="nl" data-i18n="nav_duel">Дуэль</span></button>
   <button class="ni" data-s="rewards"><span class="np"><span class="mat">card_giftcard</span></span><span class="nl" data-i18n="nav_rewards">Награды</span></button>
   <button class="ni" data-s="profile"><span class="np"><span class="mat">person</span></span><span class="nl" data-i18n="nav_profile">Профиль</span></button>
   <button class="ni" data-s="settings"><span class="np"><span class="mat">settings</span></span><span class="nl" data-i18n="nav_settings">Настройки</span></button>
@@ -1027,7 +1087,7 @@ function defaultState(){
     clkWin:{used:0,start:Date.now()}, clkPower:1, clkAuto:0, clkTurbo:0,
     daily:{lastClaim:null,streak:0}, savedAt:0, theme:'purple', sound:true,
     freeSpins:0, usedPromos:[], lang:'ru', bonusX2Until:0,
-    crashAutoOn:true, crashAutoVal:200, crashFree:0
+    crashAutoOn:true, crashAutoVal:200, crashFree:0, betaModes:false
   };
 }
 const THEMES=['purple','black','white','red','ocean','sunset','emerald','neon','gold','auto'];
@@ -1045,6 +1105,7 @@ function normalizeState(x){
   d.crashFree=Math.max(0,Math.min(9999,Math.floor(+v.crashFree||0)));
   d.crashAutoOn=(v.crashAutoOn===undefined)?true:!!v.crashAutoOn;
   d.crashAutoVal=Math.max(110,Math.min(1000,Math.round(+v.crashAutoVal||200)));
+  d.betaModes=!!v.betaModes;
   d.clkWin=Object.assign(d.clkWin,v.clkWin||{});
   d.clkWin.used=Math.max(0,Math.min(2000,Math.floor(+d.clkWin.used||0)));
   d.clkWin.start=Number.isFinite(+d.clkWin.start)?+d.clkWin.start:Date.now();
@@ -1125,9 +1186,9 @@ function renderAll(){
 
 // ===== Локализация Alpha 7 (RU/EN/UK) =====
 const I18N={
-ru:{ver_badge:'АЛЬФА 7.2',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'— растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% — возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме — шанс без штрафа',risk1:'Повышенная ставка — шанс −6%',risk2:'Крупная ставка — шанс −13%',risk3:'Высокий риск — шанс −20%',risk4:'Очень высокий риск — шанс −28%',risk5:'Экстремальный риск — шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1–18/19–36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону — выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} из 7 — награда ждёт!',received:'Получено',streak_next:'Стрик {s}/7 • следующая награда завтра',daily_reward_for:'День {d} — +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто — подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-en:{ver_badge:'ALPHA 7.2',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'— grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND — PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee — 97% return',throw:'ROLL',risk0:'Normal bet — no chance penalty',risk1:'Raised bet — chance −6%',risk2:'Big bet — chance −13%',risk3:'High risk — chance −20%',risk4:'Very high risk — chance −28%',risk5:'Extreme risk — chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1–18/19–36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side — payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} of 7 — reward is waiting!',received:'Claimed',streak_next:'Streak {s}/7 • next reward tomorrow',daily_reward_for:'Day {d} — +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto — follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-uk:{ver_badge:'АЛЬФА 7.2',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'— зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ — ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% — повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі — шанс без штрафу',risk1:'Підвищена ставка — шанс −6%',risk2:'Велика ставка — шанс −13%',risk3:'Високий ризик — шанс −20%',risk4:'Дуже високий ризик — шанс −28%',risk5:'Екстремальний ризик — шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1–18/19–36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону — виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} із 7 — нагорода чекає!',received:'Отримано',streak_next:'Стрік {s}/7 • наступна нагорода завтра',daily_reward_for:'День {d} — +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто — підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
+ru:{ver_badge:'АЛЬФА 7.3',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'— растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% — возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме — шанс без штрафа',risk1:'Повышенная ставка — шанс −6%',risk2:'Крупная ставка — шанс −13%',risk3:'Высокий риск — шанс −20%',risk4:'Очень высокий риск — шанс −28%',risk5:'Экстремальный риск — шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1–18/19–36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону — выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} из 7 — награда ждёт!',received:'Получено',streak_next:'Стрик {s}/7 • следующая награда завтра',daily_reward_for:'День {d} — +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто — подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+en:{ver_badge:'ALPHA 7.3',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'— grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND — PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee — 97% return',throw:'ROLL',risk0:'Normal bet — no chance penalty',risk1:'Raised bet — chance −6%',risk2:'Big bet — chance −13%',risk3:'High risk — chance −20%',risk4:'Very high risk — chance −28%',risk5:'Extreme risk — chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1–18/19–36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side — payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} of 7 — reward is waiting!',received:'Claimed',streak_next:'Streak {s}/7 • next reward tomorrow',daily_reward_for:'Day {d} — +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto — follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+uk:{ver_badge:'АЛЬФА 7.3',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'— зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ — ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% — повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі — шанс без штрафу',risk1:'Підвищена ставка — шанс −6%',risk2:'Велика ставка — шанс −13%',risk3:'Високий ризик — шанс −20%',risk4:'Дуже високий ризик — шанс −28%',risk5:'Екстремальний ризик — шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1–18/19–36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону — виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} із 7 — нагорода чекає!',received:'Отримано',streak_next:'Стрік {s}/7 • наступна нагорода завтра',daily_reward_for:'День {d} — +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто — підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
 };
 // ===== TOWER i18n patch =====
 try{
@@ -1177,13 +1238,23 @@ I18N.en.nav_profile='Profile';I18N.en.pf_title='PLAYER PROFILE';I18N.en.pf_click
 I18N.uk.nav_profile='Профіль';I18N.uk.pf_title='ПРОФІЛЬ ГРАВЦЯ';I18N.uk.pf_clicks='кліків';I18N.uk.pf_streak='стрик днів';I18N.uk.pf_photo='Змінити фото';I18N.uk.pf_remove='Прибрати';I18N.uk.pf_saved='Фото оновлено';I18N.uk.pf_save_err='Не вдалося зберегти фото';I18N.uk.ach_title='ДОСЯГНЕННЯ';I18N.uk.level_word='Рівень';I18N.uk.xp_word='XP';
 }catch(e){}
 try{I18N.ru.pf_ach_done='достижений';I18N.en.pf_ach_done='achievements';I18N.uk.pf_ach_done='досягнень';}catch(e){}
+try{
+I18N.ru.beta_modes='БЕТА-РЕЖИМЫ';I18N.ru.beta_hint='Онлайн-дуэль в блэкджек с другом — может лагать, это бета';I18N.ru.beta_on='Бета-режимы включены — вкладка «Дуэль» открыта';I18N.ru.beta_off='Бета-режимы выключены';I18N.ru.nav_duel='Дуэль';I18N.ru.game_duel='Дуэль';I18N.ru.duel_title='ОНЛАЙН-ДУЭЛЬ • БЛЭКДЖЕК';I18N.ru.duel_create='Создать стол';I18N.ru.duel_join='Войти';I18N.ru.duel_code='КОД СТОЛА';I18N.ru.duel_copy='Копировать код';I18N.ru.duel_leave='Покинуть';I18N.ru.duel_again='Ещё раз';I18N.ru.duel_hit='Ещё';I18N.ru.duel_stand='Хватит';I18N.ru.duel_you='вы';I18N.ru.duel_opp='соперник';I18N.ru.duel_me='Игрок';I18N.ru.duel_hint='Победа ×1.9 • ничья — возврат ставки';I18N.ru.dst_idle='Создай стол и поделись кодом — или введи код друга';I18N.ru.dst_wait='Жди соперника • код: {c}';I18N.ru.dst_joining='Подключаемся...';I18N.ru.dst_conn='Соперник на связи!';I18N.ru.dst_you='Твой ход — бери или стой';I18N.ru.dst_foe='Ход соперника...';I18N.ru.dst_win='Ты победил! +{n} ⭐';I18N.ru.dst_lose='Победил {name} • −{n} ⭐';I18N.ru.dst_push='Ничья — ставка возвращена';I18N.ru.dst_left='Соперник отключился';I18N.ru.dst_err='Нет соединения — проверь интернет';I18N.ru.dst_nofriend='Стол не найден — проверь код';I18N.ru.dst_copied='Код скопирован';I18N.ru.dst_code_err='Введи код стола';I18N.ru.dst_broke='Не хватило звёзд — стол распущен';
+I18N.en.beta_modes='BETA MODES';I18N.en.beta_hint='Online blackjack duels with friends — may lag, it is beta';I18N.en.beta_on='Beta modes on — "Duel" tab unlocked';I18N.en.beta_off='Beta modes off';I18N.en.nav_duel='Duel';I18N.en.game_duel='Duel';I18N.en.duel_title='ONLINE DUEL • BLACKJACK';I18N.en.duel_create='Create table';I18N.en.duel_join='Join';I18N.en.duel_code='TABLE CODE';I18N.en.duel_copy='Copy code';I18N.en.duel_leave='Leave';I18N.en.duel_again='Rematch';I18N.en.duel_hit='Hit';I18N.en.duel_stand='Stand';I18N.en.duel_you='you';I18N.en.duel_opp='opponent';I18N.en.duel_me='Player';I18N.en.duel_hint='Win ×1.9 • push refunds stake';I18N.en.dst_idle='Create a table and share the code — or enter a friend\'s code';I18N.en.dst_wait='Waiting for opponent • code: {c}';I18N.en.dst_joining='Connecting...';I18N.en.dst_conn='Opponent connected!';I18N.en.dst_you='Your move — hit or stand';I18N.en.dst_foe='Opponent\'s move...';I18N.en.dst_win='You win! +{n} ⭐';I18N.en.dst_lose='{name} wins • −{n} ⭐';I18N.en.dst_push='Push — stake refunded';I18N.en.dst_left='Opponent disconnected';I18N.en.dst_err='No connection — check internet';I18N.en.dst_nofriend='Table not found — check the code';I18N.en.dst_copied='Code copied';I18N.en.dst_code_err='Enter the table code';I18N.en.dst_broke='Not enough stars — table closed';
+I18N.uk.beta_modes='БЕТА-РЕЖИМИ';I18N.uk.beta_hint='Онлайн-дуель у блекджек із другом — може лагати, це бета';I18N.uk.beta_on='Бета-режими увімкнено — вкладку «Дуель» відкрито';I18N.uk.beta_off='Бета-режими вимкнено';I18N.uk.nav_duel='Дуель';I18N.uk.game_duel='Дуель';I18N.uk.duel_title='ОНЛАЙН-ДУЕЛЬ • БЛЕКДЖЕК';I18N.uk.duel_create='Створити стіл';I18N.uk.duel_join='Увійти';I18N.uk.duel_code='КОД СТОЛУ';I18N.uk.duel_copy='Копіювати код';I18N.uk.duel_leave='Покинути';I18N.uk.duel_again='Ще раз';I18N.uk.duel_hit='Ще';I18N.uk.duel_stand='Досить';I18N.uk.duel_you='ви';I18N.uk.duel_opp='суперник';I18N.uk.duel_me='Гравець';I18N.uk.duel_hint='Перемога ×1.9 • нічия — повернення ставки';I18N.uk.dst_idle='Створи стіл і поділись кодом — або введи код друга';I18N.uk.dst_wait='Чекай суперника • код: {c}';I18N.uk.dst_joining='Підключаємось...';I18N.uk.dst_conn='Суперник на звʼязку!';I18N.uk.dst_you='Твій хід — бери чи стій';I18N.uk.dst_foe='Хід суперника...';I18N.uk.dst_win='Ти переміг! +{n} ⭐';I18N.uk.dst_lose='Переміг {name} • −{n} ⭐';I18N.uk.dst_push='Нічия — ставку повернено';I18N.uk.dst_left='Суперник відключився';I18N.uk.dst_err='Немає зʼєднання — перевір інтернет';I18N.uk.dst_nofriend='Стіл не знайдено — перевір код';I18N.uk.dst_copied='Код скопійовано';I18N.uk.dst_code_err='Введи код столу';I18N.uk.dst_broke='Не вистачило зірок — стіл розпущено';
+}catch(e){}
+try{
+I18N.ru.duel_test='ТЕСТ';I18N.ru.duel_invite='Пригласить';I18N.ru.dst_invite='Заходи в Gapera — Дуэль! Мой код: {c}';
+I18N.en.duel_test='TEST';I18N.en.duel_invite='Invite';I18N.en.dst_invite='Join me in Gapera — Duel! My code: {c}';
+I18N.uk.duel_test='ТЕСТ';I18N.uk.duel_invite='Запросити';I18N.uk.dst_invite='Заходь у Gapera — Дуель! Мій код: {c}';
+}catch(e){}
 function curLang(){return LANGS.includes(S.lang)?S.lang:'ru'}
 function t(key,params){var L=curLang();var d=I18N[L]||{};var v=(key in d)?d[key]:(((I18N.ru||{})[key]!==undefined)?I18N.ru[key]:key);if(params){for(var k in params){if(Object.prototype.hasOwnProperty.call(params,k)){v=String(v).split('{'+k+'}').join(params[k])}}}return v}
 function gameName(g){var m={slots:'game_slots',dice:'game_dice',roulette:'game_roulette',crash:'game_crash',mines:'game_mines',coin:'game_coin',tower:'game_tower'};return t(m[g]||g)}
 function rrOddsRender(){var el=$('rrOdds');if(!el)return;el.textContent=t('rr_odds',{straight:R_STRAIGHT_MULT.toFixed(2),outside:R_OUTSIDE_MULT.toFixed(2)})}
 function applyI18n(){
   try{document.documentElement.lang=curLang()}catch(e){}
-  try{document.title='Gapera Alpha 7.2'}catch(e){}
+  try{document.title='Gapera Alpha 7.3'}catch(e){}
   try{document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');el.textContent=t(k)})}catch(e){}
   try{var vb=$('verBadge');if(vb)vb.textContent=t('ver_badge')}catch(e){}
   try{rLang()}catch(e){}
@@ -1205,6 +1276,7 @@ function applyI18n(){
   try{if(typeof twOn!=='undefined'&&!twOn&&typeof twLevel!=='undefined'&&twLevel===0){var twi=$('twInf');if(twi){twi.textContent=t('tw_hint');twi.style.color=''}}}catch(e){}
   try{if(typeof twRender==='function')twRender()}catch(e){}
   try{if(typeof rProfile==='function')rProfile()}catch(e){}
+  try{if(typeof duelRender==='function')duelRender()}catch(e){}
   try{if(typeof uDC==='function')uDC()}catch(e){}
   try{if(typeof mNextRender==='function'){mNextRender();mProgRender()}}catch(e){}
   try{if(typeof crashSyncUI==='function')crashSyncUI()}catch(e){}
@@ -1482,6 +1554,7 @@ document.querySelectorAll('.ni').forEach(b=>b.addEventListener('click',()=>{
   try{b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}catch(e){}
   window.scrollTo({top:0});
   if(b.dataset.s==='profile'){try{if(typeof rProfile==='function')rProfile()}catch(e){}try{rSt()}catch(e){}}
+  if(b.dataset.s==='duel'&&typeof duelRender==='function')duelRender();
   if(b.dataset.s==='rewards'){dailyTick();tickBonus();if(typeof crashResize==='function')crashResize()}
   if(b.dataset.s==='clicker')rClk();
   if(b.dataset.s==='crash'){try{crashResize();crashHud();if(!crashRunning)crashIdle()}catch(e){}}
@@ -2571,6 +2644,270 @@ try{
   const _dl=$('pfDelBtn');if(_dl)_dl.addEventListener('click',function(){try{Sound.click()}catch(_){}pfSavePhoto(null);try{rProfile()}catch(_){}});
   setInterval(function(){try{if(document.getElementById('s-profile').classList.contains('on')){rProfile();rSt()}}catch(_){}},3000);
   try{rProfile()}catch(_){}
+}catch(e){}
+// ===== DUEL — онлайн блэкджек 1 на 1 через PeerJS (бета) =====
+// P2P без своего сервера: создатель стола получает короткий код, друг вводит
+// его у себя — браузеры соединяются напрямую (WebRTC DataChannel).
+// Колоду тасует создатель и рассылает её целиком: оба клиента видят одни и те
+// же карты и применяют одни и те же ходы, поэтому состояние всегда совпадает.
+const DUEL_PREFIX='gapera-duel-';
+const DUEL_BOT='gapera_bot';
+let DU={peer:null,conn:null,role:null,code:'',opp:{name:'?',ava:'?'},deck:[],hands:{host:[],guest:[]},stood:{host:false,guest:false},idx:0,turn:null,over:true,started:false,myStake:50,st:{k:'dst_idle',p:null}};
+function duelMe(){
+  let n='';
+  try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user)n=TG.initDataUnsafe.user.first_name||''}catch(e){}
+  n=String(n||'').trim();
+  if(!n)n=((typeof t==='function')?t('duel_me'):'Player');
+  n=n.slice(0,14);
+  return {name:n,ava:(n.charAt(0)||'?').toUpperCase()};
+}
+function duelSetText(id,v){const e=$(id);if(e)e.textContent=v}
+function duelSetStatus(k,pr){DU.st={k:k,p:pr||null};const el=$('duelStatus');if(el){try{el.textContent=t(k,pr)}catch(e){el.textContent=k}}}
+function duelPeerOK(){return (typeof Peer!=='undefined')}
+function duelCode(){const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=A[Math.random()*A.length|0];return s}
+function duelNewDeck(){
+  const R=['2','3','4','5','6','7','8','9','10','J','Q','K','A'],SU=['\u2660','\u2665','\u2666','\u2663'],d=[];
+  R.forEach(r=>SU.forEach(s=>d.push({r:r,s:s})));
+  for(let i=d.length-1;i>0;i--){const j=Math.random()*(i+1)|0,tmp=d[i];d[i]=d[j];d[j]=tmp}
+  return d;
+}
+function bjVal(hand){
+  let t=0,a=0;
+  hand.forEach(c=>{if(c.r==='A'){a++;t+=11}else if(c.r==='J'||c.r==='Q'||c.r==='K')t+=10;else t+=parseInt(c.r,10)});
+  while(t>21&&a>0){t-=10;a--}
+  return t;
+}
+function bjCardHTML(c){
+  const red=(c.s==='\u2665'||c.s==='\u2666');
+  return '<div class="bj-card'+(red?' red':'')+'">'+c.r+'<span>'+c.s+'</span></div>';
+}
+function duelStake(){
+  const v=clampBet('duelStakeIn');
+  if(!ok(v)){sn(t('not_enough'));return 0}
+  return v;
+}
+function duelSend(o){try{if(DU.conn&&DU.conn.open)DU.conn.send(o)}catch(e){}}
+function duelNav(){
+  try{document.querySelectorAll('.ni[data-s="duel"]').forEach(b=>{b.style.display=''})}catch(e){}
+}
+function duelRender(){
+  try{
+    const me=duelMe();
+    duelSetText('duelMyName',me.name);duelSetText('duelMyAva',me.ava);
+    duelSetText('duelOppName',DU.opp.name);duelSetText('duelOppAva',DU.opp.ava);
+    const myH=DU.role?DU.hands[DU.role]:[];
+    const opH=DU.role?((DU.role==='host')?DU.hands.guest:DU.hands.host):[];
+    const mh=$('duelMyHand'),oh=$('duelOppHand');
+    if(mh)mh.innerHTML=myH.map(bjCardHTML).join('');
+    if(oh)oh.innerHTML=opH.map(bjCardHTML).join('');
+    duelSetText('duelMyTotal',myH.length?bjVal(myH):'');
+    duelSetText('duelOppTotal',opH.length?bjVal(opH):'');
+    const playing=DU.started&&!DU.over;
+    const myTurn=playing&&DU.turn===DU.role;
+    const mb=$('duelMyBox'),ob=$('duelOppBox');
+    if(mb)mb.classList.toggle('bj-turn',!!myTurn);
+    if(ob)ob.classList.toggle('bj-turn',!!(playing&&DU.turn!==DU.role));
+    const hit=$('duelHit'),st=$('duelStand');
+    if(hit)hit.disabled=!myTurn;
+    if(st)st.disabled=!myTurn;
+    const si=$('duelStakeIn');if(si)si.disabled=DU.started;
+    const lob=$('duelLobby'),tab=$('duelTable');
+    if(lob)lob.style.display=DU.started?'none':'';
+    if(tab)tab.style.display=DU.started?'':'none';
+    const cp=$('duelCopy');if(cp)cp.style.display=(DU.role==='host'&&DU.code&&!DU.started)?'':'none';
+    const iv=$('duelInvite');if(iv)iv.style.display=(DU.role==='host'&&DU.code&&!DU.started)?'':'none';
+    const lv=$('duelLeave');if(lv)lv.style.display=DU.role?'':'none';
+    const ag=$('duelAgain');if(ag)ag.style.display=(DU.role==='host'&&DU.started&&DU.over&&DU.conn)?'':'none';
+    const el=$('duelStatus');if(el&&DU.st){try{el.textContent=t(DU.st.k,DU.st.p)}catch(e){}}
+  }catch(e){}
+}
+function duelWire(conn){
+  DU.conn=conn;
+  const me=duelMe();
+  conn.on('open',()=>{try{conn.send({t:'hello',name:me.name,ava:me.ava})}catch(e){}});
+  conn.on('data',d=>duelOnData(d));
+  conn.on('close',()=>duelOnClose(false));
+  conn.on('error',()=>{});
+}
+function duelOnData(d){
+  if(!d||typeof d!=='object')return;
+  if(d.t==='hello'){
+    DU.opp={name:String(d.name||'?').slice(0,14),ava:String(d.ava||'?').slice(0,2)};
+    duelSetStatus('dst_conn');duelRender();
+    if(DU.role==='host'&&!DU.started)duelBegin();
+    return;
+  }
+  if(d.t==='start'&&DU.role==='guest'&&DU.over){
+    DU.deck=Array.isArray(d.deck)?d.deck:[];
+    DU.hands={host:d.host||[],guest:d.guest||[]};
+    if(!DU.deck.length||!ok(DU.myStake)){duelSend({t:'broke'});duelLeave(true);duelSetStatus('dst_broke');return}
+    S.bal-=DU.myStake;save();rBal();
+    DU.idx=4;DU.stood={host:false,guest:false};DU.turn='host';DU.over=false;DU.started=true;
+    const rz=$('duelResult');if(rz){rz.textContent='';rz.className='duel-result'}
+    duelSetStatus('dst_foe');duelRender();return;
+  }
+  if(d.t==='move'&&DU.started&&!DU.over){duelApply(d.who,d.action);return}
+  if(d.t==='broke'){
+    if(DU.role==='host'&&DU.started&&!DU.over){S.bal+=DU.myStake;save();try{rBal()}catch(e){}}
+    duelLeave(true);duelSetStatus('dst_broke');return;
+  }
+  if(d.t==='bye'){duelOnClose(false);return}
+}
+function duelApply(who,action){
+  if(DU.over||!DU.started)return;
+  if(action==='hit'&&DU.idx<DU.deck.length){DU.hands[who].push(DU.deck[DU.idx]);DU.idx++}
+  else if(action!=='hit'){DU.stood[who]=true}
+  if(bjVal(DU.hands[who])>21){duelRender();duelFinish(who==='host'?'guest':'host');return}
+  if(DU.stood.host&&DU.stood.guest){duelRender();duelFinish(null);return}
+  DU.turn=(who==='host')?'guest':'host';
+  duelSetStatus(DU.turn===DU.role?'dst_you':'dst_foe');
+  duelRender();
+}
+function duelAct(action){
+  try{Sound.click()}catch(e){}
+  if(DU.over||!DU.started||!DU.conn||DU.turn!==DU.role)return;
+  duelApply(DU.role,action);
+  duelSend({t:'move',who:DU.role,action:action});
+}
+function duelFinish(force){
+  if(DU.over)return;
+  DU.over=true;DU.turn=null;
+  let winner=force;
+  if(winner===null||winner===undefined){
+    const a=bjVal(DU.hands.host),b=bjVal(DU.hands.guest);
+    winner=(a>b)?'host':((b>a)?'guest':'push');
+  }
+  const me=DU.role,stake=DU.myStake;
+  const T=(typeof t==='function')?t:function(k,p){return k};
+  let payout=0,msg='',cls='';
+  if(winner==='push'){payout=stake;msg=T('dst_push');cls='push'}
+  else if(winner===me){payout=Math.floor(stake*1.9);msg=T('dst_win',{n:payout});cls='win'}
+  else{msg=T('dst_lose',{name:(DU.opp.name||'?'),n:stake});cls='lose'}
+  if(payout>0){S.bal+=payout;save();try{rBal()}catch(e){}}
+  try{aH('duel',payout,stake)}catch(e){}
+  const rz=$('duelResult');if(rz){rz.textContent=msg;rz.className='duel-result '+cls}
+  if(winner==='push')duelSetStatus('dst_push');
+  else if(winner===me)duelSetStatus('dst_win',{n:payout});
+  else duelSetStatus('dst_lose',{name:(DU.opp.name||'?'),n:stake});
+  if(cls==='win'){try{bz('win')}catch(e){}try{const b=$('duelTable').getBoundingClientRect();confetti(b.left+b.width/2,b.top,22)}catch(e){}}
+  else{try{bz('loss')}catch(e){}}
+  duelRender();
+}
+function duelBegin(){
+  if(DU.role!=='host'||DU.started)return;
+  if(!ok(DU.myStake)){sn(t('not_enough'));return}
+  S.bal-=DU.myStake;save();rBal();
+  DU.deck=duelNewDeck();
+  DU.hands={host:[DU.deck[0],DU.deck[1]],guest:[DU.deck[2],DU.deck[3]]};
+  DU.idx=4;DU.stood={host:false,guest:false};DU.turn='host';DU.over=false;DU.started=true;
+  const rz=$('duelResult');if(rz){rz.textContent='';rz.className='duel-result'}
+  duelSend({t:'start',deck:DU.deck,host:DU.hands.host,guest:DU.hands.guest});
+  duelSetStatus('dst_you');duelRender();
+}
+function duelCreate(){
+  try{Sound.click()}catch(e){}
+  if(!duelPeerOK()){duelSetStatus('dst_err');return}
+  duelLeave(true);
+  const stake=duelStake();if(!stake)return;
+  DU.myStake=stake;DU.role='host';DU.code=duelCode();DU.opp={name:'?',ava:'?'};
+  let peer=null;
+  try{peer=new Peer(DUEL_PREFIX+DU.code)}catch(e){duelSetStatus('dst_err');return}
+  DU.peer=peer;
+  peer.on('open',()=>{const cb=$('duelCode');if(cb)cb.value=DU.code;duelSetStatus('dst_wait',{c:DU.code});duelRender()});
+  peer.on('connection',c=>{if(DU.conn){try{c.close()}catch(e){}return}duelWire(c)});
+  peer.on('error',()=>{duelSetStatus('dst_err')});
+  duelRender();
+}
+function duelJoin(){
+  try{Sound.click()}catch(e){}
+  if(!duelPeerOK()){duelSetStatus('dst_err');return}
+  const code=String(($('duelCode')||{value:''}).value||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length<4){sn(t('dst_code_err'));return}
+  duelLeave(true);
+  const stake=duelStake();if(!stake)return;
+  DU.myStake=stake;DU.role='guest';DU.code=code;DU.opp={name:'?',ava:'?'};
+  let peer=null;
+  try{peer=new Peer()}catch(e){duelSetStatus('dst_err');return}
+  DU.peer=peer;
+  peer.on('open',()=>{
+    let c=null;
+    try{c=peer.connect(DUEL_PREFIX+code,{reliable:true})}catch(e){duelSetStatus('dst_err');return}
+    duelWire(c);duelSetStatus('dst_joining');duelRender();
+  });
+  peer.on('error',e=>{
+    if(e&&(e.type==='peer-unavailable'||e.type==='network'||e.type==='server-error')){duelLeave(true);duelSetStatus(e.type==='peer-unavailable'?'dst_nofriend':'dst_err')}
+  });
+  duelRender();
+}
+function duelInvite(){
+  try{Sound.click()}catch(e){}
+  const T=(typeof t==='function')?t:function(k,p){return k};
+  const c=DU.code||String(($('duelCode')||{value:''}).value||'').trim().toUpperCase();
+  if(!c){sn(T('dst_code_err'));return}
+  const msg=T('dst_invite',{c:c});
+  const link='https://t.me/'+DUEL_BOT+'/app?startapp=duel_'+c;
+  const share='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(msg);
+  try{
+    if(TG&&typeof TG.openTelegramLink==='function')TG.openTelegramLink(share);
+    else if(typeof window.open==='function')window.open(share,'_blank');
+  }catch(e){try{if(typeof window.open==='function')window.open(share,'_blank')}catch(_){}}
+}
+function duelCopy(){
+  try{Sound.click()}catch(e){}
+  const c=DU.code||String(($('duelCode')||{value:''}).value||'').trim();
+  if(!c)return;
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c);sn(t('dst_copied'))}
+    else{sn(c)}
+  }catch(e){sn(c)}
+}
+function duelOnClose(mine){
+  const had=!!(DU.conn||DU.role||DU.started);
+  if(!had&&mine!==true)return;
+  if(DU.started&&!DU.over){S.bal+=DU.myStake;save();try{rBal()}catch(e){}}
+  try{if(DU.conn)DU.conn.close()}catch(e){}
+  try{if(DU.peer)DU.peer.destroy()}catch(e){}
+  DU.conn=null;DU.peer=null;DU.role=null;DU.code='';DU.started=false;DU.over=true;
+  DU.hands={host:[],guest:[]};DU.stood={host:false,guest:false};DU.turn=null;DU.opp={name:'?',ava:'?'};
+  const rz=$('duelResult');if(rz){rz.textContent='';rz.className='duel-result'}
+  duelSetStatus(mine===true?'dst_idle':'dst_left');
+  duelRender();
+  if(had&&mine!==true){try{bz('loss')}catch(e){}}
+}
+function duelLeave(mine){
+  duelSend({t:'bye'});
+  duelOnClose(mine===true);
+}
+function duelAgain(){
+  try{Sound.click()}catch(e){}
+  if(DU.role!=='host'||!DU.conn||!DU.over)return;
+  DU.started=false;
+  duelBegin();
+}
+try{
+  sBet('duelStakeIn','duelDn','duelUp');
+  const _dc=$('duelCreate');if(_dc)_dc.addEventListener('click',duelCreate);
+  const _dj=$('duelJoin');if(_dj)_dj.addEventListener('click',duelJoin);
+  const _dcp=$('duelCopy');if(_dcp)_dcp.addEventListener('click',duelCopy);
+  const _di=$('duelInvite');if(_di)_di.addEventListener('click',duelInvite);
+  const _dl=$('duelLeave');if(_dl)_dl.addEventListener('click',function(){try{Sound.click()}catch(e){}duelLeave(true)});
+  const _da=$('duelAgain');if(_da)_da.addEventListener('click',duelAgain);
+  const _dh=$('duelHit');if(_dh)_dh.addEventListener('click',function(){duelAct('hit')});
+  const _ds=$('duelStand');if(_ds)_ds.addEventListener('click',function(){duelAct('stand')});
+  duelNav();
+  duelSetStatus('dst_idle');duelRender();
+  try{
+    let code='';
+    if(location.hash&&location.hash.indexOf('#duel=')===0)code=location.hash.slice(6);
+    try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param){const sp=String(TG.initDataUnsafe.start_param);if(sp.indexOf('duel_')===0)code=sp.slice(5)}}catch(e){}
+    code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(code){
+      const ci=$('duelCode');if(ci)ci.value=code;
+      duelNav();
+      const nb=document.querySelector('.ni[data-s="duel"]');if(nb)nb.click();
+      setTimeout(function(){try{if(!DU.role)duelJoin()}catch(e){}},900);
+    }
+  }catch(e){}
 }catch(e){}
 try{applyI18n()}catch(e){}
 rBal();
