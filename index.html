@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Gapera Alpha 7</title>
+  <title>Gapera Alpha 7.1</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -19,6 +19,9 @@
 :root[data-theme="red"]{color-scheme:dark;--p:#FFB4AB;--on-p:#690005;--p-c:#93000A;--on-p-c:#FFDAD6;--s2-c:#5C3A38;--on-s2:#FFDAD6;--e:#FF897A;--on-e:#5A0000;--bg:#1F0F0E;--on:#F4DEDA;--sv:#534341;--on-sv:#D8C2BE;--ol:#9E8D89;--ol-v:#534341;--sc:#261513;--sc-h:#2E1917;--sc-hi:#3A211E;--win:#8BC98F;--on-win:#0E3B12}
 :root[data-theme="ocean"]{color-scheme:dark;--p:#A8C7FA;--on-p:#062A5B;--p-c:#1B3A6B;--on-p-c:#D8E6FF;--s2-c:#2E3A52;--on-s2:#DCE4F5;--e:#F2B8B5;--on-e:#601410;--bg:#0B1526;--on:#E3EAF6;--sv:#3A4763;--on-sv:#AEB9CF;--ol:#6E7B94;--ol-v:#3A4763;--sc:#111B2E;--sc-h:#16233A;--sc-hi:#1E2E49;--win:#81C784;--on-win:#1B5E20}
 :root[data-theme="sunset"]{color-scheme:dark;--p:#FFB68F;--on-p:#5B1F00;--p-c:#7A2E12;--on-p-c:#FFDBCB;--s2-c:#4A3A34;--on-s2:#F5E2D6;--e:#FF8A80;--on-e:#4A0000;--bg:#1F100B;--on:#F6E4D8;--sv:#52403A;--on-sv:#CDB4A6;--ol:#9A857B;--ol-v:#52403A;--sc:#261511;--sc-h:#2E1A15;--sc-hi:#3B221B;--win:#9CCC65;--on-win:#1B3A0E}
+:root[data-theme="forest"]{color-scheme:dark;--p:#A5D6A7;--on-p:#0E3B12;--p-c:#1B5E20;--on-p-c:#D9F2DC;--s2-c:#2E4531;--on-s2:#DCE8DC;--e:#F2B8B5;--on-e:#601410;--bg:#0C1A0E;--on:#E2F0E3;--sv:#3A4F3D;--on-sv:#ACBFAE;--ol:#6E8B72;--ol-v:#3A4F3D;--sc:#101F12;--sc-h:#162716;--sc-hi:#1E3320;--win:#FFE082;--on-win:#4A3200}
+:root[data-theme="candy"]{color-scheme:dark;--p:#FFB1C8;--on-p:#5B0A22;--p-c:#8E2043;--on-p-c:#FFD9E3;--s2-c:#4E3239;--on-s2:#F6DCE2;--e:#FF8A80;--on-e:#4A0000;--bg:#1F0D13;--on:#F7E1E7;--sv:#554046;--on-sv:#D0B2BA;--ol:#9E8289;--ol-v:#554046;--sc:#281318;--sc-h:#30181E;--sc-hi:#3D1F27;--win:#9CCC65;--on-win:#1B3A0E}
+:root[data-theme="midnight"]{color-scheme:dark;--p:#9DB8FF;--on-p:#0A1E5B;--p-c:#1E2F6B;--on-p-c:#DCE3FF;--s2-c:#2B3452;--on-s2:#DCE2F5;--e:#F2B8B5;--on-e:#601410;--bg:#070D1F;--on:#E1E7F7;--sv:#39415E;--on-sv:#ACB4CC;--ol:#6C7594;--ol-v:#39415E;--sc:#0D1428;--sc-h:#131B33;--sc-hi:#1B2544;--win:#81C784;--on-win:#1B5E20}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation}
 input,textarea{-webkit-user-select:text;user-select:text}
 body{font-family:var(--f);background:transparent;color:var(--on);min-height:100vh;min-height:100dvh;padding-bottom:calc(80px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;position:relative}
@@ -50,7 +53,7 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .btn:active{transform:scale(.95)}
 .btn::after{content:"";position:absolute;inset:0;background:currentColor;opacity:0;transition:opacity .2s;pointer-events:none}
 .btn:hover::after{opacity:.08}.btn:active::after{opacity:.12}
-.btn .mat{font-size:20px;line-height:1}
+.btn .mat{font-size:20px;line-height:1;flex-shrink:0;transform:translateY(1px)}
 .btn:disabled{opacity:.45;cursor:default}.btn:disabled::after{display:none}
 .btn-p{background:var(--p);color:var(--on-p)}.btn-s{background:var(--s2-c);color:var(--on-s2)}
 .btn-o{background:transparent;color:var(--p);border-color:var(--ol)}.btn-t{background:transparent;color:var(--p)}.btn-w{background:var(--win);color:var(--on-win)}
@@ -288,13 +291,37 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .rr-hist .hz-r{background:#E53935}.rr-hist .hz-k{background:#212121;border:1px solid var(--ol-v)}.rr-hist .hz-g{background:#2E7D32}
 .sn{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translate(-50%,16px);opacity:0;visibility:hidden;background:var(--on);color:var(--bg);border-radius:var(--sh-s);padding:.55rem 1rem;font-size:.85rem;transition:all .3s var(--ease);z-index:100;max-width:90vw;text-align:center;font-weight:500}
 .sn.on{transform:translate(-50%,0);opacity:1;visibility:visible}
+
+/* ===== PROFILE (Профиль игрока) ===== */
+.pf-head{display:flex;align-items:center;gap:.9rem}
+.pf-ava{width:72px;height:72px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-size:1.9rem;font-weight:700;border:2px solid var(--p);box-shadow:0 0 16px color-mix(in srgb,var(--p) 40%,transparent);overflow:hidden;position:relative;color:#fff;cursor:pointer;transition:transform .15s var(--ease)}
+.pf-ava:active{transform:scale(.93)}
+.pf-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.pf-name{font-weight:700;font-size:1.05rem;word-break:break-all}
+.pf-lvl{font-size:.72rem;color:var(--on-sv);margin-top:.2rem}
+.pf-ava-row{display:flex;gap:.5rem;margin-top:.7rem}
+.pf-ava-row .btn{flex:1}
+.pf-bar{height:10px;border-radius:var(--sh-full);background:var(--sc);overflow:hidden;margin:.7rem 0 .3rem}
+.pf-bar-fill{height:100%;border-radius:var(--sh-full);background:linear-gradient(90deg,var(--p),#FFC107);transition:width .5s var(--ease)}
+.pf-xp{font-size:.72rem;color:var(--on-sv);text-align:center}
+.pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.7rem}
+.pf-mini{background:var(--sc);border-radius:var(--sh-l);padding:.6rem;text-align:center}
+.pf-mini .v{font-weight:700;font-size:1rem}
+.pf-mini .l{font-size:.62rem;color:var(--on-sv);margin-top:.1rem}
+.ach-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem}
+.ach{background:var(--sc);border:1px solid var(--ol-v);border-radius:var(--sh-l);padding:.55rem .2rem;text-align:center;cursor:pointer;transition:transform .12s var(--ease);opacity:.5;filter:grayscale(1)}
+.ach:active{transform:scale(.92)}
+.ach.got{opacity:1;filter:none;border-color:var(--p);background:color-mix(in srgb,var(--p) 14%,var(--sc));box-shadow:0 0 10px color-mix(in srgb,var(--p) 25%,transparent)}
+.ach .e{font-size:1.4rem;line-height:1}
+.ach .n{font-size:.58rem;font-weight:600;margin-top:.25rem;line-height:1.2}
+@media(max-width:420px){.ach-grid{grid-template-columns:repeat(3,1fr)}}
   </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="topbar-left">
-    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta" id="verBadge">АЛЬФА 7</span></div>
+    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta" id="verBadge">АЛЬФА 7.1</span></div>
     <span class="topbar-uid" id="uidTxt">ID: —</span>
   </div>
   <div class="bal" id="balBox"><span class="mat">star</span><span id="bal">1000</span><span class="bonus" id="btxt"></span></div>
@@ -488,8 +515,32 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
     </div>
   </section>
 
-  <!-- STATS -->
-  <section class="scr" id="s-stats">
+  <!-- PROFILE — уровень, своя аватарка, достижения -->
+  <section class="scr" id="s-profile">
+    <div class="card">
+      <div class="lbl" data-i18n="pf_title">ПРОФИЛЬ ИГРОКА</div>
+      <div class="pf-head">
+        <div class="pf-ava" id="pfAva"><img id="pfImg" alt="" style="display:none"><span id="pfLetter">?</span></div>
+        <div style="min-width:0;flex:1">
+          <div class="pf-name" id="pfName">ID: —</div>
+          <div class="pf-lvl" id="pfLvl">Уровень 1</div>
+        </div>
+      </div>
+      <input type="file" id="pfFile" accept="image/*" style="display:none">
+      <div class="pf-ava-row">
+        <button class="btn btn-s btn-sm" id="pfUpBtn"><span class="mat">photo_camera</span><span data-i18n="pf_photo">Сменить фото</span></button>
+        <button class="btn btn-s btn-sm" id="pfDelBtn"><span class="mat">delete</span><span data-i18n="pf_remove">Убрать</span></button>
+      </div>
+      <div class="pf-bar"><div class="pf-bar-fill" id="pfBar" style="width:0%"></div></div>
+      <div class="pf-xp" id="pfXp">0 XP</div>
+      <div class="pf-grid">
+        <div class="pf-mini"><div class="v" id="pfBets">0</div><div class="l" data-i18n="bets">ставок</div></div>
+        <div class="pf-mini"><div class="v" id="pfWins">0</div><div class="l" data-i18n="wins">побед</div></div>
+        <div class="pf-mini"><div class="v" id="pfClicks">0</div><div class="l" data-i18n="pf_clicks">кликов</div></div>
+        <div class="pf-mini"><div class="v" id="pfStreak">0🔥</div><div class="l" data-i18n="pf_streak">стрик дней</div></div>
+      </div>
+    </div>
+        <!-- STATS moved into profile -->
     <div class="card">
       <div class="lbl" data-i18n="stats">СТАТИСТИКА</div>
       <div class="stat-row">
@@ -504,8 +555,12 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
       </div>
     </div>
     <div class="card"><div class="lbl" data-i18n="history">ИСТОРИЯ</div><div class="hist-list" id="hL"><div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">Пусто</div></div></div>
-    <button class="btn btn-o btn-lg" id="rst"><span class="mat">restart_alt</span><span data-i18n="reset">Сбросить</span></button>
+<div class="card">
+      <div class="lbl"><span data-i18n="ach_title">ДОСТИЖЕНИЯ</span> • <span id="achCount">0/16</span></div>
+      <div class="ach-grid" id="achGrid"></div>
+    </div>
   </section>
+
 
   <!-- SETTINGS -->
   <section class="scr" id="s-settings">
@@ -527,6 +582,9 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
         <button class="theme-sw" data-theme="auto"><span class="theme-preview" style="background:linear-gradient(135deg,#161616 50%,#F7F2FA 50%)"></span><span data-i18n="th_auto">Авто</span></button>
         <button class="theme-sw" data-theme="ocean"><span class="theme-beta" data-i18n="beta">бета</span><span class="theme-preview" style="background:linear-gradient(135deg,#A8C7FA,#1B3A6B)"></span><span data-i18n="th_ocean">Океан</span></button>
         <button class="theme-sw" data-theme="sunset"><span class="theme-beta" data-i18n="beta">бета</span><span class="theme-preview" style="background:linear-gradient(135deg,#FFB68F,#7A2E12)"></span><span data-i18n="th_sunset">Закат</span></button>
+        <button class="theme-sw" data-theme="forest"><span class="theme-preview" style="background:linear-gradient(135deg,#A5D6A7,#1B5E20)"></span><span data-i18n="th_forest">Лесная</span></button>
+        <button class="theme-sw" data-theme="candy"><span class="theme-preview" style="background:linear-gradient(135deg,#FFB1C8,#8E2043)"></span><span data-i18n="th_candy">Конфета</span></button>
+        <button class="theme-sw" data-theme="midnight"><span class="theme-preview" style="background:linear-gradient(135deg,#9DB8FF,#1E2F6B)"></span><span data-i18n="th_midnight">Полночь</span></button>
       </div>
       <div class="rewards-sub" style="margin-top:.6rem" data-i18n="auto_note">Авто — подстраивается под тёмную/светлую тему телефона</div>
     </div>
@@ -552,7 +610,7 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
   <button class="ni" data-s="coin"><span class="np"><span class="mat">monetization_on</span></span><span class="nl" data-i18n="nav_coin">Монета</span></button>
   <button class="ni" data-s="clicker"><span class="np"><span class="mat">ads_click</span></span><span class="nl" data-i18n="nav_clicker">Кликер</span></button>
   <button class="ni" data-s="rewards"><span class="np"><span class="mat">card_giftcard</span></span><span class="nl" data-i18n="nav_rewards">Награды</span></button>
-  <button class="ni" data-s="stats"><span class="np"><span class="mat">bar_chart</span></span><span class="nl" data-i18n="nav_stats">Стата</span></button>
+  <button class="ni" data-s="profile"><span class="np"><span class="mat">person</span></span><span class="nl" data-i18n="nav_profile">Профиль</span></button>
   <button class="ni" data-s="settings"><span class="np"><span class="mat">settings</span></span><span class="nl" data-i18n="nav_settings">Настройки</span></button>
 </nav>
 
@@ -783,7 +841,7 @@ function defaultState(){
     freeSpins:0, usedPromos:[], lang:'ru', bonusX2Until:0
   };
 }
-const THEMES=['purple','black','white','red','ocean','sunset','auto'];
+const THEMES=['purple','black','white','red','ocean','sunset','forest','candy','midnight','auto'];
 const LANGS=['ru','uk','en'];
 function normalizeState(x){
   const d=defaultState(), v=(x&&typeof x==='object')?x:{};
@@ -875,9 +933,9 @@ function renderAll(){
 
 // ===== Локализация Alpha 7 (RU/EN/UK) =====
 const I18N={
-ru:{ver_badge:'АЛЬФА 7',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'— растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% — возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме — шанс без штрафа',risk1:'Повышенная ставка — шанс −6%',risk2:'Крупная ставка — шанс −13%',risk3:'Высокий риск — шанс −20%',risk4:'Очень высокий риск — шанс −28%',risk5:'Экстремальный риск — шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1–18/19–36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону — выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} из 7 — награда ждёт!',received:'Получено',streak_next:'Стрик {s}/7 • следующая награда завтра',daily_reward_for:'День {d} — +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто — подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-en:{ver_badge:'ALPHA 7',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'— grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND — PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee — 97% return',throw:'ROLL',risk0:'Normal bet — no chance penalty',risk1:'Raised bet — chance −6%',risk2:'Big bet — chance −13%',risk3:'High risk — chance −20%',risk4:'Very high risk — chance −28%',risk5:'Extreme risk — chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1–18/19–36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side — payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} of 7 — reward is waiting!',received:'Claimed',streak_next:'Streak {s}/7 • next reward tomorrow',daily_reward_for:'Day {d} — +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto — follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-uk:{ver_badge:'АЛЬФА 7',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'— зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ — ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% — повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі — шанс без штрафу',risk1:'Підвищена ставка — шанс −6%',risk2:'Велика ставка — шанс −13%',risk3:'Високий ризик — шанс −20%',risk4:'Дуже високий ризик — шанс −28%',risk5:'Екстремальний ризик — шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1–18/19–36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону — виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} із 7 — нагорода чекає!',received:'Отримано',streak_next:'Стрік {s}/7 • наступна нагорода завтра',daily_reward_for:'День {d} — +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто — підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
+ru:{ver_badge:'АЛЬФА 7.1',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'— растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% — возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме — шанс без штрафа',risk1:'Повышенная ставка — шанс −6%',risk2:'Крупная ставка — шанс −13%',risk3:'Высокий риск — шанс −20%',risk4:'Очень высокий риск — шанс −28%',risk5:'Экстремальный риск — шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1–18/19–36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону — выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} из 7 — награда ждёт!',received:'Получено',streak_next:'Стрик {s}/7 • следующая награда завтра',daily_reward_for:'День {d} — +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто — подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+en:{ver_badge:'ALPHA 7.1',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'— grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND — PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee — 97% return',throw:'ROLL',risk0:'Normal bet — no chance penalty',risk1:'Raised bet — chance −6%',risk2:'Big bet — chance −13%',risk3:'High risk — chance −20%',risk4:'Very high risk — chance −28%',risk5:'Extreme risk — chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1–18/19–36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side — payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} of 7 — reward is waiting!',received:'Claimed',streak_next:'Streak {s}/7 • next reward tomorrow',daily_reward_for:'Day {d} — +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto — follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+uk:{ver_badge:'АЛЬФА 7.1',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'— зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ — ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% — повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі — шанс без штрафу',risk1:'Підвищена ставка — шанс −6%',risk2:'Велика ставка — шанс −13%',risk3:'Високий ризик — шанс −20%',risk4:'Дуже високий ризик — шанс −28%',risk5:'Екстремальний ризик — шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1–18/19–36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону — виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} із 7 — нагорода чекає!',received:'Отримано',streak_next:'Стрік {s}/7 • наступна нагорода завтра',daily_reward_for:'День {d} — +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто — підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
 };
 // ===== TOWER i18n patch =====
 try{
@@ -885,13 +943,24 @@ I18N.ru.nav_tower='Башня';I18N.ru.game_tower='Башня';I18N.ru.tw_easy='
 I18N.en.nav_tower='Tower';I18N.en.game_tower='Tower';I18N.en.tw_easy='Easy 4×';I18N.en.tw_med='Medium 3×';I18N.en.tw_hard='Hard 2×';I18N.en.tw_fee='8 floors • one bomb per floor • 4% fee already in multiplier';I18N.en.tw_hint='Pick a tile on each floor and climb up!';I18N.en.tw_floor='Floor';I18N.en.tw_next='Floor {n} of 8 — pick a tile!';I18N.en.tw_hit='💥 Bomb on floor {n}! −{b}';I18N.en.tw_took='✅ Cashed out <b>{c}</b> (×{m}) • floor {n}';I18N.en.tw_max='🏆 Top! <b>{c}</b> (×{m}) — auto payout!';
 I18N.uk.nav_tower='Вежа';I18N.uk.game_tower='Вежа';I18N.uk.tw_easy='Легко 4×';I18N.uk.tw_med='Середньо 3×';I18N.uk.tw_hard='Хард 2×';I18N.uk.tw_fee='8 поверхів • на кожному одна бомба • множник уже включає комісію 4%';I18N.uk.tw_hint='Обирай клітинку на кожному поверсі й лізь вгору!';I18N.uk.tw_floor='Поверх';I18N.uk.tw_next='Поверх {n} із 8 — обери клітинку!';I18N.uk.tw_hit='💥 Бомба на {n} поверсі! −{b}';I18N.uk.tw_took='✅ Забрав <b>{c}</b> (×{m}) • поверх {n}';I18N.uk.tw_max='🏆 Вершина! <b>{c}</b> (×{m}) — автовиплата!';
 }catch(e){}
+// ===== PROFILE i18n patch =====
+try{
+I18N.ru.nav_profile='Профиль';I18N.ru.pf_title='ПРОФИЛЬ ИГРОКА';I18N.ru.pf_clicks='кликов';I18N.ru.pf_streak='стрик дней';I18N.ru.pf_photo='Сменить фото';I18N.ru.pf_remove='Убрать';I18N.ru.pf_saved='Фото обновлено';I18N.ru.pf_save_err='Не вышло сохранить фото';I18N.ru.ach_title='ДОСТИЖЕНИЯ';I18N.ru.level_word='Уровень';I18N.ru.xp_word='XP';
+I18N.en.nav_profile='Profile';I18N.en.pf_title='PLAYER PROFILE';I18N.en.pf_clicks='clicks';I18N.en.pf_streak='day streak';I18N.en.pf_photo='Change photo';I18N.en.pf_remove='Remove';I18N.en.pf_saved='Photo updated';I18N.en.pf_save_err='Could not save photo';I18N.en.ach_title='ACHIEVEMENTS';I18N.en.level_word='Level';I18N.en.xp_word='XP';
+I18N.uk.nav_profile='Профіль';I18N.uk.pf_title='ПРОФІЛЬ ГРАВЦЯ';I18N.uk.pf_clicks='кліків';I18N.uk.pf_streak='стрик днів';I18N.uk.pf_photo='Змінити фото';I18N.uk.pf_remove='Прибрати';I18N.uk.pf_saved='Фото оновлено';I18N.uk.pf_save_err='Не вдалося зберегти фото';I18N.uk.ach_title='ДОСЯГНЕННЯ';I18N.uk.level_word='Рівень';I18N.uk.xp_word='XP';
+}catch(e){}
+try{
+I18N.ru.th_forest='Лесная';I18N.ru.th_candy='Конфета';I18N.ru.th_midnight='Полночь';
+I18N.en.th_forest='Forest';I18N.en.th_candy='Candy';I18N.en.th_midnight='Midnight';
+I18N.uk.th_forest='Лісова';I18N.uk.th_candy='Цукерка';I18N.uk.th_midnight='Північ';
+}catch(e){}
 function curLang(){return LANGS.includes(S.lang)?S.lang:'ru'}
 function t(key,params){var L=curLang();var d=I18N[L]||{};var v=(key in d)?d[key]:(((I18N.ru||{})[key]!==undefined)?I18N.ru[key]:key);if(params){for(var k in params){if(Object.prototype.hasOwnProperty.call(params,k)){v=String(v).split('{'+k+'}').join(params[k])}}}return v}
 function gameName(g){var m={slots:'game_slots',dice:'game_dice',roulette:'game_roulette',crash:'game_crash',mines:'game_mines',coin:'game_coin',tower:'game_tower'};return t(m[g]||g)}
 function rrOddsRender(){var el=$('rrOdds');if(!el)return;el.textContent=t('rr_odds',{straight:R_STRAIGHT_MULT.toFixed(2),outside:R_OUTSIDE_MULT.toFixed(2)})}
 function applyI18n(){
   try{document.documentElement.lang=curLang()}catch(e){}
-  try{document.title='Gapera Alpha 7'}catch(e){}
+  try{document.title='Gapera Alpha 7.1'}catch(e){}
   try{document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');el.textContent=t(k)})}catch(e){}
   try{var vb=$('verBadge');if(vb)vb.textContent=t('ver_badge')}catch(e){}
   try{rLang()}catch(e){}
@@ -912,6 +981,7 @@ function applyI18n(){
   try{if(typeof mOn!=='undefined'&&!mOn&&typeof mR!=='undefined'&&mR.length===0){var mi=$('mInf');if(mi){mi.textContent=t('mines_hint');mi.style.color=''}}}catch(e){}
   try{if(typeof twOn!=='undefined'&&!twOn&&typeof twLevel!=='undefined'&&twLevel===0){var twi=$('twInf');if(twi){twi.textContent=t('tw_hint');twi.style.color=''}}}catch(e){}
   try{if(typeof twRender==='function')twRender()}catch(e){}
+  try{if(typeof rProfile==='function')rProfile()}catch(e){}
 }
 // ===== Темы оформления =====
 
@@ -1113,7 +1183,7 @@ function rBal(){
   b.classList.add('bump');
   setTimeout(()=>b.classList.remove('bump'),150);
 }
-function sn(m){$('sn').textContent=m;$('sn').classList.add('on');setTimeout(()=>$('sn').classList.remove('on'),2000)}
+let snT=null;function sn(m,ms){try{$('sn').textContent=m;$('sn').classList.add('on');clearTimeout(snT);snT=setTimeout(()=>$('sn').classList.remove('on'),ms||2000)}catch(e){}}
 function bz(k){
   if(k==='win'||k==='success') Sound.win();
   else if(k==='loss'||k==='error') Sound.loss();
@@ -1176,7 +1246,8 @@ document.querySelectorAll('.ni').forEach(b=>b.addEventListener('click',()=>{
   $('s-'+b.dataset.s).classList.add('on');
   try{b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}catch(e){}
   window.scrollTo({top:0});
-  if(b.dataset.s==='stats')rSt();
+  
+  if(b.dataset.s==='profile'){try{if(typeof rProfile==='function')rProfile()}catch(e){}try{rSt()}catch(e){}}
   if(b.dataset.s==='rewards'){dailyTick();tickBonus();if(typeof crashResize==='function')crashResize()}
   if(b.dataset.s==='clicker')rClk();
   if(b.dataset.s==='crash'&&typeof crashResize==='function')crashResize();
@@ -1816,26 +1887,111 @@ const GAME_NAMES={slots:'Слоты',dice:'Кости',roulette:'Рулетка'
 function rSt(){$('xT').textContent=S.stats.total;$('xW').textContent=S.stats.win;$('xL').textContent=S.stats.loss;$('xWo').textContent=S.stats.won;$('xB').textContent=S.stats.bet;$('xP').textContent=S.stats.won-S.stats.bet;$('xP').style.color=S.stats.won-S.stats.bet>=0?'var(--win)':'var(--e)';const el=$('hL');if(!S.hist.length){el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">'+t('empty')+'</div>';return}el.innerHTML='';S.hist.slice(0,30).forEach(h=>{const d=document.createElement('div');d.className='h-item';const t=new Date(h.t);const ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');const safeGame=String(gameName(h.g)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 d.innerHTML='<span>'+safeGame+' • '+ts+'</span><span>'+(h.r>0?'<span class="w">+'+h.r+'</span>':'<span class="l">−'+h.a+'</span>')+'</span>';el.appendChild(d)})}
 rSt();
-
-$('rst').addEventListener('click',()=>{
-  Sound.click();S=defaultState();save(true);applyTheme(S.theme);rTheme();rLang();rSound();rBal();rSt();rClk();rSlotMax();rFreeSpins();
-  sLock=false;$('sGo').disabled=false;
-  dLock=false;$('dGo').disabled=false;
-  rLock=false;$('rGo').disabled=false;rSel=null;document.querySelectorAll('.rr-b').forEach(x=>x.classList.remove('sel'));rrHist=[];rrHistRender();
-  mOn=false;$('mGo').style.display='';$('mCa').style.display='none';$('mInf').textContent=t('mines_hint');$('mInf').style.color='';mGr();
-  try{twOn=false;twLevel=0;twMult=1;twBet=0;$('twGo').style.display='';$('twCa').style.display='none';$('twInf').textContent=t('tw_hint');$('twInf').style.color='';twRender()}catch(e){}
-  cFlip=false;$('cGo').disabled=false;$('cC').textContent='🪙';$('cR').textContent='';
-  ['sBet','dBet','rBet','mBet','cBet','crashBet','twBet'].forEach(id=>{try{$(id).value=50}catch(e){}});
-  try{$('dSl').value=7;uDC()}catch(e){}
-  try{crashSetAuto(200)}catch(e){}
-  crashRunning=false;cancelAnimationFrame(crashRAF);crashLock=false;$('crashGo').style.display='';$('crashGo').disabled=false;$('crashCash').style.display='none';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=t('crash_make_bet');$('crashInfo').textContent=t('crash_info_idle');
-  try{const pos=crashDraw(1,false);crashPlacePoint(pos,false)}catch(e){}
-  try{crashBurstEl.classList.remove('on')}catch(e){}
-  try{crashResize()}catch(e){}
-  crashRenderHistory();
-  try{if(typeof applyI18n==='function')applyI18n()}catch(e){try{dailyTick()}catch(_){}try{tickBonus()}catch(_){}}
-  sn(t('reset_done'));
-});
+// ===== PROFILE (уровень, своя аватарка, достижения) =====
+const PF_LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЖЗИКЛМНПРСТУФХЦЧШЭЮЯ0123456789';
+let pfPhoto=null;
+function pfHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)}
+function pfAvaKey(){try{return 'gapera_avatar_'+getUid()}catch(e){return 'gapera_avatar_anon'}}
+function pfLoadPhoto(){try{pfPhoto=localStorage.getItem(pfAvaKey())||null}catch(e){pfPhoto=null}}
+function pfSavePhoto(d){try{if(d)localStorage.setItem(pfAvaKey(),d);else localStorage.removeItem(pfAvaKey());pfPhoto=d||null;return true}catch(e){return false}}
+function pfRenderAva(uid){
+  const ava=$('pfAva'),img=$('pfImg'),ch=$('pfLetter');
+  if(!ava)return;
+  if(pfPhoto&&img){try{img.src=pfPhoto}catch(e){}img.style.display='block';if(ch)ch.style.display='none';ava.style.background='var(--sc-hi)';return}
+  if(img)img.style.display='none';if(ch)ch.style.display='';
+  const x=pfHash('ava|'+String(uid));
+  if(ch)ch.textContent=PF_LETTERS[x%PF_LETTERS.length];
+  ava.style.background='linear-gradient(135deg,hsl('+(x%360)+',60%,45%),hsl('+((x+50)%360)+',60%,28%))';
+}
+function pfXp(){try{return Math.max(0,(S.stats.total||0)*20+(S.stats.win||0)*30+(S.clicks||0)*2)}catch(e){return 0}}
+function pfLevelInfo(xp){const lvl=1+Math.floor(Math.sqrt(xp/200));const base=200*(lvl-1)*(lvl-1);const next=200*lvl*lvl;const prog=next>base?Math.min(100,Math.max(0,(xp-base)/(next-base)*100)):100;return{lvl,base,next,prog}}
+const PF_ACHS=[
+ {id:'first',e:'🎯',n:{ru:'Первая кровь',en:'First blood',uk:'Перша кров'},d:{ru:'Сделай первую ставку',en:'Place your first bet',uk:'Зроби першу ставку'},ok:()=>S.stats.total>=1},
+ {id:'ten',e:'🍀',n:{ru:'Везунчик',en:'Lucky 10',uk:'Щасливчик'},d:{ru:'Одержи 10 побед',en:'Get 10 wins',uk:'Здобудь 10 перемог'},ok:()=>S.stats.win>=10},
+ {id:'grind',e:'⚙️',n:{ru:'Гриндер',en:'Grinder',uk:'Гріндер'},d:{ru:'Сделай 100 ставок',en:'Place 100 bets',uk:'Зроби 100 ставок'},ok:()=>S.stats.total>=100},
+ {id:'rich1',e:'💰',n:{ru:'Богач',en:'Rich',uk:'Багач'},d:{ru:'Накопи 10 000 на балансе',en:'Hold 10,000 balance',uk:'Накопи 10 000 на балансі'},ok:()=>S.bal>=10000},
+ {id:'rich2',e:'💎',n:{ru:'Магнат',en:'Tycoon',uk:'Магнат'},d:{ru:'Накопи 100 000 на балансе',en:'Hold 100,000 balance',uk:'Накопи 100 000 на балансі'},ok:()=>S.bal>=100000},
+ {id:'clk1',e:'👆',n:{ru:'Палец-качок',en:'Clicker fan',uk:'Палець-качок'},d:{ru:'Кликни 100 раз в Кликере',en:'Click 100 times in Clicker',uk:'Клікни 100 разів у Клікері'},ok:()=>(S.clicks||0)>=100},
+ {id:'clk2',e:'⚡',n:{ru:'Золотая звезда',en:'Gold star',uk:'Золота зірка'},d:{ru:'Кликни 1000 раз в Кликере',en:'Click 1,000 times in Clicker',uk:'Клікни 1000 разів у Клікері'},ok:()=>(S.clicks||0)>=1000},
+ {id:'st3',e:'🔥',n:{ru:'Стабильность',en:'Streak x3',uk:'Стабільність'},d:{ru:'Забирай ежедневный бонус 3 дня подряд',en:'Claim the daily bonus 3 days in a row',uk:'Забирай щоденний бонус 3 дні поспіль'},ok:()=>(S.daily.streak||0)>=3},
+ {id:'st7',e:'👑',n:{ru:'Неделя фарта',en:'Week of luck',uk:'Тиждень фарту'},d:{ru:'Забирай ежедневный бонус 7 дней подряд',en:'Claim the daily bonus 7 days in a row',uk:'Забирай щоденний бонус 7 днів поспіль'},ok:()=>(S.daily.streak||0)>=7},
+ {id:'crx',e:'🚀',n:{ru:'Ракетчик',en:'Rocketeer',uk:'Ракетник'},d:{ru:'Поймай 10× или выше в Ракетке',en:'Catch 10x or higher in Crash',uk:'Спіймай 10× або вище в Ракетці'},ok:()=>((S.crashHist||[]).some(x=>x>=10))},
+ {id:'tww',e:'🗼',n:{ru:'Верхолаз',en:'Climber',uk:'Верхолаз'},d:{ru:'Выиграй раунд в Башне',en:'Win a round in Tower',uk:'Виграй раунд у Вежі'},ok:()=>((S.hist||[]).some(h=>h.g==='tower'&&h.r>0))},
+ {id:'prm',e:'🎁',n:{ru:'Охотник',en:'Hunter',uk:'Мисливець'},d:{ru:'Активируй промокод в Настройках',en:'Activate a promo code in Settings',uk:'Активуй промокод у Налаштуваннях'},ok:()=>((S.usedPromos||[]).length>=1)},
+ {id:'dicew',e:'🎲',n:{ru:'Игрок в кости',en:'Dice player',uk:'Гравець у кістки'},d:{ru:'Выиграй раунд в Кости',en:'Win a round in Dice',uk:'Виграй раунд у Кістки'},ok:()=>((S.hist||[]).some(h=>h.g==='dice'&&h.r>0))},
+ {id:'sap',e:'💣',n:{ru:'Сапёр',en:'Sapper',uk:'Сапер'},d:{ru:'Выиграй раунд в Минах',en:'Win a round in Mines',uk:'Виграй раунд у Мінах'},ok:()=>((S.hist||[]).some(h=>h.g==='mines'&&h.r>0))},
+ {id:'mln',e:'💸',n:{ru:'Миллионер',en:'Millionaire',uk:'Мільйонер'},d:{ru:'Накопи 1 000 000 на балансе',en:'Hold 1,000,000 balance',uk:'Накопи 1 000 000 на балансі'},ok:()=>S.bal>=1000000},
+ {id:'ser',e:'🏅',n:{ru:'Серия',en:'Hot streak',uk:'Серія'},d:{ru:'Одержи 3 победы подряд',en:'Score 3 wins in a row',uk:'Здобудь 3 перемоги поспіль'},ok:()=>((S.hist||[]).length>=3&&(S.hist||[]).slice(0,3).every(h=>h.r>0))}
+];
+function rProfile(){
+  try{
+    const L=(typeof curLang==='function')?curLang():'ru';
+    let uid='—';try{uid=displayUid()}catch(e){}
+    pfRenderAva(uid);
+    const nm=$('pfName');if(nm)nm.textContent='ID: '+uid;
+    const xp=pfXp(),li=pfLevelInfo(xp);
+    const lv=$('pfLvl');if(lv)lv.textContent=(typeof t==='function'?t('level_word'):'Уровень')+' '+li.lvl;
+    const bar=$('pfBar');if(bar)bar.style.width=li.prog+'%';
+    const xe=$('pfXp');if(xe)xe.textContent=xp.toLocaleString()+' XP • '+(li.next-xp).toLocaleString()+' до '+(li.lvl+1)+' ур.';
+    const set=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+    set('pfBets',S.stats.total||0);set('pfWins',S.stats.win||0);set('pfClicks',(S.clicks||0).toLocaleString());set('pfStreak',(S.daily.streak||0)+'🔥');
+    try{
+      const gr=$('achGrid');if(gr){
+        gr.innerHTML='';let got=0;
+        PF_ACHS.forEach(a=>{
+          let has=false;try{has=!!a.ok()}catch(_){has=false}
+          if(has)got++;
+          const d=document.createElement('div');d.className='ach'+(has?' got':'');
+          d.innerHTML='<div class="e">'+a.e+'</div><div class="n">'+((a.n&&a.n[L])||a.n.ru)+'</div>';
+          d.addEventListener('click',()=>{try{Sound.click()}catch(_){}sn(((a.n&&a.n[L])||a.n.ru)+': '+((a.d&&a.d[L])||a.d.ru)+(has?' ✅':' 🔒'),2500)});
+          gr.appendChild(d);
+        });
+        set('achCount',got+'/'+PF_ACHS.length);
+      }
+    }catch(e){}
+  }catch(e){}
+}
+function pfPickPhoto(){try{const f=$('pfFile');if(f)f.click()}catch(e){}}
+function pfOnFile(e){
+  try{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    const T=(typeof t==='function')?t:function(k){return k};
+    if(!f.type||f.type.indexOf('image/')!==0){sn(T('pf_save_err'));return}
+    const rd=new FileReader();
+    rd.onload=function(){
+      try{
+        const im=new Image();
+        im.onload=function(){
+          try{
+            const Sz=128,c=document.createElement('canvas');c.width=Sz;c.height=Sz;
+            const cx=c.getContext('2d');const sc=Math.max(Sz/im.width,Sz/im.height);
+            const w=im.width*sc,hgt=im.height*sc;
+            cx.fillStyle='#222';cx.fillRect(0,0,Sz,Sz);
+            cx.drawImage(im,(Sz-w)/2,(Sz-hgt)/2,w,hgt);
+            const url=c.toDataURL('image/jpeg',0.85);
+            let ok=false;try{ok=pfSavePhoto(url)}catch(_){ok=false}
+            if(ok){let uid='—';try{uid=displayUid()}catch(_){}pfRenderAva(uid);sn(T('pf_saved'))}
+            else{sn(T('pf_save_err'))}
+          }catch(_){sn(T('pf_save_err'))}
+        };
+        im.onerror=function(){sn(T('pf_save_err'))};
+        im.src=rd.result;
+      }catch(_){sn(T('pf_save_err'))}
+    };
+    rd.onerror=function(){sn(T('pf_save_err'))};
+    rd.readAsDataURL(f);
+    try{e.target.value=''}catch(_){}
+  }catch(e){}
+}
+try{
+  pfLoadPhoto();
+  const _up=$('pfUpBtn');if(_up)_up.addEventListener('click',function(){try{Sound.click()}catch(_){}pfPickPhoto()});
+  const _av=$('pfAva');if(_av)_av.addEventListener('click',function(){try{Sound.click()}catch(_){}pfPickPhoto()});
+  const _fl=$('pfFile');if(_fl)_fl.addEventListener('change',pfOnFile);
+  const _dl=$('pfDelBtn');if(_dl)_dl.addEventListener('click',function(){try{Sound.click()}catch(_){}pfSavePhoto(null);try{rProfile()}catch(_){}});
+  setInterval(function(){try{if(document.getElementById('s-profile').classList.contains('on')){rProfile();rSt()}}catch(_){}},3000);
+  try{rProfile()}catch(_){}
+}catch(e){}
 try{applyI18n()}catch(e){}
 rBal();
 })();
