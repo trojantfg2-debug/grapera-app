@@ -101,6 +101,7 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .ch-item .v{font-weight:700;font-size:1.1rem}
 .ch-item .l{font-size:.65rem;color:var(--on-sv)}
 
+#crashAutoLabel{font-size:.78rem;letter-spacing:-.3px}
 /* Roulette */
 .rr-board{display:flex;flex-direction:column;gap:.4rem;padding:.5rem 0}
 .rr-row{display:flex;gap:.3rem;justify-content:center}
@@ -389,7 +390,7 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
       </div>
       <div class="crash-controls">
         <div class="crash-panel"><div class="lbl" data-i18n="bet">СТАВКА</div><div class="crash-bet"><button class="btn btn-s btn-sm" id="crashDn">−</button><input id="crashBet" type="number" value="50" min="1" step="1" inputmode="numeric"><button class="btn btn-s btn-sm" id="crashUp">+</button></div><div class="crash-quick"><button data-v="10">10</button><button data-v="50">50</button><button data-v="100">100</button><button data-v="250">250</button></div></div>
-        <div class="crash-panel"><div class="lbl" data-i18n="autocash">АВТОЗАБОР</div><div class="crash-value" id="crashAutoVal">2.00×</div><input id="crashAuto" type="range" min="110" max="1000" value="200" style="width:100%;margin-top:.5rem;accent-color:var(--p)"><div class="crash-live-info" style="margin:.25rem 0 0" data-i18n="auto_hint">Сработает только если график доберётся до множителя</div></div>
+        <div class="crash-panel"><div class="lbl" data-i18n="autocash">АВТОЗАБОР</div><div class="m3-slider" id="m3crSl"><input type="range" min="110" max="1000" value="200" id="crashAuto" aria-label="Автозабор" /><div class="m3-slider__label" id="crashAutoLabel">2.00×</div><div class="m3-slider__track"><div class="m3-slider__inactive"></div><div class="m3-slider__active" id="crashAutoFill"></div><div class="m3-slider__handle" id="crashAutoThumb"></div></div></div><div class="dice-target"><span>1.10×</span><span id="crashAutoVal">2.00×</span><span>10.00×</span></div><div class="crash-live-info" style="margin:.25rem 0 0" data-i18n="auto_hint">Сработает только если график доберётся до множителя</div></div>
       </div>
       <div class="crash-live-info" id="crashInfo">RTP игры: 97% • График может оборваться в любой момент</div>
       <button class="btn btn-p btn-lg" id="crashGo"><span class="mat">show_chart</span><span data-i18n="launch">ЗАПУСТИТЬ</span></button>
@@ -1466,8 +1467,9 @@ function crashPlacePoint(pos,crashed){
 function crashRenderHistory(){
   const el=$('crashHistory');el.innerHTML='';(S.crashHist||[]).slice(0,8).forEach(n=>{const sp=document.createElement('span');sp.textContent=n.toFixed(2)+'×';sp.className=n<1.5?'low':n<3?'mid':'high';el.appendChild(sp)})
 }
-function crashSetAuto(v){crashAutoValue=v/100;$('crashAutoVal').textContent=crashAutoValue.toFixed(2)+'×'}
-$('crashAuto').addEventListener('input',e=>crashSetAuto(+e.target.value));
+function crashSetAuto(v){crashAutoValue=v/100;const txt=crashAutoValue.toFixed(2)+'×';$('crashAutoVal').textContent=txt;const lb=$('crashAutoLabel');if(lb)lb.textContent=txt;crashSlUpd()}
+function crashSlUpd(){const el=$('crashAuto');if(!el)return;const p=((el.value-el.min)/(el.max-el.min))*100;const f=$('crashAutoFill');if(!f)return;f.style.width='calc('+p+'% - 3px)';f.style.borderRadius=p>97?'8px':'8px 2px 2px 8px';$('crashAutoThumb').style.left=p+'%';$('crashAutoLabel').style.left=p+'%'}
+$('crashAuto').addEventListener('input',e=>{Sound.spin();crashSetAuto(+e.target.value)});
 $('crashBet').addEventListener('change',()=>{let v=Math.floor(Number($('crashBet').value));if(!Number.isFinite(v)||v<1)v=1;v=Math.min(v,Math.max(1,Math.floor(S.bal)));$('crashBet').value=v});
 $('crashDn').addEventListener('click',()=>{Sound.click();$('crashBet').value=Math.max(1,(parseInt($('crashBet').value)||1)-10)});
 $('crashUp').addEventListener('click',()=>{Sound.click();$('crashBet').value=Math.min(Math.max(1,S.bal),(parseInt($('crashBet').value)||1)+10)});
