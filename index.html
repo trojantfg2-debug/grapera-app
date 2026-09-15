@@ -436,12 +436,41 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
 .bj-who{display:flex;align-items:center;gap:.5rem;margin-bottom:.45rem}
 .bj-ava{width:30px;height:30px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:.85rem;background:var(--p-c);color:var(--on-p-c)}
 .bj-who b{flex:1;font-size:.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.bj-total{font-weight:700;font-size:1rem;color:var(--p);min-width:1.5rem;text-align:right}
-.bj-hand{display:flex;gap:.35rem;justify-content:center;flex-wrap:wrap;min-height:62px}
-.bj-card{width:44px;height:62px;border-radius:8px;background:var(--sc-hi);border:1px solid var(--ol-v);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;line-height:1.1;animation:bjIn .25s var(--ease)}
-.bj-card span{font-size:1.05rem}
-.bj-card.red{color:#E53935}
-@keyframes bjIn{from{transform:translateY(-10px) scale(.8);opacity:0}to{transform:none;opacity:1}}
+.bj-felt{background:radial-gradient(120% 110% at 50% 0%,#35855A,#1E5B3A 55%,#123722);border-radius:var(--sh-l);padding:.7rem .5rem .5rem;margin-bottom:.5rem;border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 2px 14px rgba(0,0,0,.45)}
+.bj-deck{text-align:center;font-size:.68rem;color:rgba(255,255,255,.75);margin-bottom:.4rem}
+.bj-deck b{color:#fff}
+.bj-felt .bj-who b{color:#fff}
+.bj-total:empty{display:none}
+.bj-handrow{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:.35rem}
+.bj-handrow:last-child{margin-bottom:0}
+.bj-handrow .bj-hand{min-height:88px}
+.bj-total.sm{font-size:.75rem;min-width:1.7rem}
+.bj-dbl{font-size:.68rem;font-weight:700;color:#3E2700;background:linear-gradient(180deg,#FFD54F,#FFA000);border-radius:9999px;padding:.1rem .45rem;white-space:nowrap}
+.bj-side{background:rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.14);border-radius:var(--sh-l);padding:.6rem;margin-bottom:.5rem;transition:border-color .2s,box-shadow .2s,opacity .3s}
+.bj-felt .bj-side:last-child{margin-bottom:0}
+.bj-side.bj-turn{border-color:#FFD54F;box-shadow:0 0 14px rgba(255,213,79,.5)}
+.bj-side.busted{border-color:#EF5350;box-shadow:0 0 12px rgba(239,83,80,.5)}
+.bj-side.has21{border-color:#FFD54F;box-shadow:0 0 16px rgba(255,213,79,.65)}
+.bj-side.winner{border-color:var(--win);box-shadow:0 0 18px color-mix(in srgb,var(--win) 60%,transparent)}
+.bj-side.loser{opacity:.55}
+.bj-who b{color:#fff}
+.bj-total{font-weight:700;font-size:.85rem;color:#fff;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.25);border-radius:9999px;padding:.1rem .55rem;min-width:2rem;text-align:center}
+.bj-total:empty{display:none}
+.bj-total.bust{background:#C62828;border-color:#EF5350}
+.bj-total.bj21{background:linear-gradient(180deg,#FFD54F,#FFA000);color:#3E2700;border-color:#FFD54F}
+.bj-hand{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;min-height:96px;padding:.3rem 0 .1rem}
+.bj-hand .bj-card{margin-left:-22px;box-shadow:-3px 4px 8px rgba(0,0,0,.45)}
+.bj-hand .bj-card:first-child{margin-left:0}
+.bj-card{width:58px;height:84px;border-radius:9px;background:linear-gradient(160deg,#FFFFFF,#EDE8DC);border:1px solid #B9B2A4;color:#1c1c1e;position:relative;font-weight:700;flex-shrink:0}
+.bj-card:nth-child(odd){transform:rotate(-3deg)}
+.bj-card:nth-child(even){transform:rotate(3deg)}
+.bj-card:last-child{animation:bjIn .3s var(--ease)}
+.bj-card.red{color:#C62828}
+.bj-card .cnr{position:absolute;top:4px;left:5px;font-size:.68rem;line-height:1.05;font-style:normal;text-align:center}
+.bj-card .cnr small{display:block;font-size:.8rem}
+.bj-card .cnr.btm{top:auto;left:auto;bottom:4px;right:5px;transform:rotate(180deg)}
+.bj-card .pip{font-size:1.9rem;line-height:1;font-style:normal}
+@keyframes bjIn{from{transform:translateY(-16px) rotate(8deg) scale(.85);opacity:0}to{opacity:1}}
 .bj-row{display:flex;gap:.5rem;margin-top:.2rem}
 .bj-row .btn{flex:1}
 .duel-result{text-align:center;font-weight:700;font-size:1rem;min-height:1.4rem;margin-top:.5rem}
@@ -692,6 +721,8 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       </div>
     </div>
     <div class="card" id="duelTable" style="display:none">
+      <div class="bj-felt">
+      <div class="bj-deck"><span data-i18n="duel_deck">В колоде</span>: <b id="duelDeckN">52</b></div>
       <div class="bj-side" id="duelOppBox">
         <div class="bj-who"><span class="bj-ava" id="duelOppAva">?</span><b id="duelOppName">…</b><span class="bj-total" id="duelOppTotal"></span></div>
         <div class="bj-hand" id="duelOppHand"></div>
@@ -700,9 +731,12 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
         <div class="bj-who"><span class="bj-ava" id="duelMyAva">?</span><b id="duelMyName">…</b><span class="bj-total" id="duelMyTotal"></span></div>
         <div class="bj-hand" id="duelMyHand"></div>
       </div>
+      </div>
       <div class="bj-row">
-        <button class="btn btn-p" id="duelHit"><span data-i18n="duel_hit">Ещё</span></button>
-        <button class="btn btn-s" id="duelStand"><span data-i18n="duel_stand">Хватит</span></button>
+        <button class="btn btn-p btn-sm" id="duelHit"><span data-i18n="duel_hit">Ещё</span></button>
+        <button class="btn btn-s btn-sm" id="duelStand"><span data-i18n="duel_stand">Хватит</span></button>
+        <button class="btn btn-s btn-sm" id="duelDouble"><span data-i18n="duel_double">Удвоить</span></button>
+        <button class="btn btn-s btn-sm" id="duelSplit"><span data-i18n="duel_split">Сплит</span></button>
       </div>
       <div class="duel-result" id="duelResult"></div>
     </div>
@@ -1253,9 +1287,10 @@ I18N.en.beta_modes='BETA MODES';I18N.en.beta_hint='Online blackjack duels with f
 I18N.uk.beta_modes='БЕТА-РЕЖИМИ';I18N.uk.beta_hint='Онлайн-дуель у блекджек із другом — може лагати, це бета';I18N.uk.beta_on='Бета-режими увімкнено — вкладку «Дуель» відкрито';I18N.uk.beta_off='Бета-режими вимкнено';I18N.uk.nav_duel='Дуель';I18N.uk.game_duel='Дуель';I18N.uk.duel_title='ОНЛАЙН-ДУЕЛЬ • БЛЕКДЖЕК';I18N.uk.duel_create='Створити стіл';I18N.uk.duel_join='Увійти';I18N.uk.duel_code='КОД СТОЛУ';I18N.uk.duel_copy='Копіювати код';I18N.uk.duel_leave='Покинути';I18N.uk.duel_again='Ще раз';I18N.uk.duel_hit='Ще';I18N.uk.duel_stand='Досить';I18N.uk.duel_you='ви';I18N.uk.duel_opp='суперник';I18N.uk.duel_me='Гравець';I18N.uk.duel_hint='Перемога ×1.9 • нічия — повернення ставки';I18N.uk.dst_idle='Створи стіл і поділись кодом — або введи код друга';I18N.uk.dst_wait='Чекай суперника • код: {c}';I18N.uk.dst_joining='Підключаємось...';I18N.uk.dst_conn='Суперник на звʼязку!';I18N.uk.dst_you='Твій хід — бери чи стій';I18N.uk.dst_foe='Хід суперника...';I18N.uk.dst_win='Ти переміг! +{n} ⭐';I18N.uk.dst_lose='Переміг {name} • −{n} ⭐';I18N.uk.dst_push='Нічия — ставку повернено';I18N.uk.dst_left='Суперник відключився';I18N.uk.dst_err='Немає зʼєднання — перевір інтернет';I18N.uk.dst_nofriend='Стіл не знайдено — перевір код';I18N.uk.dst_copied='Код скопійовано';I18N.uk.dst_code_err='Введи код столу';I18N.uk.dst_broke='Не вистачило зірок — стіл розпущено';
 }catch(e){}
 try{
-I18N.ru.duel_test='ТЕСТ';I18N.ru.duel_your_code='ВАШ КОД';I18N.ru.duel_invite='Пригласить';I18N.ru.dst_invite='Заходи в Gapera — Дуэль! Мой код: {c}';
-I18N.en.duel_test='TEST';I18N.en.duel_your_code='YOUR CODE';I18N.en.duel_invite='Invite';I18N.en.dst_invite='Join me in Gapera — Duel! My code: {c}';
-I18N.uk.duel_test='ТЕСТ';I18N.uk.duel_your_code='ВАШ КОД';I18N.uk.duel_invite='Запросити';I18N.uk.dst_invite='Заходь у Gapera — Дуель! Мій код: {c}';
+I18N.ru.duel_test='ТЕСТ';I18N.ru.duel_your_code='ВАШ КОД';I18N.ru.duel_deck='В колоде';I18N.ru.duel_double='Удвоить';I18N.ru.duel_split='Сплит';I18N.ru.dst_bj='БЛЭКДЖЕК! +{n} ⭐';I18N.ru.duel_invite='Пригласить';I18N.ru.dst_invite='Заходи в Gapera — Дуэль! Мой код: {c}';
+I18N.en.duel_test='TEST';I18N.en.duel_your_code='YOUR CODE';I18N.en.duel_deck='Deck';I18N.en.duel_double='Double';I18N.en.duel_split='Split';I18N.en.dst_bj='BLACKJACK! +{n} ⭐';I18N.en.duel_invite='Invite';I18N.en.dst_invite='Join me in Gapera — Duel! My code: {c}';
+I18N.uk.duel_test='ТЕСТ';I18N.uk.duel_your_code='ВАШ КОД';I18N.uk.duel_deck='У колоді';I18N.uk.duel_double='Подвоїти';I18N.uk.duel_split='Спліт';I18N.uk.dst_bj='БЛЕКДЖЕК! +{n} ⭐';I18N.uk.duel_invite='Запросити';I18N.uk.dst_invite='Заходь у Gapera — Дуель! Мій код: {c}';
+I18N.ru.dst_timeout='Не дождались ответа — проверь код и что стол открыт';I18N.en.dst_timeout='No answer — check the code and that the table is open';I18N.uk.dst_timeout='Не дочекались відповіді — перевір код і що стіл відкрито';
 }catch(e){}
 function curLang(){return LANGS.includes(S.lang)?S.lang:'ru'}
 function t(key,params){var L=curLang();var d=I18N[L]||{};var v=(key in d)?d[key]:(((I18N.ru||{})[key]!==undefined)?I18N.ru[key]:key);if(params){for(var k in params){if(Object.prototype.hasOwnProperty.call(params,k)){v=String(v).split('{'+k+'}').join(params[k])}}}return v}
@@ -2661,7 +2696,7 @@ try{
 // же карты и применяют одни и те же ходы, поэтому состояние всегда совпадает.
 const DUEL_PREFIX='gapera-duel-';
 const DUEL_BOT='gapera_bot';
-let DU={peer:null,conn:null,role:null,code:'',opp:{name:'?',ava:'?'},deck:[],hands:{host:[],guest:[]},stood:{host:false,guest:false},idx:0,turn:null,over:true,started:false,myStake:50,st:{k:'dst_idle',p:null}};
+let DU={peer:null,conn:null,role:null,code:'',opp:{name:'?',ava:'?'},deck:[],hands:{host:[],guest:[]},idx:0,turn:null,over:true,started:false,winner:null,myStake:50,invested:0,st:{k:'dst_idle',p:null}};
 function duelMe(){
   let n='';
   try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user)n=TG.initDataUnsafe.user.first_name||''}catch(e){}
@@ -2673,6 +2708,16 @@ function duelMe(){
 function duelSetText(id,v){const e=$(id);if(e)e.textContent=v}
 function duelSetStatus(k,pr){DU.st={k:k,p:pr||null};const el=$('duelStatus');if(el){try{el.textContent=t(k,pr)}catch(e){el.textContent=k}}}
 function duelPeerOK(){return (typeof Peer!=='undefined')}
+function duelPeerOpts(){
+  return {debug:0,config:{iceServers:[
+    {urls:'stun:stun.l.google.com:19302'},
+    {urls:'stun:stun1.l.google.com:19302'},
+    {urls:'stun:global.stun.twilio.com:3478'},
+    {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+    {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
+    {urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}
+  ]}};
+}
 function duelCode(){const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=A[Math.random()*A.length|0];return s}
 function duelNewDeck(){
   const R=['2','3','4','5','6','7','8','9','10','J','Q','K','A'],SU=['\u2660','\u2665','\u2666','\u2663'],d=[];
@@ -2688,7 +2733,35 @@ function bjVal(hand){
 }
 function bjCardHTML(c){
   const red=(c.s==='\u2665'||c.s==='\u2666');
-  return '<div class="bj-card'+(red?' red':'')+'">'+c.r+'<span>'+c.s+'</span></div>';
+  return '<div class="bj-card'+(red?' red':'')+'"><i class="cnr">'+c.r+'<small>'+c.s+'</small></i><i class="pip">'+c.s+'</i><i class="cnr btm">'+c.r+'<small>'+c.s+'</small></i></div>';
+}
+function duelBestOf(arr){let s=0;(arr||[]).forEach(hh=>{const v=bjVal(hh.c);if(v<=21&&v>s)s=v});return s}
+function duelBest(who){return duelBestOf(DU.hands[who]||[])}
+function duelSideInfo(arr){
+  if(!arr.length||!arr.some(hh=>hh.c.length))return {disp:'',bust:false,bj:false};
+  let best=0,worst=0,allBust=true;
+  arr.forEach(hh=>{const v=bjVal(hh.c);if(v>21){if(v>worst)worst=v}else{allBust=false;if(v>best)best=v}});
+  if(allBust)return {disp:worst,bust:true,bj:false};
+  return {disp:best,bust:false,bj:(best===21)};
+}
+function duelIsNatural(hh){return hh&&hh.c.length===2&&bjVal(hh.c)===21}
+function duelUnfinished(who){const r=[];(DU.hands[who]||[]).forEach((hh,i)=>{if(!hh.dn)r.push(i)});return r}
+function duelCanSplitSilent(who){
+  const hs=DU.hands[who]||[];
+  return hs.length===1&&hs[0].c.length===2&&hs[0].c[0].r===hs[0].c[1].r&&hs[0].noAct&&!hs[0].dn;
+}
+function duelHandRowHTML(hh){
+  const v=bjVal(hh.c);
+  const cls='bj-total sm'+(v>21?' bust':(v===21?' bj21':''));
+  return '<div class="bj-handrow"><div class="bj-hand">'+hh.c.map(bjCardHTML).join('')+'</div><div class="'+cls+'">'+v+'</div>'+(hh.dbl?'<span class="bj-dbl">×2</span>':'')+'</div>';
+}
+function duelAdvance(fromWho){
+  const other=(fromWho==='host')?'guest':'host';
+  let uh=duelUnfinished(other);
+  if(uh.length){DU.turn={who:other,hand:uh[0]};duelSetStatus(other===DU.role?'dst_you':'dst_foe');duelRender();return}
+  uh=duelUnfinished(fromWho);
+  if(uh.length){DU.turn={who:fromWho,hand:uh[0]};duelSetStatus(fromWho===DU.role?'dst_you':'dst_foe');duelRender();return}
+  DU.turn=null;duelFinish(null,false);
 }
 function duelStake(){
   const v=clampBet('duelStakeIn');
@@ -2704,21 +2777,37 @@ function duelRender(){
     const me=duelMe();
     duelSetText('duelMyName',me.name);duelSetText('duelMyAva',me.ava);
     duelSetText('duelOppName',DU.opp.name);duelSetText('duelOppAva',DU.opp.ava);
-    const myH=DU.role?DU.hands[DU.role]:[];
-    const opH=DU.role?((DU.role==='host')?DU.hands.guest:DU.hands.host):[];
+    const myHands=DU.role?DU.hands[DU.role]:[];
+    const opRole=DU.role?((DU.role==='host')?'guest':'host'):null;
+    const opHands=opRole?DU.hands[opRole]:[];
     const mh=$('duelMyHand'),oh=$('duelOppHand');
-    if(mh)mh.innerHTML=myH.map(bjCardHTML).join('');
-    if(oh)oh.innerHTML=opH.map(bjCardHTML).join('');
-    duelSetText('duelMyTotal',myH.length?bjVal(myH):'');
-    duelSetText('duelOppTotal',opH.length?bjVal(opH):'');
+    if(mh)mh.innerHTML=myHands.map(duelHandRowHTML).join('');
+    if(oh)oh.innerHTML=opHands.map(duelHandRowHTML).join('');
+    const myI=duelSideInfo(myHands),opI=duelSideInfo(opHands);
+    duelSetText('duelMyTotal',myI.disp);
+    duelSetText('duelOppTotal',opI.disp);
+    const mt=$('duelMyTotal'),ot=$('duelOppTotal');
+    if(mt)mt.className='bj-total'+(myI.bust?' bust':(myI.bj?' bj21':''));
+    if(ot)ot.className='bj-total'+(opI.bust?' bust':(opI.bj?' bj21':''));
+    duelSetText('duelDeckN',DU.started?(DU.deck.length-DU.idx):52);
     const playing=DU.started&&!DU.over;
-    const myTurn=playing&&DU.turn===DU.role;
+    const myTurn=!!(playing&&DU.turn&&DU.turn.who===DU.role);
+    const curH=(myTurn&&DU.role)?((DU.hands[DU.role]||[])[DU.turn.hand]||null):null;
     const mb=$('duelMyBox'),ob=$('duelOppBox');
     if(mb)mb.classList.toggle('bj-turn',!!myTurn);
-    if(ob)ob.classList.toggle('bj-turn',!!(playing&&DU.turn!==DU.role));
-    const hit=$('duelHit'),st=$('duelStand');
+    if(ob)ob.classList.toggle('bj-turn',!!(playing&&DU.turn&&DU.turn.who!==DU.role));
+    if(mb){mb.classList.toggle('busted',myI.bust);mb.classList.toggle('has21',myI.bj)}
+    if(ob){ob.classList.toggle('busted',opI.bust);ob.classList.toggle('has21',opI.bj)}
+    const w=DU.winner;
+    const iWon=DU.over&&DU.started&&w&&w!=='push'&&w===DU.role;
+    const iLost=DU.over&&DU.started&&w&&w!=='push'&&w!==DU.role;
+    if(mb){mb.classList.toggle('winner',!!iWon);mb.classList.toggle('loser',!!iLost)}
+    if(ob){ob.classList.toggle('winner',!!iLost);ob.classList.toggle('loser',!!iWon)}
+    const hit=$('duelHit'),st=$('duelStand'),db=$('duelDouble'),sp=$('duelSplit');
     if(hit)hit.disabled=!myTurn;
     if(st)st.disabled=!myTurn;
+    if(db)db.disabled=!(myTurn&&curH&&curH.c.length===2&&curH.noAct&&!curH.split&&S.bal>=DU.myStake);
+    if(sp)sp.disabled=!(myTurn&&DU.role&&duelCanSplitSilent(DU.role)&&S.bal>=DU.myStake);
     const si=$('duelStakeIn');if(si)si.disabled=DU.started;
     const lob=$('duelLobby'),tab=$('duelTable');
     if(lob)lob.style.display=DU.started?'none':'';
@@ -2755,67 +2844,108 @@ function duelOnData(d){
     DU.hands={host:d.host||[],guest:d.guest||[]};
     if(!DU.deck.length||!ok(DU.myStake)){duelSend({t:'broke'});duelLeave(true);duelSetStatus('dst_broke');return}
     S.bal-=DU.myStake;save();rBal();
-    DU.idx=4;DU.stood={host:false,guest:false};DU.turn='host';DU.over=false;DU.started=true;
+    DU.invested=DU.myStake;
+    DU.idx=4;DU.turn={who:'host',hand:0};DU.over=false;DU.started=true;DU.winner=null;
     const rz=$('duelResult');if(rz){rz.textContent='';rz.className='duel-result'}
-    duelSetStatus('dst_foe');duelRender();return;
+    duelSetStatus('dst_foe');duelRender();
+    duelCheckNatural();return;
   }
-  if(d.t==='move'&&DU.started&&!DU.over){duelApply(d.who,d.action);return}
+  if(d.t==='move'&&DU.started&&!DU.over){duelApply(d.who,d.hand,d.action);return}
   if(d.t==='broke'){
-    if(DU.role==='host'&&DU.started&&!DU.over){S.bal+=DU.myStake;save();try{rBal()}catch(e){}}
+    if(DU.role==='host'&&DU.started&&!DU.over){S.bal+=(DU.invested||0);save();try{rBal()}catch(e){}}
     duelLeave(true);duelSetStatus('dst_broke');return;
   }
   if(d.t==='bye'){duelOnClose(false);return}
 }
-function duelApply(who,action){
+function duelApply(who,hand,action){
   if(DU.over||!DU.started)return;
-  if(action==='hit'&&DU.idx<DU.deck.length){DU.hands[who].push(DU.deck[DU.idx]);DU.idx++}
-  else if(action!=='hit'){DU.stood[who]=true}
-  if(bjVal(DU.hands[who])>21){duelRender();duelFinish(who==='host'?'guest':'host');return}
-  if(DU.stood.host&&DU.stood.guest){duelRender();duelFinish(null);return}
-  DU.turn=(who==='host')?'guest':'host';
-  duelSetStatus(DU.turn===DU.role?'dst_you':'dst_foe');
-  duelRender();
+  if(!DU.turn||DU.turn.who!==who||DU.turn.hand!==hand)return;
+  const hs=DU.hands[who]||[],hh=hs[hand];
+  if(!hh||hh.dn||!hh.c.length)return;
+  if(action==='hit'){
+    if(DU.idx>=DU.deck.length){hh.st=true;hh.dn=true}
+    else{hh.c.push(DU.deck[DU.idx]);DU.idx++;hh.noAct=false;if(bjVal(hh.c)>21)hh.dn=true}
+  }else if(action==='stand'){hh.st=true;hh.dn=true}
+  else if(action==='double'){
+    if(!(hh.c.length===2&&hh.noAct&&!hh.split))return;
+    if(who===DU.role){S.bal-=DU.myStake;save();try{rBal()}catch(e){}DU.invested+=DU.myStake}
+    if(DU.idx<DU.deck.length){hh.c.push(DU.deck[DU.idx]);DU.idx++}
+    hh.noAct=false;hh.dbl=true;hh.st=true;hh.dn=true;
+  }else if(action==='split'){
+    if(!(hs.length===1&&hh.c.length===2&&hh.c[0].r===hh.c[1].r&&hh.noAct))return;
+    if(DU.idx+1>=DU.deck.length){hh.st=true;hh.dn=true;duelAdvance(who);return}
+    if(who===DU.role){S.bal-=DU.myStake;save();try{rBal()}catch(e){}DU.invested+=DU.myStake}
+    const mk=c=>({c:c,st:false,dn:false,dbl:false,split:true,noAct:true});
+    const c1=DU.deck[DU.idx++],c2=DU.deck[DU.idx++];
+    DU.hands[who]=[mk([hh.c[0],c1]),mk([hh.c[1],c2])];
+    DU.turn={who:who,hand:0};
+    duelSetStatus(who===DU.role?'dst_you':'dst_foe');
+    duelRender();return;
+  }else return;
+  duelAdvance(who);
 }
 function duelAct(action){
   try{Sound.click()}catch(e){}
-  if(DU.over||!DU.started||!DU.conn||DU.turn!==DU.role)return;
-  duelApply(DU.role,action);
-  duelSend({t:'move',who:DU.role,action:action});
+  if(DU.over||!DU.started||!DU.conn||!DU.turn||DU.turn.who!==DU.role)return;
+  const who=DU.role,hd=DU.turn.hand;
+  const hs=DU.hands[who]||[],hh=hs[hd];
+  if(!hh||hh.dn)return;
+  if(action==='double'){
+    if(!(hh.c.length===2&&hh.noAct&&!hh.split))return;
+    if(S.bal<DU.myStake){sn(t('not_enough'));return}
+  }
+  if(action==='split'){
+    if(!duelCanSplitSilent(who))return;
+    if(S.bal<DU.myStake){sn(t('not_enough'));return}
+  }
+  duelApply(who,hd,action);
+  duelSend({t:'move',who:who,hand:hd,action:action});
 }
-function duelFinish(force){
+function duelFinish(force,isBJ){
   if(DU.over)return;
   DU.over=true;DU.turn=null;
   let winner=force;
   if(winner===null||winner===undefined){
-    const a=bjVal(DU.hands.host),b=bjVal(DU.hands.guest);
+    const a=duelBest('host'),b=duelBest('guest');
     winner=(a>b)?'host':((b>a)?'guest':'push');
   }
-  const me=DU.role,stake=DU.myStake;
+  DU.winner=winner;
+  const me=DU.role,inv=DU.invested||0;
   const T=(typeof t==='function')?t:function(k,p){return k};
   let payout=0,msg='',cls='';
-  if(winner==='push'){payout=stake;msg=T('dst_push');cls='push'}
-  else if(winner===me){payout=Math.floor(stake*1.9);msg=T('dst_win',{n:payout});cls='win'}
-  else{msg=T('dst_lose',{name:(DU.opp.name||'?'),n:stake});cls='lose'}
+  if(winner==='push'){payout=inv;msg=T('dst_push');cls='push'}
+  else if(winner===me){payout=Math.floor(inv*(isBJ?2.5:1.9));msg=T(isBJ?'dst_bj':'dst_win',{n:payout});cls='win'}
+  else{msg=T('dst_lose',{name:(DU.opp.name||'?'),n:inv});cls='lose'}
   if(payout>0){S.bal+=payout;save();try{rBal()}catch(e){}}
-  try{aH('duel',payout,stake)}catch(e){}
+  try{aH('duel',payout,inv)}catch(e){}
   const rz=$('duelResult');if(rz){rz.textContent=msg;rz.className='duel-result '+cls}
   if(winner==='push')duelSetStatus('dst_push');
-  else if(winner===me)duelSetStatus('dst_win',{n:payout});
-  else duelSetStatus('dst_lose',{name:(DU.opp.name||'?'),n:stake});
+  else if(winner===me)duelSetStatus(isBJ?'dst_bj':'dst_win',{n:payout});
+  else duelSetStatus('dst_lose',{name:(DU.opp.name||'?'),n:inv});
   if(cls==='win'){try{bz('win')}catch(e){}try{const b=$('duelTable').getBoundingClientRect();confetti(b.left+b.width/2,b.top,22)}catch(e){}}
   else{try{bz('loss')}catch(e){}}
   duelRender();
+}
+function duelCheckNatural(){
+  const hn=duelIsNatural((DU.hands.host||[])[0]),gn=duelIsNatural((DU.hands.guest||[])[0]);
+  if(!hn&&!gn)return false;
+  duelRender();
+  duelFinish(hn?(gn?'push':'host'):'guest',true);
+  return true;
 }
 function duelBegin(){
   if(DU.role!=='host'||DU.started)return;
   if(!ok(DU.myStake)){sn(t('not_enough'));return}
   S.bal-=DU.myStake;save();rBal();
+  DU.invested=DU.myStake;
   DU.deck=duelNewDeck();
-  DU.hands={host:[DU.deck[0],DU.deck[1]],guest:[DU.deck[2],DU.deck[3]]};
-  DU.idx=4;DU.stood={host:false,guest:false};DU.turn='host';DU.over=false;DU.started=true;
+  const mk=cards=>({c:cards,st:false,dn:false,dbl:false,split:false,noAct:true});
+  DU.hands={host:[mk([DU.deck[0],DU.deck[1]])],guest:[mk([DU.deck[2],DU.deck[3]])]};
+  DU.idx=4;DU.turn={who:'host',hand:0};DU.over=false;DU.started=true;DU.winner=null;
   const rz=$('duelResult');if(rz){rz.textContent='';rz.className='duel-result'}
   duelSend({t:'start',deck:DU.deck,host:DU.hands.host,guest:DU.hands.guest});
   duelSetStatus('dst_you');duelRender();
+  duelCheckNatural();
 }
 function duelCreate(){
   try{Sound.click()}catch(e){}
@@ -2824,10 +2954,11 @@ function duelCreate(){
   const stake=duelStake();if(!stake)return;
   DU.myStake=stake;DU.role='host';DU.code=duelCode();DU.opp={name:'?',ava:'?'};
   let peer=null;
-  try{peer=new Peer(DUEL_PREFIX+DU.code)}catch(e){duelSetStatus('dst_err');return}
+  try{peer=new Peer(DUEL_PREFIX+DU.code, duelPeerOpts())}catch(e){duelSetStatus('dst_err');return}
   DU.peer=peer;
   peer.on('open',()=>{const cb=$('duelCode');if(cb)cb.value=DU.code;duelSetStatus('dst_wait',{c:DU.code});duelRender()});
   peer.on('connection',c=>{if(DU.conn){try{c.close()}catch(e){}return}duelWire(c)});
+  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
   peer.on('error',()=>{duelSetStatus('dst_err')});
   duelRender();
 }
@@ -2840,13 +2971,15 @@ function duelJoin(){
   const stake=duelStake();if(!stake)return;
   DU.myStake=stake;DU.role='guest';DU.code=code;DU.opp={name:'?',ava:'?'};
   let peer=null;
-  try{peer=new Peer()}catch(e){duelSetStatus('dst_err');return}
+  try{peer=new Peer(duelPeerOpts())}catch(e){duelSetStatus('dst_err');return}
   DU.peer=peer;
   peer.on('open',()=>{
     let c=null;
     try{c=peer.connect(DUEL_PREFIX+code,{reliable:true})}catch(e){duelSetStatus('dst_err');return}
     duelWire(c);duelSetStatus('dst_joining');duelRender();
+    setTimeout(function(){try{if(DU.role==='guest'&&!DU.started&&((DU.opp&&DU.opp.name)||'?')==='?'){duelLeave(true);duelSetStatus('dst_timeout')}}catch(e){}},12000);
   });
+  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
   peer.on('error',e=>{
     if(e&&(e.type==='peer-unavailable'||e.type==='network'||e.type==='server-error')){duelLeave(true);duelSetStatus(e.type==='peer-unavailable'?'dst_nofriend':'dst_err')}
   });
@@ -2877,11 +3010,11 @@ function duelCopy(){
 function duelOnClose(mine){
   const had=!!(DU.conn||DU.role||DU.started);
   if(!had&&mine!==true)return;
-  if(DU.started&&!DU.over){S.bal+=DU.myStake;save();try{rBal()}catch(e){}}
+  if(DU.started&&!DU.over){S.bal+=(DU.invested||0);save();try{rBal()}catch(e){}}
   try{if(DU.conn)DU.conn.close()}catch(e){}
   try{if(DU.peer)DU.peer.destroy()}catch(e){}
   DU.conn=null;DU.peer=null;DU.role=null;DU.code='';DU.started=false;DU.over=true;
-  DU.hands={host:[],guest:[]};DU.stood={host:false,guest:false};DU.turn=null;DU.opp={name:'?',ava:'?'};
+  DU.hands={host:[],guest:[]};DU.turn=null;DU.opp={name:'?',ava:'?'};
   const rz=$('duelResult');if(rz){rz.textContent='';rz.className='duel-result'}
   duelSetStatus(mine===true?'dst_idle':'dst_left');
   duelRender();
@@ -2907,6 +3040,8 @@ try{
   const _da=$('duelAgain');if(_da)_da.addEventListener('click',duelAgain);
   const _dh=$('duelHit');if(_dh)_dh.addEventListener('click',function(){duelAct('hit')});
   const _ds=$('duelStand');if(_ds)_ds.addEventListener('click',function(){duelAct('stand')});
+  const _dd=$('duelDouble');if(_dd)_dd.addEventListener('click',function(){duelAct('double')});
+  const _dsp=$('duelSplit');if(_dsp)_dsp.addEventListener('click',function(){duelAct('split')});
   duelNav();
   duelSetStatus('dst_idle');duelRender();
   try{
