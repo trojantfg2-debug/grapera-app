@@ -448,6 +448,7 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
 .duel-result.win{color:var(--win)}
 .duel-result.lose{color:var(--e)}
 .duel-result.push{color:#FFC107}
+.duel-code-big{text-align:center;font-size:2rem;font-weight:700;letter-spacing:6px;text-indent:6px;margin:.3rem 0 .6rem;color:var(--p)}
   </style>
 </head>
 <body>
@@ -670,20 +671,24 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       <div class="lbl"><span data-i18n="duel_title">ОНЛАЙН-ДУЭЛЬ • БЛЭКДЖЕК</span> <span class="topbar-beta" data-i18n="duel_test">ТЕСТ</span></div>
       <div class="duel-status" id="duelStatus"></div>
       <div id="duelLobby">
-        <div class="lbl"><span data-i18n="bet">СТАВКА</span></div>
-        <div class="bet-row"><button class="btn btn-s btn-sm" id="duelDn">−</button><input id="duelStakeIn" type="number" value="50" min="1" step="10" /><button class="btn btn-s btn-sm" id="duelUp">+</button></div>
-        <div class="pf-ava-row">
-          <button class="btn btn-p btn-sm" id="duelCreate"><span class="mat">add</span><span data-i18n="duel_create">Создать стол</span></button>
-          <button class="btn btn-s btn-sm" id="duelCopy" style="display:none"><span class="mat">content_copy</span><span data-i18n="duel_copy">Копировать код</span></button>
-          <button class="btn btn-s btn-sm" id="duelInvite" style="display:none"><span class="mat">send</span><span data-i18n="duel_invite">Пригласить</span></button>
+        <div id="duelPre">
+          <div class="lbl"><span data-i18n="bet">СТАВКА</span></div>
+          <div class="bet-row"><button class="btn btn-s btn-sm" id="duelDn">−</button><input id="duelStakeIn" type="number" value="50" min="1" step="10" /><button class="btn btn-s btn-sm" id="duelUp">+</button></div>
+          <div class="pf-ava-row">
+            <button class="btn btn-p btn-sm" id="duelCreate"><span class="mat">add</span><span data-i18n="duel_create">Создать стол</span></button>
+          </div>
+          <div class="lbl" style="margin-top:.7rem" data-i18n="duel_code">КОД СТОЛА</div>
+          <div class="bet-row"><input id="duelCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXXX" style="text-transform:uppercase" /><button class="btn btn-p btn-sm" id="duelJoin"><span data-i18n="duel_join">Войти</span></button></div>
+          <div class="rewards-sub" style="margin-top:.6rem" data-i18n="duel_hint">Победа ×1.9 • ничья — возврат ставки</div>
         </div>
-        <div class="lbl" style="margin-top:.7rem" data-i18n="duel_code">КОД СТОЛА</div>
-        <div class="bet-row"><input id="duelCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXXX" style="text-transform:uppercase" /><button class="btn btn-p btn-sm" id="duelJoin"><span data-i18n="duel_join">Войти</span></button></div>
-        <div class="pf-ava-row">
-          <button class="btn btn-s btn-sm" id="duelLeave" style="display:none"><span class="mat">logout</span><span data-i18n="duel_leave">Покинуть</span></button>
-          <button class="btn btn-w btn-sm" id="duelAgain" style="display:none"><span class="mat">replay</span><span data-i18n="duel_again">Ещё раз</span></button>
+        <div id="duelWait" style="display:none">
+          <div class="lbl" data-i18n="duel_your_code">ВАШ КОД</div>
+          <div class="duel-code-big" id="duelCodeBig">——</div>
+          <div class="pf-ava-row">
+            <button class="btn btn-s btn-sm" id="duelCopy"><span class="mat">content_copy</span><span data-i18n="duel_copy">Копировать код</span></button>
+            <button class="btn btn-s btn-sm" id="duelInvite"><span class="mat">send</span><span data-i18n="duel_invite">Пригласить</span></button>
+          </div>
         </div>
-        <div class="rewards-sub" style="margin-top:.6rem" data-i18n="duel_hint">Победа ×1.9 • ничья — возврат ставки</div>
       </div>
     </div>
     <div class="card" id="duelTable" style="display:none">
@@ -700,6 +705,10 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
         <button class="btn btn-s" id="duelStand"><span data-i18n="duel_stand">Хватит</span></button>
       </div>
       <div class="duel-result" id="duelResult"></div>
+    </div>
+    <div class="pf-ava-row" id="duelFoot" style="display:none">
+      <button class="btn btn-s btn-sm" id="duelLeave"><span class="mat">logout</span><span data-i18n="duel_leave">Покинуть</span></button>
+      <button class="btn btn-w btn-sm" id="duelAgain" style="display:none"><span class="mat">replay</span><span data-i18n="duel_again">Ещё раз</span></button>
     </div>
   </section>
 
@@ -1244,9 +1253,9 @@ I18N.en.beta_modes='BETA MODES';I18N.en.beta_hint='Online blackjack duels with f
 I18N.uk.beta_modes='БЕТА-РЕЖИМИ';I18N.uk.beta_hint='Онлайн-дуель у блекджек із другом — може лагати, це бета';I18N.uk.beta_on='Бета-режими увімкнено — вкладку «Дуель» відкрито';I18N.uk.beta_off='Бета-режими вимкнено';I18N.uk.nav_duel='Дуель';I18N.uk.game_duel='Дуель';I18N.uk.duel_title='ОНЛАЙН-ДУЕЛЬ • БЛЕКДЖЕК';I18N.uk.duel_create='Створити стіл';I18N.uk.duel_join='Увійти';I18N.uk.duel_code='КОД СТОЛУ';I18N.uk.duel_copy='Копіювати код';I18N.uk.duel_leave='Покинути';I18N.uk.duel_again='Ще раз';I18N.uk.duel_hit='Ще';I18N.uk.duel_stand='Досить';I18N.uk.duel_you='ви';I18N.uk.duel_opp='суперник';I18N.uk.duel_me='Гравець';I18N.uk.duel_hint='Перемога ×1.9 • нічия — повернення ставки';I18N.uk.dst_idle='Створи стіл і поділись кодом — або введи код друга';I18N.uk.dst_wait='Чекай суперника • код: {c}';I18N.uk.dst_joining='Підключаємось...';I18N.uk.dst_conn='Суперник на звʼязку!';I18N.uk.dst_you='Твій хід — бери чи стій';I18N.uk.dst_foe='Хід суперника...';I18N.uk.dst_win='Ти переміг! +{n} ⭐';I18N.uk.dst_lose='Переміг {name} • −{n} ⭐';I18N.uk.dst_push='Нічия — ставку повернено';I18N.uk.dst_left='Суперник відключився';I18N.uk.dst_err='Немає зʼєднання — перевір інтернет';I18N.uk.dst_nofriend='Стіл не знайдено — перевір код';I18N.uk.dst_copied='Код скопійовано';I18N.uk.dst_code_err='Введи код столу';I18N.uk.dst_broke='Не вистачило зірок — стіл розпущено';
 }catch(e){}
 try{
-I18N.ru.duel_test='ТЕСТ';I18N.ru.duel_invite='Пригласить';I18N.ru.dst_invite='Заходи в Gapera — Дуэль! Мой код: {c}';
-I18N.en.duel_test='TEST';I18N.en.duel_invite='Invite';I18N.en.dst_invite='Join me in Gapera — Duel! My code: {c}';
-I18N.uk.duel_test='ТЕСТ';I18N.uk.duel_invite='Запросити';I18N.uk.dst_invite='Заходь у Gapera — Дуель! Мій код: {c}';
+I18N.ru.duel_test='ТЕСТ';I18N.ru.duel_your_code='ВАШ КОД';I18N.ru.duel_invite='Пригласить';I18N.ru.dst_invite='Заходи в Gapera — Дуэль! Мой код: {c}';
+I18N.en.duel_test='TEST';I18N.en.duel_your_code='YOUR CODE';I18N.en.duel_invite='Invite';I18N.en.dst_invite='Join me in Gapera — Duel! My code: {c}';
+I18N.uk.duel_test='ТЕСТ';I18N.uk.duel_your_code='ВАШ КОД';I18N.uk.duel_invite='Запросити';I18N.uk.dst_invite='Заходь у Gapera — Дуель! Мій код: {c}';
 }catch(e){}
 function curLang(){return LANGS.includes(S.lang)?S.lang:'ru'}
 function t(key,params){var L=curLang();var d=I18N[L]||{};var v=(key in d)?d[key]:(((I18N.ru||{})[key]!==undefined)?I18N.ru[key]:key);if(params){for(var k in params){if(Object.prototype.hasOwnProperty.call(params,k)){v=String(v).split('{'+k+'}').join(params[k])}}}return v}
@@ -2714,9 +2723,13 @@ function duelRender(){
     const lob=$('duelLobby'),tab=$('duelTable');
     if(lob)lob.style.display=DU.started?'none':'';
     if(tab)tab.style.display=DU.started?'':'none';
-    const cp=$('duelCopy');if(cp)cp.style.display=(DU.role==='host'&&DU.code&&!DU.started)?'':'none';
-    const iv=$('duelInvite');if(iv)iv.style.display=(DU.role==='host'&&DU.code&&!DU.started)?'':'none';
-    const lv=$('duelLeave');if(lv)lv.style.display=DU.role?'':'none';
+    const pre=$('duelPre'),wait=$('duelWait');
+    if(pre)pre.style.display=DU.role?'none':'';
+    if(wait)wait.style.display=(!DU.started&&DU.role)?'':'none';
+    duelSetText('duelCodeBig',DU.code||'——');
+    const cp=$('duelCopy');if(cp)cp.style.display=(DU.role==='host')?'':'none';
+    const iv=$('duelInvite');if(iv)iv.style.display=(DU.role==='host')?'':'none';
+    const ft=$('duelFoot');if(ft)ft.style.display=DU.role?'':'none';
     const ag=$('duelAgain');if(ag)ag.style.display=(DU.role==='host'&&DU.started&&DU.over&&DU.conn)?'':'none';
     const el=$('duelStatus');if(el&&DU.st){try{el.textContent=t(DU.st.k,DU.st.p)}catch(e){}}
   }catch(e){}
