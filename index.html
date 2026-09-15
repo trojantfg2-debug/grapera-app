@@ -404,6 +404,30 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .nl{letter-spacing:.2px}
 .sn{box-shadow:0 8px 24px rgba(0,0,0,.35)}
 button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2px solid var(--p);outline-offset:2px}
+  /* ===== PROFILE (Профиль игрока) ===== */
+.pf-head{display:flex;align-items:center;gap:.9rem}
+.pf-ava{width:72px;height:72px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-size:1.9rem;font-weight:700;border:2px solid var(--p);box-shadow:0 0 16px color-mix(in srgb,var(--p) 40%,transparent);overflow:hidden;position:relative;color:#fff;cursor:pointer;transition:transform .15s var(--ease)}
+.pf-ava:active{transform:scale(.93)}
+.pf-ava img{width:100%;height:100%;object-fit:cover;display:block}
+.pf-name{font-weight:700;font-size:1.05rem;word-break:break-all}
+.pf-lvl{font-size:.72rem;color:var(--on-sv);margin-top:.2rem}
+.pf-ava-row{display:flex;gap:.5rem;margin-top:.7rem}
+.pf-ava-row .btn{flex:1}
+.pf-bar{height:10px;border-radius:var(--sh-full);background:var(--sc);overflow:hidden;margin:.7rem 0 .3rem}
+.pf-bar-fill{height:100%;border-radius:var(--sh-full);background:linear-gradient(90deg,var(--p),#FFC107);transition:width .5s var(--ease)}
+.pf-xp{font-size:.72rem;color:var(--on-sv);text-align:center}
+.pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-top:.7rem}
+.pf-mini{background:var(--sc);border-radius:var(--sh-l);padding:.6rem;text-align:center}
+.pf-mini .v{font-weight:700;font-size:1rem}
+.pf-mini .l{font-size:.62rem;color:var(--on-sv);margin-top:.1rem}
+.ach-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.45rem}
+.ach{background:var(--sc);border:1px solid var(--ol-v);border-radius:var(--sh-l);padding:.55rem .2rem;text-align:center;cursor:pointer;transition:transform .12s var(--ease);opacity:.5;filter:grayscale(1)}
+.ach:active{transform:scale(.92)}
+.ach.got{opacity:1;filter:none;border-color:var(--p);background:color-mix(in srgb,var(--p) 14%,var(--sc));box-shadow:0 0 10px color-mix(in srgb,var(--p) 25%,transparent)}
+.ach .e{font-size:1.4rem;line-height:1}
+.ach .n{font-size:.58rem;font-weight:600;margin-top:.25rem;line-height:1.2}
+@media(max-width:420px){.ach-grid{grid-template-columns:repeat(3,1fr)}}
+#s-profile .btn .mat{transform:translateY(1px)}
   </style>
 </head>
 <body>
@@ -620,8 +644,32 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
     </div>
   </section>
 
-  <!-- STATS -->
-  <section class="scr" id="s-stats">
+<!-- PROFILE — уровень, своя аватарка, достижения -->
+  <section class="scr" id="s-profile">
+    <div class="card">
+      <div class="lbl" data-i18n="pf_title">ПРОФИЛЬ ИГРОКА</div>
+      <div class="pf-head">
+        <div class="pf-ava" id="pfAva"><img id="pfImg" alt="" style="display:none"><span id="pfLetter">?</span></div>
+        <div style="min-width:0;flex:1">
+          <div class="pf-name" id="pfName">ID: —</div>
+          <div class="pf-lvl" id="pfLvl">Уровень 1</div>
+        </div>
+      </div>
+      <input type="file" id="pfFile" accept="image/*" style="display:none">
+      <div class="pf-ava-row">
+        <button class="btn btn-s btn-sm" id="pfUpBtn"><span class="mat">photo_camera</span><span data-i18n="pf_photo">Сменить фото</span></button>
+        <button class="btn btn-s btn-sm" id="pfDelBtn"><span class="mat">delete</span><span data-i18n="pf_remove">Убрать</span></button>
+      </div>
+      <div class="pf-bar"><div class="pf-bar-fill" id="pfBar" style="width:0%"></div></div>
+      <div class="pf-xp" id="pfXp">0 XP</div>
+      <div class="pf-grid">
+        <div class="pf-mini"><div class="v" id="pfBets">0</div><div class="l" data-i18n="bets">ставок</div></div>
+        <div class="pf-mini"><div class="v" id="pfWins">0</div><div class="l" data-i18n="wins">побед</div></div>
+        <div class="pf-mini"><div class="v" id="pfClicks">0</div><div class="l" data-i18n="pf_clicks">кликов</div></div>
+        <div class="pf-mini"><div class="v" id="pfStreak">0🔥</div><div class="l" data-i18n="pf_streak">стрик дней</div></div>
+      </div>
+    </div>
+        <!-- STATS moved into profile -->
     <div class="card">
       <div class="lbl" data-i18n="stats">СТАТИСТИКА</div>
       <div class="stat-row">
@@ -636,8 +684,12 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       </div>
     </div>
     <div class="card"><div class="lbl" data-i18n="history">ИСТОРИЯ</div><div class="hist-list" id="hL"><div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">Пусто</div></div></div>
-    <button class="btn btn-o btn-lg" id="rst"><span class="mat">restart_alt</span><span data-i18n="reset">Сбросить</span></button>
+<div class="card">
+      <div class="lbl"><span data-i18n="ach_title">ДОСТИЖЕНИЯ</span> • <span id="achCount">0/16</span></div>
+      <div class="ach-grid" id="achGrid"></div>
+    </div>
   </section>
+
 
   <!-- SETTINGS -->
   <section class="scr" id="s-settings">
@@ -688,7 +740,7 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
   <button class="ni" data-s="coin"><span class="np"><span class="mat">monetization_on</span></span><span class="nl" data-i18n="nav_coin">Монета</span></button>
   <button class="ni" data-s="clicker"><span class="np"><span class="mat">ads_click</span></span><span class="nl" data-i18n="nav_clicker">Кликер</span></button>
   <button class="ni" data-s="rewards"><span class="np"><span class="mat">card_giftcard</span></span><span class="nl" data-i18n="nav_rewards">Награды</span></button>
-  <button class="ni" data-s="stats"><span class="np"><span class="mat">bar_chart</span></span><span class="nl" data-i18n="nav_stats">Стата</span></button>
+  <button class="ni" data-s="profile"><span class="np"><span class="mat">person</span></span><span class="nl" data-i18n="nav_profile">Профиль</span></button>
   <button class="ni" data-s="settings"><span class="np"><span class="mat">settings</span></span><span class="nl" data-i18n="nav_settings">Настройки</span></button>
 </nav>
 
@@ -1120,6 +1172,12 @@ I18N.ru.auto_off='ВЫКЛ';I18N.ru.auto_on_msg='Автозабор включё
 I18N.en.auto_off='OFF';I18N.en.auto_on_msg='Auto cashout on';I18N.en.auto_off_msg='Auto cashout off';I18N.en.auto_off_hint='Auto cashout is off — cash out manually with the button';I18N.en.crash_info_live_off='Auto cashout is off • cash out before the crash';
 I18N.uk.auto_off='ВИМК';I18N.uk.auto_on_msg='Автозабір увімкнено';I18N.uk.auto_off_msg='Автозабір вимкнено';I18N.uk.auto_off_hint='Автозабір вимкнено — забирай вручну кнопкою «ЗАБРАТИ»';I18N.uk.crash_info_live_off='Автозабір вимкнено • забери виграш до обриву графіка';
 }catch(e){}
+// ===== PROFILE i18n patch =====
+try{
+I18N.ru.nav_profile='Профиль';I18N.ru.pf_title='ПРОФИЛЬ ИГРОКА';I18N.ru.pf_clicks='кликов';I18N.ru.pf_streak='стрик дней';I18N.ru.pf_photo='Сменить фото';I18N.ru.pf_remove='Убрать';I18N.ru.pf_saved='Фото обновлено';I18N.ru.pf_save_err='Не вышло сохранить фото';I18N.ru.ach_title='ДОСТИЖЕНИЯ';I18N.ru.level_word='Уровень';I18N.ru.xp_word='XP';
+I18N.en.nav_profile='Profile';I18N.en.pf_title='PLAYER PROFILE';I18N.en.pf_clicks='clicks';I18N.en.pf_streak='day streak';I18N.en.pf_photo='Change photo';I18N.en.pf_remove='Remove';I18N.en.pf_saved='Photo updated';I18N.en.pf_save_err='Could not save photo';I18N.en.ach_title='ACHIEVEMENTS';I18N.en.level_word='Level';I18N.en.xp_word='XP';
+I18N.uk.nav_profile='Профіль';I18N.uk.pf_title='ПРОФІЛЬ ГРАВЦЯ';I18N.uk.pf_clicks='кліків';I18N.uk.pf_streak='стрик днів';I18N.uk.pf_photo='Змінити фото';I18N.uk.pf_remove='Прибрати';I18N.uk.pf_saved='Фото оновлено';I18N.uk.pf_save_err='Не вдалося зберегти фото';I18N.uk.ach_title='ДОСЯГНЕННЯ';I18N.uk.level_word='Рівень';I18N.uk.xp_word='XP';
+}catch(e){}
 function curLang(){return LANGS.includes(S.lang)?S.lang:'ru'}
 function t(key,params){var L=curLang();var d=I18N[L]||{};var v=(key in d)?d[key]:(((I18N.ru||{})[key]!==undefined)?I18N.ru[key]:key);if(params){for(var k in params){if(Object.prototype.hasOwnProperty.call(params,k)){v=String(v).split('{'+k+'}').join(params[k])}}}return v}
 function gameName(g){var m={slots:'game_slots',dice:'game_dice',roulette:'game_roulette',crash:'game_crash',mines:'game_mines',coin:'game_coin',tower:'game_tower'};return t(m[g]||g)}
@@ -1147,6 +1205,7 @@ function applyI18n(){
   try{if(typeof mOn!=='undefined'&&!mOn&&typeof mR!=='undefined'&&mR.length===0){var mi=$('mInf');if(mi){mi.textContent=t('mines_hint');mi.style.color=''}}}catch(e){}
   try{if(typeof twOn!=='undefined'&&!twOn&&typeof twLevel!=='undefined'&&twLevel===0){var twi=$('twInf');if(twi){twi.textContent=t('tw_hint');twi.style.color=''}}}catch(e){}
   try{if(typeof twRender==='function')twRender()}catch(e){}
+  try{if(typeof rProfile==='function')rProfile()}catch(e){}
   try{if(typeof uDC==='function')uDC()}catch(e){}
   try{if(typeof mNextRender==='function'){mNextRender();mProgRender()}}catch(e){}
   try{if(typeof crashSyncUI==='function')crashSyncUI()}catch(e){}
@@ -1360,7 +1419,7 @@ function rBal(){
   b.classList.add('bump');
   setTimeout(()=>b.classList.remove('bump'),150);
 }
-function sn(m){$('sn').textContent=m;$('sn').classList.add('on');setTimeout(()=>$('sn').classList.remove('on'),2000)}
+let snT=null;function sn(m,ms){try{$('sn').textContent=m;$('sn').classList.add('on');clearTimeout(snT);snT=setTimeout(()=>$('sn').classList.remove('on'),ms||2000)}catch(e){}}
 function bz(k){
   if(k==='win'||k==='success') Sound.win();
   else if(k==='loss'||k==='error') Sound.loss();
@@ -1423,7 +1482,7 @@ document.querySelectorAll('.ni').forEach(b=>b.addEventListener('click',()=>{
   $('s-'+b.dataset.s).classList.add('on');
   try{b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}catch(e){}
   window.scrollTo({top:0});
-  if(b.dataset.s==='stats')rSt();
+  if(b.dataset.s==='profile'){try{if(typeof rProfile==='function')rProfile()}catch(e){}try{rSt()}catch(e){}}
   if(b.dataset.s==='rewards'){dailyTick();tickBonus();if(typeof crashResize==='function')crashResize()}
   if(b.dataset.s==='clicker')rClk();
   if(b.dataset.s==='crash'){try{crashResize();crashHud();if(!crashRunning)crashIdle()}catch(e){}}
@@ -2394,28 +2453,111 @@ const GAME_NAMES={slots:'Слоты',dice:'Кости',roulette:'Рулетка'
 function rSt(){$('xT').textContent=S.stats.total;$('xW').textContent=S.stats.win;$('xL').textContent=S.stats.loss;$('xWo').textContent=S.stats.won;$('xB').textContent=S.stats.bet;$('xP').textContent=S.stats.won-S.stats.bet;$('xP').style.color=S.stats.won-S.stats.bet>=0?'var(--win)':'var(--e)';const el=$('hL');if(!S.hist.length){el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">'+t('empty')+'</div>';return}el.innerHTML='';S.hist.slice(0,30).forEach(h=>{const d=document.createElement('div');d.className='h-item';const t=new Date(h.t);const ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');const safeGame=String(gameName(h.g)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 d.innerHTML='<span>'+safeGame+' • '+ts+'</span><span>'+(h.r>0?'<span class="w">+'+h.r+'</span>':'<span class="l">−'+h.a+'</span>')+'</span>';el.appendChild(d)})}
 rSt();
-
-$('rst').addEventListener('click',()=>{
-  Sound.click();S=defaultState();save(true);applyTheme(S.theme);rTheme();rLang();rSound();rBal();rSt();rClk();rSlotMax();rFreeSpins();
-  sLock=false;$('sGo').disabled=false;
-  dLock=false;$('dGo').disabled=false;
-  rLock=false;$('rGo').disabled=false;rSel=null;document.querySelectorAll('.rr-b').forEach(x=>x.classList.remove('sel'));rrHist=[];rrHistRender();
-  mOn=false;$('mGo').style.display='';$('mCa').style.display='none';$('mInf').textContent=t('mines_hint');$('mInf').style.color='';mGr();
-  try{twOn=false;twLevel=0;twMult=1;twBet=0;$('twGo').style.display='';$('twCa').style.display='none';$('twInf').textContent=t('tw_hint');$('twInf').style.color='';twRender()}catch(e){}
-  cFlip=false;$('cGo').disabled=false;$('cC').textContent='🪙';$('cR').textContent='';
-  ['sBet','dBet','rBet','mBet','cBet','crashBet','twBet'].forEach(id=>{try{$(id).value=50}catch(e){}});
-  try{$('dSl').value=7;uDC()}catch(e){}
-  try{crashSetAuto(200)}catch(e){}
-  crashRunning=false;cancelAnimationFrame(crashRAF);cancelAnimationFrame(crashTailRAF);crashParts.length=0;crashLock=false;$('crashGo').style.display='';$('crashGo').disabled=false;$('crashCash').style.display='none';$('crashMult').textContent='1.00×';$('crashMult').className='crash-mult live';$('crashStatus').textContent=t('crash_make_bet');$('crashInfo').textContent=t('crash_info_idle');
-  try{crashSetAutoOn(true,true)}catch(e){}
-  try{S.crashFree=0;rCrashFree();crashChanceUpd()}catch(e){}
-  try{crashIdle()}catch(e){}
-  try{crashBurstEl.classList.remove('on')}catch(e){}
-  try{crashResize();crashIdle();crashHud()}catch(e){}
-  crashRenderHistory();
-  try{if(typeof applyI18n==='function')applyI18n()}catch(e){try{dailyTick()}catch(_){}try{tickBonus()}catch(_){}}
-  sn(t('reset_done'));
-});
+// ===== PROFILE (уровень, своя аватарка, достижения) =====
+const PF_LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЖЗИКЛМНПРСТУФХЦЧШЭЮЯ0123456789';
+let pfPhoto=null;
+function pfHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)}
+function pfAvaKey(){try{return 'gapera_avatar_'+getUid()}catch(e){return 'gapera_avatar_anon'}}
+function pfLoadPhoto(){try{pfPhoto=localStorage.getItem(pfAvaKey())||null}catch(e){pfPhoto=null}}
+function pfSavePhoto(d){try{if(d)localStorage.setItem(pfAvaKey(),d);else localStorage.removeItem(pfAvaKey());pfPhoto=d||null;return true}catch(e){return false}}
+function pfRenderAva(uid){
+  const ava=$('pfAva'),img=$('pfImg'),ch=$('pfLetter');
+  if(!ava)return;
+  if(pfPhoto&&img){try{img.src=pfPhoto}catch(e){}img.style.display='block';if(ch)ch.style.display='none';ava.style.background='var(--sc-hi)';return}
+  if(img)img.style.display='none';if(ch)ch.style.display='';
+  const x=pfHash('ava|'+String(uid));
+  if(ch)ch.textContent=PF_LETTERS[x%PF_LETTERS.length];
+  ava.style.background='linear-gradient(135deg,hsl('+(x%360)+',60%,45%),hsl('+((x+50)%360)+',60%,28%))';
+}
+function pfXp(){try{return Math.max(0,(S.stats.total||0)*20+(S.stats.win||0)*30+(S.clicks||0)*2)}catch(e){return 0}}
+function pfLevelInfo(xp){const lvl=1+Math.floor(Math.sqrt(xp/200));const base=200*(lvl-1)*(lvl-1);const next=200*lvl*lvl;const prog=next>base?Math.min(100,Math.max(0,(xp-base)/(next-base)*100)):100;return{lvl,base,next,prog}}
+const PF_ACHS=[
+ {id:'first',e:'🎯',n:{ru:'Первая кровь',en:'First blood',uk:'Перша кров'},d:{ru:'Сделай первую ставку',en:'Place your first bet',uk:'Зроби першу ставку'},ok:()=>S.stats.total>=1},
+ {id:'ten',e:'🍀',n:{ru:'Везунчик',en:'Lucky 10',uk:'Щасливчик'},d:{ru:'Одержи 10 побед',en:'Get 10 wins',uk:'Здобудь 10 перемог'},ok:()=>S.stats.win>=10},
+ {id:'grind',e:'⚙️',n:{ru:'Гриндер',en:'Grinder',uk:'Гріндер'},d:{ru:'Сделай 100 ставок',en:'Place 100 bets',uk:'Зроби 100 ставок'},ok:()=>S.stats.total>=100},
+ {id:'rich1',e:'💰',n:{ru:'Богач',en:'Rich',uk:'Багач'},d:{ru:'Накопи 10 000 на балансе',en:'Hold 10,000 balance',uk:'Накопи 10 000 на балансі'},ok:()=>S.bal>=10000},
+ {id:'rich2',e:'💎',n:{ru:'Магнат',en:'Tycoon',uk:'Магнат'},d:{ru:'Накопи 100 000 на балансе',en:'Hold 100,000 balance',uk:'Накопи 100 000 на балансі'},ok:()=>S.bal>=100000},
+ {id:'clk1',e:'👆',n:{ru:'Палец-качок',en:'Clicker fan',uk:'Палець-качок'},d:{ru:'Кликни 100 раз в Кликере',en:'Click 100 times in Clicker',uk:'Клікни 100 разів у Клікері'},ok:()=>(S.clicks||0)>=100},
+ {id:'clk2',e:'⚡',n:{ru:'Золотая звезда',en:'Gold star',uk:'Золота зірка'},d:{ru:'Кликни 1000 раз в Кликере',en:'Click 1,000 times in Clicker',uk:'Клікни 1000 разів у Клікері'},ok:()=>(S.clicks||0)>=1000},
+ {id:'st3',e:'🔥',n:{ru:'Стабильность',en:'Streak x3',uk:'Стабільність'},d:{ru:'Забирай ежедневный бонус 3 дня подряд',en:'Claim the daily bonus 3 days in a row',uk:'Забирай щоденний бонус 3 дні поспіль'},ok:()=>(S.daily.streak||0)>=3},
+ {id:'st7',e:'👑',n:{ru:'Неделя фарта',en:'Week of luck',uk:'Тиждень фарту'},d:{ru:'Забирай ежедневный бонус 7 дней подряд',en:'Claim the daily bonus 7 days in a row',uk:'Забирай щоденний бонус 7 днів поспіль'},ok:()=>(S.daily.streak||0)>=7},
+ {id:'crx',e:'🚀',n:{ru:'Ракетчик',en:'Rocketeer',uk:'Ракетник'},d:{ru:'Поймай 10× или выше в Ракетке',en:'Catch 10x or higher in Crash',uk:'Спіймай 10× або вище в Ракетці'},ok:()=>((S.crashHist||[]).some(x=>x>=10))},
+ {id:'tww',e:'🗼',n:{ru:'Верхолаз',en:'Climber',uk:'Верхолаз'},d:{ru:'Выиграй раунд в Башне',en:'Win a round in Tower',uk:'Виграй раунд у Вежі'},ok:()=>((S.hist||[]).some(h=>h.g==='tower'&&h.r>0))},
+ {id:'prm',e:'🎁',n:{ru:'Охотник',en:'Hunter',uk:'Мисливець'},d:{ru:'Активируй промокод в Настройках',en:'Activate a promo code in Settings',uk:'Активуй промокод у Налаштуваннях'},ok:()=>((S.usedPromos||[]).length>=1)},
+ {id:'dicew',e:'🎲',n:{ru:'Игрок в кости',en:'Dice player',uk:'Гравець у кістки'},d:{ru:'Выиграй раунд в Кости',en:'Win a round in Dice',uk:'Виграй раунд у Кістки'},ok:()=>((S.hist||[]).some(h=>h.g==='dice'&&h.r>0))},
+ {id:'sap',e:'💣',n:{ru:'Сапёр',en:'Sapper',uk:'Сапер'},d:{ru:'Выиграй раунд в Минах',en:'Win a round in Mines',uk:'Виграй раунд у Мінах'},ok:()=>((S.hist||[]).some(h=>h.g==='mines'&&h.r>0))},
+ {id:'mln',e:'💸',n:{ru:'Миллионер',en:'Millionaire',uk:'Мільйонер'},d:{ru:'Накопи 1 000 000 на балансе',en:'Hold 1,000,000 balance',uk:'Накопи 1 000 000 на балансі'},ok:()=>S.bal>=1000000},
+ {id:'ser',e:'🏅',n:{ru:'Серия',en:'Hot streak',uk:'Серія'},d:{ru:'Одержи 3 победы подряд',en:'Score 3 wins in a row',uk:'Здобудь 3 перемоги поспіль'},ok:()=>((S.hist||[]).length>=3&&(S.hist||[]).slice(0,3).every(h=>h.r>0))}
+];
+function rProfile(){
+  try{
+    const L=(typeof curLang==='function')?curLang():'ru';
+    let uid='—';try{uid=displayUid()}catch(e){}
+    pfRenderAva(uid);
+    const nm=$('pfName');if(nm)nm.textContent='ID: '+uid;
+    const xp=pfXp(),li=pfLevelInfo(xp);
+    const lv=$('pfLvl');if(lv)lv.textContent=(typeof t==='function'?t('level_word'):'Уровень')+' '+li.lvl;
+    const bar=$('pfBar');if(bar)bar.style.width=li.prog+'%';
+    const xe=$('pfXp');if(xe)xe.textContent=xp.toLocaleString()+' XP • '+(li.next-xp).toLocaleString()+' до '+(li.lvl+1)+' ур.';
+    const set=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+    set('pfBets',S.stats.total||0);set('pfWins',S.stats.win||0);set('pfClicks',(S.clicks||0).toLocaleString());set('pfStreak',(S.daily.streak||0)+'🔥');
+    try{
+      const gr=$('achGrid');if(gr){
+        gr.innerHTML='';let got=0;
+        PF_ACHS.forEach(a=>{
+          let has=false;try{has=!!a.ok()}catch(_){has=false}
+          if(has)got++;
+          const d=document.createElement('div');d.className='ach'+(has?' got':'');
+          d.innerHTML='<div class="e">'+a.e+'</div><div class="n">'+((a.n&&a.n[L])||a.n.ru)+'</div>';
+          d.addEventListener('click',()=>{try{Sound.click()}catch(_){}sn(((a.n&&a.n[L])||a.n.ru)+': '+((a.d&&a.d[L])||a.d.ru)+(has?' ✅':' 🔒'),2500)});
+          gr.appendChild(d);
+        });
+        set('achCount',got+'/'+PF_ACHS.length);
+      }
+    }catch(e){}
+  }catch(e){}
+}
+function pfPickPhoto(){try{const f=$('pfFile');if(f)f.click()}catch(e){}}
+function pfOnFile(e){
+  try{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    const T=(typeof t==='function')?t:function(k){return k};
+    if(!f.type||f.type.indexOf('image/')!==0){sn(T('pf_save_err'));return}
+    const rd=new FileReader();
+    rd.onload=function(){
+      try{
+        const im=new Image();
+        im.onload=function(){
+          try{
+            const Sz=128,c=document.createElement('canvas');c.width=Sz;c.height=Sz;
+            const cx=c.getContext('2d');const sc=Math.max(Sz/im.width,Sz/im.height);
+            const w=im.width*sc,hgt=im.height*sc;
+            cx.fillStyle='#222';cx.fillRect(0,0,Sz,Sz);
+            cx.drawImage(im,(Sz-w)/2,(Sz-hgt)/2,w,hgt);
+            const url=c.toDataURL('image/jpeg',0.85);
+            let ok=false;try{ok=pfSavePhoto(url)}catch(_){ok=false}
+            if(ok){let uid='—';try{uid=displayUid()}catch(_){}pfRenderAva(uid);sn(T('pf_saved'))}
+            else{sn(T('pf_save_err'))}
+          }catch(_){sn(T('pf_save_err'))}
+        };
+        im.onerror=function(){sn(T('pf_save_err'))};
+        im.src=rd.result;
+      }catch(_){sn(T('pf_save_err'))}
+    };
+    rd.onerror=function(){sn(T('pf_save_err'))};
+    rd.readAsDataURL(f);
+    try{e.target.value=''}catch(_){}
+  }catch(e){}
+}
+try{
+  pfLoadPhoto();
+  const _up=$('pfUpBtn');if(_up)_up.addEventListener('click',function(){try{Sound.click()}catch(_){}pfPickPhoto()});
+  const _av=$('pfAva');if(_av)_av.addEventListener('click',function(){try{Sound.click()}catch(_){}pfPickPhoto()});
+  const _fl=$('pfFile');if(_fl)_fl.addEventListener('change',pfOnFile);
+  const _dl=$('pfDelBtn');if(_dl)_dl.addEventListener('click',function(){try{Sound.click()}catch(_){}pfSavePhoto(null);try{rProfile()}catch(_){}});
+  setInterval(function(){try{if(document.getElementById('s-profile').classList.contains('on')){rProfile();rSt()}}catch(_){}},3000);
+  try{rProfile()}catch(_){}
+}catch(e){}
 try{applyI18n()}catch(e){}
 rBal();
 })();
