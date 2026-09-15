@@ -488,7 +488,7 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       <div class="rewards-sub" data-i18n="dice_fee">Множитель уже включает комиссию 3% — возврат 97%</div>
       <div class="bet-row"><button class="btn btn-s btn-sm" id="dDn">−</button><input id="dBet" type="number" value="50" min="1" step="10" /><button class="btn btn-s btn-sm" id="dUp">+</button></div>
       <div class="dice-risk" id="dRisk">Ставка в норме — шанс без штрафа</div>
-      <button class="btn btn-p btn-lg" id="dGo"><span class="mat">casino</span><span data-i18n="throw">БРОСИТЬ</span></button>
+      <button class="btn btn-p btn-lg" id="dGo" style="margin-top:.8rem"><span class="mat">casino</span><span data-i18n="throw">БРОСИТЬ</span></button>
     </div>
   </section>
 
@@ -663,10 +663,8 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       <div class="pf-bar"><div class="pf-bar-fill" id="pfBar" style="width:0%"></div></div>
       <div class="pf-xp" id="pfXp">0 XP</div>
       <div class="pf-grid">
-        <div class="pf-mini"><div class="v" id="pfBets">0</div><div class="l" data-i18n="bets">ставок</div></div>
-        <div class="pf-mini"><div class="v" id="pfWins">0</div><div class="l" data-i18n="wins">побед</div></div>
-        <div class="pf-mini"><div class="v" id="pfClicks">0</div><div class="l" data-i18n="pf_clicks">кликов</div></div>
         <div class="pf-mini"><div class="v" id="pfStreak">0🔥</div><div class="l" data-i18n="pf_streak">стрик дней</div></div>
+        <div class="pf-mini"><div class="v" id="pfAchDone">0/16</div><div class="l" data-i18n="pf_ach_done">достижений</div></div>
       </div>
     </div>
         <!-- STATS moved into profile -->
@@ -1178,6 +1176,7 @@ I18N.ru.nav_profile='Профиль';I18N.ru.pf_title='ПРОФИЛЬ ИГРОК
 I18N.en.nav_profile='Profile';I18N.en.pf_title='PLAYER PROFILE';I18N.en.pf_clicks='clicks';I18N.en.pf_streak='day streak';I18N.en.pf_photo='Change photo';I18N.en.pf_remove='Remove';I18N.en.pf_saved='Photo updated';I18N.en.pf_save_err='Could not save photo';I18N.en.ach_title='ACHIEVEMENTS';I18N.en.level_word='Level';I18N.en.xp_word='XP';
 I18N.uk.nav_profile='Профіль';I18N.uk.pf_title='ПРОФІЛЬ ГРАВЦЯ';I18N.uk.pf_clicks='кліків';I18N.uk.pf_streak='стрик днів';I18N.uk.pf_photo='Змінити фото';I18N.uk.pf_remove='Прибрати';I18N.uk.pf_saved='Фото оновлено';I18N.uk.pf_save_err='Не вдалося зберегти фото';I18N.uk.ach_title='ДОСЯГНЕННЯ';I18N.uk.level_word='Рівень';I18N.uk.xp_word='XP';
 }catch(e){}
+try{I18N.ru.pf_ach_done='достижений';I18N.en.pf_ach_done='achievements';I18N.uk.pf_ach_done='досягнень';}catch(e){}
 function curLang(){return LANGS.includes(S.lang)?S.lang:'ru'}
 function t(key,params){var L=curLang();var d=I18N[L]||{};var v=(key in d)?d[key]:(((I18N.ru||{})[key]!==undefined)?I18N.ru[key]:key);if(params){for(var k in params){if(Object.prototype.hasOwnProperty.call(params,k)){v=String(v).split('{'+k+'}').join(params[k])}}}return v}
 function gameName(g){var m={slots:'game_slots',dice:'game_dice',roulette:'game_roulette',crash:'game_crash',mines:'game_mines',coin:'game_coin',tower:'game_tower'};return t(m[g]||g)}
@@ -1722,23 +1721,39 @@ function rrPaint(n){
   const rn=$('rN');
   rn.textContent=n;rn.style.background=rrColor(n);rn.style.color='#fff';rn.style.borderColor='rgba(255,255,255,.25)';
 }
-// Выигрышный номер выбирается ДО анимации, шарик просто замедляется к нему
+// Выигрышный номер выбирается ДО анимации, а колесо доворачивается так,
+// чтобы его сектор реально оказался под стрелкой сверху.
+// conic-gradient начинается сверху и идёт по часовой: центр сектора idx — (idx+0.5)*step.
+let rrAngle=0;
 function rrSpinTo(win,done){
-  const wheel=$('rWheel'),rn=$('rN');
-  wheel.classList.remove('spin');void wheel.offsetWidth;wheel.classList.add('spin');
+  const wheel=$('rWheel'),rn=$('rN'),ring=$('rRing');
+  const step=360/rNums.length;
+  let idx=rNums.indexOf(win);if(idx<0)idx=0;
+  const want=-((idx+0.5)*step);
+  const delta=((want-rrAngle)%360+360)%360;
+  rrAngle+=360*5+delta;
+  let finished=false;
+  const finish=()=>{
+    if(finished)return;finished=true;
+    rrPaint(win);rn.classList.remove('pulse');void rn.offsetWidth;rn.classList.add('pulse');
+    Sound.reelStop();done();
+  };
   let delay=45,elapsed=0;
-  const step=()=>{
-    if(elapsed>2200){
-      wheel.classList.remove('spin');
-      rrPaint(win);rn.classList.remove('pulse');void rn.offsetWidth;rn.classList.add('pulse');
-      Sound.reelStop();done();return;
-    }
+  const tick=()=>{
+    if(elapsed>2150)return;
     rrPaint(rNums[Math.random()*rNums.length|0]);
     Sound.tick();
     elapsed+=delay;delay=Math.min(190,delay*1.13);
-    setTimeout(step,delay);
+    setTimeout(tick,delay);
   };
-  setTimeout(step,delay);
+  setTimeout(tick,delay);
+  if(ring){
+    ring.style.transition='transform 2.5s cubic-bezier(.13,.72,.12,1)';
+    ring.style.transform='rotate('+rrAngle+'deg)';
+    const onEnd=()=>{try{ring.removeEventListener('transitionend',onEnd)}catch(e){}finish()};
+    ring.addEventListener('transitionend',onEnd);
+  }
+  setTimeout(finish,2800);
 }
 function rrHistRender(){const el=$('rrHist');if(!el)return;el.innerHTML='';rrHist.slice(0,10).forEach(n=>{const s=document.createElement('span');s.textContent=n;s.className=RED.has(n)?'hz-r':n===0?'hz-g':'hz-k';el.appendChild(s)})}
 document.querySelectorAll('.rr-b').forEach(b=>b.addEventListener('click',()=>{Sound.click();document.querySelectorAll('.rr-b').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rSel=b.dataset.v}));
@@ -2454,7 +2469,6 @@ function rSt(){$('xT').textContent=S.stats.total;$('xW').textContent=S.stats.win
 d.innerHTML='<span>'+safeGame+' • '+ts+'</span><span>'+(h.r>0?'<span class="w">+'+h.r+'</span>':'<span class="l">−'+h.a+'</span>')+'</span>';el.appendChild(d)})}
 rSt();
 // ===== PROFILE (уровень, своя аватарка, достижения) =====
-const PF_LETTERS='ABCDEFGHIJKLMNOPQRSTUVWXYZАБВГДЕЖЗИКЛМНПРСТУФХЦЧШЭЮЯ0123456789';
 let pfPhoto=null;
 function pfHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)}
 function pfAvaKey(){try{return 'gapera_avatar_'+getUid()}catch(e){return 'gapera_avatar_anon'}}
@@ -2466,7 +2480,7 @@ function pfRenderAva(uid){
   if(pfPhoto&&img){try{img.src=pfPhoto}catch(e){}img.style.display='block';if(ch)ch.style.display='none';ava.style.background='var(--sc-hi)';return}
   if(img)img.style.display='none';if(ch)ch.style.display='';
   const x=pfHash('ava|'+String(uid));
-  if(ch)ch.textContent=PF_LETTERS[x%PF_LETTERS.length];
+  const dg=String(uid).match(/\d/);if(ch)ch.textContent=dg?dg[0]:String(uid).charAt(0).toUpperCase();
   ava.style.background='linear-gradient(135deg,hsl('+(x%360)+',60%,45%),hsl('+((x+50)%360)+',60%,28%))';
 }
 function pfXp(){try{return Math.max(0,(S.stats.total||0)*20+(S.stats.win||0)*30+(S.clicks||0)*2)}catch(e){return 0}}
@@ -2500,7 +2514,7 @@ function rProfile(){
     const bar=$('pfBar');if(bar)bar.style.width=li.prog+'%';
     const xe=$('pfXp');if(xe)xe.textContent=xp.toLocaleString()+' XP • '+(li.next-xp).toLocaleString()+' до '+(li.lvl+1)+' ур.';
     const set=(id,v)=>{const e=$(id);if(e)e.textContent=v};
-    set('pfBets',S.stats.total||0);set('pfWins',S.stats.win||0);set('pfClicks',(S.clicks||0).toLocaleString());set('pfStreak',(S.daily.streak||0)+'🔥');
+    set('pfStreak',(S.daily.streak||0)+'🔥');
     try{
       const gr=$('achGrid');if(gr){
         gr.innerHTML='';let got=0;
@@ -2512,7 +2526,7 @@ function rProfile(){
           d.addEventListener('click',()=>{try{Sound.click()}catch(_){}sn(((a.n&&a.n[L])||a.n.ru)+': '+((a.d&&a.d[L])||a.d.ru)+(has?' ✅':' 🔒'),2500)});
           gr.appendChild(d);
         });
-        set('achCount',got+'/'+PF_ACHS.length);
+        set('achCount',got+'/'+PF_ACHS.length);set('pfAchDone',got+'/'+PF_ACHS.length);
       }
     }catch(e){}
   }catch(e){}
