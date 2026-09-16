@@ -772,10 +772,12 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
         <div class="rewards-sub" id="duelModeHint" style="margin:.4rem 0"></div>
         <div class="lbl"><span data-i18n="bet">СТАВКА</span></div>
         <div class="bet-row"><button class="btn btn-s btn-sm" id="duelDn">−</button><input id="duelStakeIn" type="number" value="50" min="1" step="10" /><button class="btn btn-s btn-sm" id="duelUp">+</button></div>
+        <div class="bac-versus" id="duelReadyState"></div>
         <button class="btn btn-p btn-lg" id="duelStartBtn" style="margin-top:.6rem"><span class="mat">play_arrow</span><span data-i18n="duel_start">НАЧАТЬ ИГРУ</span></button>
       </div>
       <div id="duelCfgGuest" style="display:none">
         <div class="bac-versus" id="duelCfgView">…</div>
+        <button class="btn btn-p btn-lg" id="duelReadyBtn" style="margin-top:.4rem"><span class="mat">check</span><span data-i18n="duel_ready">Готово</span></button>
         <div class="rewards-sub" style="text-align:center" data-i18n="duel_wait_host">Хост настраивает лобби — настройки появятся здесь</div>
       </div>
     </div>
@@ -2821,7 +2823,7 @@ try{
 const DUEL_PREFIX='gapera-duel-';
 const DUEL_BOT='gapera_bot';
 function duelPayout(stake){return Math.floor(stake*1.9)}
-let DU={peer:null,conn:null,linked:false,chat:[],role:null,code:'',mode:'bac',opp:{name:'?',ava:'?'},myStake:50,invested:0,started:false,over:true,winner:null,st:{k:'dst_idle',p:null},
+let DU={peer:null,conn:null,linked:false,chat:[],myReady:false,oppReady:false,role:null,code:'',mode:'bac',opp:{name:'?',ava:'?'},myStake:50,invested:0,started:false,over:true,winner:null,st:{k:'dst_idle',p:null},
  bac:{shoe:[],pos:0,cutAt:0,round:0,hist:[],myPick:null,opPick:null,coup:null,phase:'idle'},
  rou:{myBet:null,opBet:null,num:null,hist:[],phase:'idle'},
  pok:null};
@@ -2911,14 +2913,30 @@ function duelSetText(id,v){const e=$(id);if(e)e.textContent=v}
 function duelSetStatus(k,pr){DU.st={k:k,p:pr||null};const el=$('duelStatus');if(el){try{el.textContent=t(k,pr)}catch(e){el.textContent=k}}}
 function duelPeerOK(){return (typeof Peer!=='undefined')}
 function duelPeerOpts(){
-  return {debug:0,config:{iceServers:[
-    {urls:'stun:stun.l.google.com:19302'},
-    {urls:'stun:stun1.l.google.com:19302'},
-    {urls:'stun:global.stun.twilio.com:3478'},
-    {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
-    {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
-    {urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}
-  ]}};
+  // На разных сетях прямое соединение режут NAT/файрволы — пробиваем через
+  // TURN-релеи. Несколько независимых серверов: если один мёртв, сработает
+  // другой. TCP/443 и TURNS нужны там, где порезан UDP (мобильные операторы,
+  // строгие Wi-Fi). STUN — только узнать свой адрес, трафик не релейит.
+  return {debug:0,config:{
+    iceTransportPolicy:'all',
+    bundlePolicy:'max-bundle',
+    rtcpMuxPolicy:'require',
+    iceCandidatePoolSize:8,
+    iceServers:[
+      {urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun2.l.google.com:19302','stun:stun3.l.google.com:19302','stun:stun4.l.google.com:19302']},
+      {urls:'stun:stun.cloudflare.com:3478'},
+      {urls:'stun:global.stun.twilio.com:3478'},
+      {urls:'stun:freeturn.net:5349'},
+      // freeTURN — бесплатный TURN (лимита 2 Мбит/пир картам и чату за глаза)
+      {urls:'turns:freeturn.tel:5349',username:'free',credential:'free'},
+      // AnyFirewall — открытый демо-TURN, TCP 443 пролезает через строгие сети
+      {urls:'turn:turn.anyfirewall.com:443?transport=tcp',username:'webrtc',credential:'webrtc'},
+      // OpenRelay — static-creds часто мертвы, оставляем как запасной вариант
+      {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
+      {urls:'turn:openrelay.metered.ca:80?transport=tcp',username:'openrelayproject',credential:'openrelayproject'},
+      {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
+      {urls:'turn:openrelay.metered.ca:443?transport=tcp',username:'openrelayproject',credential:'openrelayproject'}
+    ]}};
 }
 function duelCode(){const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=A[Math.random()*A.length|0];return s}
 // Карта {r:'A'..'K', s:'♠'|'♥'|'♦'|'♣'} — единый рендер для баккары и покера
@@ -3277,6 +3295,16 @@ function duelRender(){
       if(DU.role==='guest'&&S.bal<DU.myStake){cv.textContent+=' • '+t('duel_short');cv.style.color='var(--e)'}
       else cv.style.color='';
     }
+    const rb=$('duelReadyBtn');
+    if(rb){
+      rb.disabled=!(DU.role==='guest'&&DU.linked&&!DU.started);
+      const on=!!DU.myReady;
+      rb.classList.toggle('btn-p',!on);rb.classList.toggle('btn-s',on);
+      rb.innerHTML='<span class="mat">'+(on?'close':'check')+'</span><span>'+t(on?'duel_unready':'duel_ready')+'</span>';
+    }
+    const rs=$('duelReadyState');
+    if(rs){rs.textContent=DU.oppReady?t('duel_opp_ready'):t('duel_wait_ready');rs.style.color=DU.oppReady?'var(--win)':''}
+    const stb=$('duelStartBtn');if(stb)stb.disabled=!(DU.linked&&DU.oppReady&&!DU.started);
     const ci=$('duelChatIn');if(ci)ci.placeholder=t('duel_chat_ph');
     const chc=$('duelChatCard');
     if(chc)chc.style.display=(DU.role&&DU.linked)?'':'none';
@@ -3614,7 +3642,7 @@ function pokRender(){
 function duelWire(conn){
   DU.conn=conn;
   const me=duelMe();
-  conn.on('open',()=>{DU.linked=true;try{conn.send({t:'hello',name:me.name,ava:me.ava})}catch(e){}duelRender()});
+  conn.on('open',()=>{DU.linked=true;duelHbStart();try{conn.send({t:'hello',name:me.name,ava:me.ava})}catch(e){}duelRender()});
   conn.on('data',d=>duelOnData(d));
   conn.on('close',()=>duelOnClose(false));
   conn.on('error',()=>{});
@@ -3629,6 +3657,8 @@ function duelResetTables(){
 }
 function duelOnData(d){
   if(!d||typeof d!=='object')return;
+  if(d.t==='ping'){duelSend({t:'pong'});return}
+  if(d.t==='pong'){DU.lastPong=Date.now();return}
   if(d.t==='hello'){
     DU.opp={name:String(d.name||'?').slice(0,14),ava:String(d.ava||'?').slice(0,2)};
     DU.linked=true;
@@ -3710,8 +3740,10 @@ function duelOnData(d){
   if(d.t==='lobby_cfg'&&DU.role==='guest'&&!DU.started){
     if(d.mode==='bac'||d.mode==='rou'||d.mode==='pok')DU.mode=d.mode;
     if(Number.isFinite(+d.stake)&&+d.stake>=1)DU.myStake=Math.floor(+d.stake);
+    DU.myReady=false; // настройки изменились — нужно подтвердить заново
     duelRender();return;
   }
+  if(d.t==='ready'&&DU.role==='host'&&!DU.started){DU.oppReady=!!d.v;duelRender();return}
   if(d.t==='chat'&&typeof d.text==='string'){
     duelChatPush(false,(DU.opp&&DU.opp.name)||'?',String(d.text).slice(0,120));return;
   }
@@ -3762,12 +3794,18 @@ function pokBegin(first){
   pokRender();duelRender();
 }
 // ---------- Лобби: настройки хоста и чат ----------
+try{
+Object.assign(I18N.ru,{duel_ready:'Готово',duel_unready:'Отмена',duel_wait_ready:'Ждём: соперник должен нажать «Готово»',duel_opp_ready:'Соперник готов ✅'});
+Object.assign(I18N.en,{duel_ready:'Ready',duel_unready:'Cancel',duel_wait_ready:'Waiting: opponent must press Ready',duel_opp_ready:'Opponent ready ✅'});
+Object.assign(I18N.uk,{duel_ready:'Готово',duel_unready:'Скасувати',duel_wait_ready:'Чекаємо: суперник має натиснути «Готово»',duel_opp_ready:'Суперник готовий ✅'});
+}catch(e){}
 function duelModeName(m){return t(m==='rou'?'d_rou':(m==='pok'?'d_pok':'d_bac'))}
 function duelSendCfg(){duelSend({t:'lobby_cfg',mode:DU.mode,stake:DU.myStake})}
 // Хост жмёт «Начать игру» в лобби: ставка читается из настроек лобби
 function duelStartMatch(){
   try{Sound.click()}catch(e){}
   if(DU.role!=='host'||!DU.linked||DU.started)return;
+  if(!DU.oppReady){sn(t('duel_wait_ready'));return}
   const stake=duelStake();if(!stake)return;
   if(DU.mode==='pok'&&stake<POK_MIN_STAKE){sn(t('pok_min20'));return}
   DU.myStake=stake;
@@ -3799,6 +3837,23 @@ function duelChatRender(){
   });
   log.scrollTop=log.scrollHeight;
 }
+try{
+Object.assign(I18N.ru,{dst_retry:'Соединение… попытка {n}',net_unstable:'Связь с соперником пропала — проверьте интернет'});
+Object.assign(I18N.en,{dst_retry:'Connecting… attempt {n}',net_unstable:'Link to opponent lost — check your internet'});
+Object.assign(I18N.uk,{dst_retry:'Зʼєднання… спроба {n}',net_unstable:'Звʼязок із суперником пропав — перевірте інтернет'});
+}catch(e){}
+// Heartbeat: раз в 15с пингуем соперника. Тишина 45с — предупреждаем, что
+// связь подвисла (мобильные сети любят рвать долгоживущие соединения).
+function duelHbStart(){
+  duelHbStop();
+  DU.lastPong=Date.now();
+  DU.hbTimer=setInterval(()=>{
+    if(!DU.conn||!DU.linked){duelHbStop();return}
+    duelSend({t:'ping'});
+    if(Date.now()-DU.lastPong>45000){DU.lastPong=Date.now();try{sn(t('net_unstable'))}catch(e){}}
+  },15000);
+}
+function duelHbStop(){try{clearInterval(DU.hbTimer)}catch(e){}DU.hbTimer=null}
 function duelCreate(){
   try{Sound.click()}catch(e){}
   if(!duelPeerOK()){duelSetStatus('dst_err');return}
@@ -3816,6 +3871,11 @@ function duelCreate(){
     peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
     peer.on('error',e=>{
       if(e&&e.type==='unavailable-id'&&attempts<3){try{peer.destroy()}catch(_){}setTimeout(tryOpen,250);return}
+      if(e&&(e.type==='network'||e.type==='server-error'||e.type==='socket-closed')){
+        duelSetStatus('dst_retry',{n:1});
+        try{peer.reconnect()}catch(_){}
+        return;
+      }
       duelSetStatus('dst_err');
     });
   };
@@ -3829,30 +3889,60 @@ function duelJoin(){
   if(code.length<4){sn(t('dst_code_err'));return}
   duelLeave(true);
   DU.role='guest';DU.code=code;DU.opp={name:'?',ava:'?'};
+  DU.joinSeq=(DU.joinSeq||0)+1;
+  duelJoinAttempt(DU.joinSeq,1);
+  duelRender();
+}
+// Вход с ретраями: мобильные сети и строгие Wi-Fi часто роняют первую попытку
+// (сигналинг не успел, ICE не собрался). Каждую попытку создаём пир заново,
+// пауза растёт экспоненциально. joinSeq отменяет устаревшие попытки.
+function duelJoinAttempt(seq,tryNo){
+  if(seq!==DU.joinSeq||DU.role!=='guest')return;
+  if(tryNo>6){duelLeave(true);duelSetStatus('dst_timeout');return}
+  duelSetStatus(tryNo<=1?'dst_joining':'dst_retry',{n:tryNo});
+  duelRender();
+  try{if(DU.peer)DU.peer.destroy()}catch(e){}
+  DU.peer=null;DU.conn=null;DU.linked=false;
   let peer=null;
   try{peer=new Peer(duelPeerOpts())}catch(e){duelSetStatus('dst_err');return}
   DU.peer=peer;
-  let joinAttempts=0,gaveUp=false;
-  const tryConnect=()=>{
-    joinAttempts++;
-    let c=null;
-    try{c=peer.connect(DUEL_PREFIX+code,{reliable:true})}catch(e){duelSetStatus('dst_err');return}
-    duelWire(c);
+  let dead=false,noFriend=0;
+  const giveUp=(nofriend)=>{
+    if(dead)return;dead=true;
+    try{peer.destroy()}catch(e){}
+    if(seq!==DU.joinSeq||DU.role!=='guest')return;
+    if(nofriend){duelLeave(true);duelSetStatus('dst_nofriend');return}
+    setTimeout(()=>duelJoinAttempt(seq,tryNo+1),Math.min(8000,600*Math.pow(2,tryNo-1)));
   };
+  const overall=setTimeout(()=>{if(!DU.linked)giveUp(false)},15000);
+  const watch=setInterval(()=>{
+    if(DU.linked||seq!==DU.joinSeq||DU.role!=='guest'){dead=true;clearInterval(watch);clearTimeout(overall)}
+  },500);
   peer.on('open',()=>{
-    tryConnect();duelSetStatus('dst_joining');duelRender();
-    setTimeout(function(){try{if(DU.role==='guest'&&!DU.started&&((DU.opp&&DU.opp.name)||'?')==='?'){duelLeave(true);duelSetStatus('dst_timeout')}}catch(e){}},12000);
+    if(dead||seq!==DU.joinSeq||DU.role!=='guest')return;
+    let c=null;
+    try{c=peer.connect(DUEL_PREFIX+DU.code,{reliable:true})}catch(e){clearTimeout(overall);giveUp(false);return}
+    duelWire(c);
+    duelSetStatus('dst_joining');duelRender();
   });
   peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
   peer.on('error',e=>{
-    if(gaveUp||DU.role!=='guest')return;
-    if(e&&e.type==='peer-unavailable'){
-      if(joinAttempts<3){setTimeout(tryConnect,600);return}
-      gaveUp=true;duelLeave(true);duelSetStatus('dst_nofriend');return;
+    if(dead||seq!==DU.joinSeq||DU.role!=='guest'||!e)return;
+    if(e.type==='peer-unavailable'){
+      // Стол ещё не зарегистрировался на сервере сигналинга — добиваем
+      // быстрыми доборами на том же пире, потом решаем что кода нет
+      noFriend++;
+      if(noFriend>=4){clearTimeout(overall);giveUp(true);return}
+      setTimeout(()=>{
+        if(dead||seq!==DU.joinSeq||DU.role!=='guest'||DU.linked)return;
+        try{const c2=peer.connect(DUEL_PREFIX+DU.code,{reliable:true});duelWire(c2)}catch(_){}
+      },900);
+      return;
     }
-    if(e&&(e.type==='network'||e.type==='server-error')){gaveUp=true;duelLeave(true);duelSetStatus('dst_err')}
+    if(e.type==='network'||e.type==='server-error'||e.type==='socket-error'||e.type==='socket-closed'){
+      clearTimeout(overall);giveUp(false);return;
+    }
   });
-  duelRender();
 }
 function duelInvite(){
   try{Sound.click()}catch(e){}
@@ -3883,13 +3973,15 @@ function duelOnClose(mine){
   try{if(DU.conn)DU.conn.close()}catch(e){}
   try{if(DU.peer)DU.peer.destroy()}catch(e){}
   DU.conn=null;DU.peer=null;DU.role=null;DU.code='';DU.started=false;DU.over=true;DU.winner=null;
-  DU.linked=false;DU.chat=[];
+  duelHbStop();
+  DU.linked=false;DU.chat=[];DU.myReady=false;DU.oppReady=false;
   duelResetTables();duelChatRender();
   duelSetStatus(mine===true?'dst_idle':'dst_left');
   duelRender();
   if(had&&mine!==true){try{bz('loss')}catch(e){}}
 }
 function duelLeave(mine){
+  DU.joinSeq=(DU.joinSeq||0)+1; // отменяем висящие попытки входа
   duelSend({t:'bye'});
   duelOnClose(mine===true);
 }
@@ -3921,6 +4013,7 @@ try{
     try{Sound.click()}catch(e){}
     if(DU.role!=='host'||DU.started)return;
     DU.mode=b.dataset.m||'bac';
+    DU.oppReady=false; // смена режима — гость подтверждает заново
     duelSendCfg();
     duelRender();
   }));
@@ -3949,11 +4042,19 @@ try{
   const _pau=$('pokAmtUp');if(_pau)_pau.addEventListener('click',()=>{try{Sound.click()}catch(e){}const a=$('pokAmt');if(a)a.value=(parseInt(a.value)||1)+5});
   const _dsi=$('duelStakeIn');
   if(_dsi){
-    const cfgPush=()=>{try{if(DU.role==='host'&&!DU.started){DU.myStake=clampBet('duelStakeIn');duelSendCfg();duelRender()}}catch(e){}};
+    const cfgPush=()=>{try{if(DU.role==='host'&&!DU.started){DU.myStake=clampBet('duelStakeIn');DU.oppReady=false;duelSendCfg();duelRender()}}catch(e){}};
     _dsi.addEventListener('change',cfgPush);
     ['duelDn','duelUp'].forEach(id=>{const b=$(id);if(b)b.addEventListener('click',()=>setTimeout(cfgPush,0))});
   }
   const _dst=$('duelStartBtn');if(_dst)_dst.addEventListener('click',duelStartMatch);
+  const _rdy=$('duelReadyBtn');
+  if(_rdy)_rdy.addEventListener('click',()=>{
+    try{Sound.click()}catch(e){}
+    if(DU.role!=='guest'||!DU.linked||DU.started)return;
+    DU.myReady=!DU.myReady;
+    duelSend({t:'ready',v:DU.myReady});
+    duelRender();
+  });
   const _dcs=$('duelChatSend');if(_dcs)_dcs.addEventListener('click',()=>{const i=$('duelChatIn');duelChatSend(i?i.value:'')});
   const _dci=$('duelChatIn');if(_dci)_dci.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();duelChatSend(e.target.value)}});
   document.querySelectorAll('#duelChatCard .chat-quick button').forEach(b=>b.addEventListener('click',()=>duelChatSend(t('duel_offer',{n:b.dataset.q}))));
