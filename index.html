@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Gapera Alpha 7.4</title>
+  <title>Gapera Alpha 7.5</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -101,30 +101,17 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 
 /* Dice */
 .dice-area{display:flex;gap:1rem;justify-content:center;padding:1rem 0}
+.dice-area{perspective:700px}
 .die{width:84px;height:84px;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);gap:7px;padding:13px;
   background:linear-gradient(150deg,var(--sc-hi),color-mix(in srgb,var(--sc) 80%,#000));
   border-radius:18px;border:2px solid var(--ol-v);transition:border-color .25s,box-shadow .25s;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.1),inset 0 -3px 8px rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.32);
-  will-change:transform}
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.1),inset 0 -3px 8px rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.32)}
 .die i{display:block;border-radius:50%;background:transparent;transition:background .08s}
 .die i.on{background:var(--on);box-shadow:0 0 7px color-mix(in srgb,var(--on) 45%,transparent),inset 0 -1px 2px rgba(0,0,0,.4)}
-/* Чисто 2D-анимация (rotate + неравномерный scale по X/Y, без perspective/3D
-   трансформаций) — вместо честного 3D-куба, который в вебвью Telegram на
-   части Android-устройств рендерится с артефактами (плывущие грани, разрывы
-   на стыках). Такое покачивание-подбрасывание не может «сломаться» ни в
-   одном движке, потому что это просто афинное 2D-преобразование одного
-   плоского слоя. */
-.die.rolling{animation:dieRoll .38s cubic-bezier(.45,.05,.55,.95) infinite;border-color:var(--p);box-shadow:inset 0 2px 0 rgba(255,255,255,.1),0 0 22px color-mix(in srgb,var(--p) 40%,transparent)}
-@keyframes dieRoll{
-  0%{transform:rotate(0deg) scale(1,1)}
-  20%{transform:rotate(-15deg) scale(1.06,.9)}
-  40%{transform:rotate(11deg) scale(.92,1.07)}
-  60%{transform:rotate(-9deg) scale(1.05,.94)}
-  80%{transform:rotate(6deg) scale(.97,1.03)}
-  100%{transform:rotate(0deg) scale(1,1)}
-}
-.die.land{animation:dieLand .3s var(--ease)}
-@keyframes dieLand{0%{transform:scale(1.18) rotate(-6deg)}55%{transform:scale(.93) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+.die.rolling{animation:dieTumble .5s linear infinite;border-color:var(--p);box-shadow:inset 0 2px 0 rgba(255,255,255,.1),0 0 22px color-mix(in srgb,var(--p) 40%,transparent)}
+@keyframes dieTumble{0%{transform:rotateX(0) rotateY(0) rotateZ(0)}33%{transform:rotateX(180deg) rotateY(90deg) rotateZ(8deg)}66%{transform:rotateX(300deg) rotateY(220deg) rotateZ(-8deg)}100%{transform:rotateX(360deg) rotateY(360deg) rotateZ(0)}}
+.die.land{animation:dieLand .34s var(--ease)}
+@keyframes dieLand{0%{transform:scale(1.16) rotate(-5deg)}60%{transform:scale(.95) rotate(2deg)}100%{transform:scale(1)}}
 .die.hot i.on{background:var(--p);box-shadow:0 0 10px color-mix(in srgb,var(--p) 65%,transparent)}
 .dice-sum{text-align:center;font-size:.72rem;color:var(--on-sv);margin-top:-.4rem}
 .dice-res{text-align:center;font-weight:700;font-size:1.2rem;margin:.5rem 0;min-height:1.5rem}
@@ -264,9 +251,9 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .crash-mult.dead{color:var(--e);animation:multDead .42s var(--ease)}
 @keyframes multPulse{50%{transform:scale(1.04)}}
 @keyframes multDead{0%{transform:scale(1.14)}60%{transform:scale(.96)}100%{transform:scale(1)}}
-.crash-status{font-size:.72rem;color:rgba(255,255,255,.78);margin-top:.15rem;min-height:1rem}
+.crash-status{font-size:.72rem;color:var(--on-sv);margin-top:.15rem;min-height:1rem}
 .crash-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
-.crash-hud{position:absolute;left:12px;right:12px;top:11px;z-index:4;display:flex;justify-content:space-between;gap:.5rem;font-size:.63rem;font-weight:600;color:rgba(255,255,255,.82);opacity:.8;pointer-events:none}
+.crash-hud{position:absolute;left:12px;right:12px;top:11px;z-index:4;display:flex;justify-content:space-between;gap:.5rem;font-size:.63rem;font-weight:600;color:var(--on-sv);opacity:.8;pointer-events:none}
 /* Ракета на конце графика — позиция всегда синхронна с последним кадром линии */
 .crash-point{position:absolute;width:32px;height:32px;margin:-16px 0 0 -16px;z-index:3;left:8%;top:86%;display:grid;place-items:center;font-size:20px;line-height:1;filter:drop-shadow(0 0 9px color-mix(in srgb,var(--p) 75%,transparent))}
 .crash-point::after{content:"🚀"}
@@ -472,35 +459,17 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
 .bj-total.bust{background:#C62828;border-color:#EF5350}
 .bj-total.bj21{background:linear-gradient(180deg,#FFD54F,#FFA000);color:#3E2700;border-color:#FFD54F}
 .bj-hand{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;min-height:96px;padding:.3rem 0 .1rem}
-.bj-hand .bj-card{margin-left:-22px;box-shadow:-4px 5px 10px rgba(0,0,0,.4),-1px 1px 2px rgba(0,0,0,.25)}
+.bj-hand .bj-card{margin-left:-22px;box-shadow:-3px 4px 8px rgba(0,0,0,.45)}
 .bj-hand .bj-card:first-child{margin-left:0}
-.bj-card{
-  width:58px;height:84px;border-radius:8px;
-  background:
-    radial-gradient(130% 90% at 18% 0%,rgba(255,255,255,.95),rgba(255,255,255,0) 55%),
-    linear-gradient(165deg,#FEFCF7 0%,#F3EFE2 55%,#E8E1CE 100%);
-  border:1px solid #C5BCA4;
-  color:#232323;position:relative;font-weight:700;flex-shrink:0;
-  overflow:hidden;isolation:isolate;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -6px 10px -8px rgba(0,0,0,.35)
-}
-.bj-card::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background-image:repeating-linear-gradient(115deg,rgba(120,105,70,.05) 0 1px,transparent 1px 3px);
-  mix-blend-mode:multiply;opacity:.55
-}
-.bj-card::after{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.65) 47%,transparent 58%);
-  mix-blend-mode:overlay
-}
+.bj-card{width:58px;height:84px;border-radius:9px;background:linear-gradient(165deg,#FFFFFF 0%,#F6F2E8 55%,#E9E3D3 100%);border:1px solid #B9B2A4;color:#1c1c1e;position:relative;font-weight:700;flex-shrink:0;overflow:hidden}
+.bj-card::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:repeating-linear-gradient(115deg,rgba(120,105,70,.055) 0 1px,transparent 1px 3px)}
+.bj-card::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 32%)}
 .bj-card:last-child{animation:bjIn .3s var(--ease)}
-.bj-card.red{color:#B3261E}
-.bj-card .cnr{position:absolute;top:4px;left:5px;font-size:.68rem;line-height:1.05;font-style:normal;text-align:center;z-index:2;text-shadow:0 1px 0 rgba(255,255,255,.6)}
-.bj-card .cnr small{display:block;font-size:.8rem}
+.bj-card.red{color:#C62828}
+.bj-card .cnr{position:absolute;top:4px;left:5px;z-index:1;display:flex;flex-direction:column;align-items:center;font-size:.68rem;line-height:1.1;font-style:normal}
+.bj-card .cnr small{font-size:.8rem;line-height:1}
 .bj-card .cnr.btm{top:auto;left:auto;bottom:4px;right:5px;transform:rotate(180deg)}
-.bj-card .pip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.95rem;line-height:1;font-style:normal;z-index:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15))}
-.bj-card .wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.6rem;line-height:1;font-style:normal;opacity:.08;z-index:0}
+.bj-card .pip{position:absolute;inset:0;z-index:0;display:grid;place-items:center;font-size:1.9rem;line-height:1;font-style:normal}
 @keyframes bjIn{from{transform:translateY(-16px) rotate(8deg) scale(.85);opacity:0}to{opacity:1}}
 .bj-row{display:flex;gap:.5rem;margin-top:.2rem}
 .bj-row .btn{flex:1}
@@ -509,13 +478,54 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
 .duel-result.lose{color:var(--e)}
 .duel-result.push{color:#FFC107}
 .duel-code-big{text-align:center;font-size:2rem;font-weight:700;letter-spacing:6px;text-indent:6px;margin:.3rem 0 .6rem;color:var(--p)}
+/* ===== DUEL MODES: баккара / рулетка / покер (дуэли 1 на 1) ===== */
+.duel-modes{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.4rem 0}
+.duel-mode{display:flex;flex-direction:column;align-items:center;gap:.15rem;background:var(--sc);border:2px solid var(--ol-v);border-radius:var(--sh-l);padding:.6rem .3rem;cursor:pointer;font-family:inherit;color:var(--on);transition:all .15s}
+.duel-mode:active{transform:scale(.95)}
+.duel-mode.on{border-color:var(--p);background:color-mix(in srgb,var(--p) 16%,var(--sc));box-shadow:0 0 12px color-mix(in srgb,var(--p) 30%,transparent)}
+.duel-mode b{font-size:.78rem}
+.duel-mode small{font-size:.58rem;color:var(--on-sv);text-align:center;line-height:1.25}
+.duel-mode .mat{font-size:22px;color:var(--p)}
+.bac-road{display:flex;gap:.25rem;justify-content:center;flex-wrap:wrap;margin-bottom:.5rem;min-height:1.4rem}
+.bac-road i{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:.6rem;font-weight:700;font-style:normal;color:#fff}
+.br-P{background:#2979FF}.br-B{background:#E53935}.br-T{background:#43A047}
+.bac-picks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.4rem;margin:.4rem 0}
+.bac-picks button{padding:.6rem .2rem;border-radius:var(--sh-l);border:2px solid var(--ol-v);background:var(--sc);color:var(--on);font:700 .72rem/1.3 var(--f);cursor:pointer;transition:all .15s}
+.bac-picks button:active{transform:scale(.95)}
+.bac-picks button.on{border-color:var(--p);background:var(--p-c);color:var(--on-p-c)}
+.bac-picks button:disabled{opacity:.55}
+.bac-versus{text-align:center;font-size:.78rem;color:var(--on-sv);min-height:1.2rem;margin:.3rem 0}
+.duel-bets{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;margin:.4rem 0}
+.duel-bets button{padding:.55rem .2rem;border-radius:var(--sh-m);border:2px solid var(--ol-v);background:var(--sc);color:var(--on);font:700 .7rem/1.25 var(--f);cursor:pointer;transition:all .15s}
+.duel-bets button:active{transform:scale(.94)}
+.duel-bets button.on{border-color:var(--p);background:var(--p-c);color:var(--on-p-c)}
+.duel-bets button:disabled{opacity:.55}
+.duel-numrow{display:flex;gap:.4rem;align-items:center;margin-top:.35rem}
+.duel-numrow input{flex:1;min-width:0;padding:.55rem .4rem;border:1.5px solid var(--ol-v);border-radius:var(--sh-s);background:var(--bg);color:var(--on);font:inherit;text-align:center;outline:none}
+.pok-log{max-height:110px;overflow-y:auto;font-size:.72rem;color:var(--on-sv);background:var(--sc);border-radius:var(--sh-m);padding:.4rem .6rem;margin-top:.4rem}
+.pok-log div{padding:.12rem 0;border-bottom:1px dashed var(--ol-v)}
+.pok-log div:last-child{border-bottom:none}
+.pok-callinfo{text-align:center;font-size:.8rem;font-weight:700;min-height:1.3rem;margin:.3rem 0}
+.d-badge{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#FFD54F;color:#3E2700;font-size:.65rem;font-weight:700;margin-left:.3rem;vertical-align:middle}
+.pok-amt{display:flex;gap:.3rem;align-items:center;flex:1;min-width:0}
+.pok-amt input{width:100%;min-width:0;padding:.5rem .3rem;border:1.5px solid var(--ol-v);border-radius:var(--sh-s);background:var(--bg);color:var(--on);font:inherit;font-weight:700;text-align:center;outline:none}
+.duel-vs{display:flex;align-items:center;justify-content:center;gap:.6rem;font-weight:700;margin:.3rem 0 .6rem}
+.duel-vs b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:42%}
+.chat-log{max-height:150px;overflow-y:auto;display:flex;flex-direction:column;gap:.3rem;margin:.4rem 0;min-height:2rem}
+.chat-msg{max-width:82%;padding:.4rem .6rem;border-radius:var(--sh-m);font-size:.78rem;word-break:break-word}
+.chat-msg.me{align-self:flex-end;background:var(--p);color:var(--on-p)}
+.chat-msg.op{align-self:flex-start;background:var(--sc);border:1px solid var(--ol-v)}
+.chat-msg small{display:block;font-size:.6rem;opacity:.7;margin-bottom:.1rem}
+.chat-quick{display:flex;gap:.3rem;justify-content:center;margin:.3rem 0}
+.chat-q{padding:.3rem .6rem;border-radius:var(--sh-full);border:1px solid var(--ol-v);background:transparent;color:var(--on-sv);font:600 .7rem var(--f);cursor:pointer}
+.chat-q:active{transform:scale(.92)}
   </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="topbar-left">
-    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta" id="verBadge">АЛЬФА 7.4</span></div>
+    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta" id="verBadge">АЛЬФА 7.5</span></div>
     <span class="topbar-uid" id="uidTxt">ID: —</span>
   </div>
   <div class="bal" id="balBox"><span class="mat">star</span><span id="bal">1000</span><span class="bonus" id="btxt"></span></div>
@@ -725,17 +735,15 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
     </div>
   </section>
 
-  <!-- DUEL — онлайн-дуэль блэкджек 1 на 1 (бета) -->
+  <!-- DUEL — онлайн-дуэли 1 на 1: баккара, рулетка, покер -->
   <section class="scr" id="s-duel">
     <div class="card">
-      <div class="lbl"><span data-i18n="duel_title">ОНЛАЙН-ДУЭЛЬ • БЛЭКДЖЕК</span> <span class="topbar-beta" data-i18n="duel_test">ТЕСТ</span></div>
+      <div class="lbl"><span data-i18n="duel_title">ОНЛАЙН-ДУЭЛИ • 1 НА 1</span> <span class="topbar-beta" data-i18n="duel_test">v1.1</span></div>
       <div class="duel-status" id="duelStatus"></div>
       <div id="duelLobby">
         <div id="duelPre">
-          <div class="lbl"><span data-i18n="bet">СТАВКА</span></div>
-          <div class="bet-row"><button class="btn btn-s btn-sm" id="duelDn">−</button><input id="duelStakeIn" type="number" value="50" min="1" step="10" /><button class="btn btn-s btn-sm" id="duelUp">+</button></div>
           <div class="pf-ava-row">
-            <button class="btn btn-p btn-sm" id="duelCreate"><span class="mat">add</span><span data-i18n="duel_create">Создать стол</span></button>
+            <button class="btn btn-p btn-sm" id="duelCreate"><span class="mat">add</span><span data-i18n="duel_create">Создать лобби</span></button>
           </div>
           <div class="lbl" style="margin-top:.7rem" data-i18n="duel_code">КОД СТОЛА</div>
           <div class="bet-row"><input id="duelCode" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXXX" style="text-transform:uppercase" /><button class="btn btn-p btn-sm" id="duelJoin"><span data-i18n="duel_join">Войти</span></button></div>
@@ -751,25 +759,107 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
         </div>
       </div>
     </div>
-    <div class="card" id="duelTable" style="display:none">
+    <div class="card" id="duelSetup" style="display:none">
+      <div class="lbl"><span data-i18n="duel_lobby">ЛОББИ</span></div>
+      <div class="duel-vs"><b id="duelVsMe">…</b><span>⚔️</span><b id="duelVsOpp">…</b></div>
+      <div id="duelCfgHost">
+        <div class="lbl" data-i18n="duel_mode">РЕЖИМ ДУЭЛИ</div>
+        <div class="duel-modes" id="duelModes">
+          <button class="duel-mode on" data-m="bac"><span class="mat">style</span><b data-i18n="d_bac">Баккара</b><small>Punto Banco • 8 колод</small></button>
+          <button class="duel-mode" data-m="rou"><span class="mat">casino</span><b data-i18n="d_rou">Рулетка</b><small>European • зеро</small></button>
+          <button class="duel-mode" data-m="pok"><span class="mat">groups</span><b data-i18n="d_pok">Покер</b><small>Heads-Up Hold'em</small></button>
+        </div>
+        <div class="rewards-sub" id="duelModeHint" style="margin:.4rem 0"></div>
+        <div class="lbl"><span data-i18n="bet">СТАВКА</span></div>
+        <div class="bet-row"><button class="btn btn-s btn-sm" id="duelDn">−</button><input id="duelStakeIn" type="number" value="50" min="1" step="10" /><button class="btn btn-s btn-sm" id="duelUp">+</button></div>
+        <button class="btn btn-p btn-lg" id="duelStartBtn" style="margin-top:.6rem"><span class="mat">play_arrow</span><span data-i18n="duel_start">НАЧАТЬ ИГРУ</span></button>
+      </div>
+      <div id="duelCfgGuest" style="display:none">
+        <div class="bac-versus" id="duelCfgView">…</div>
+        <div class="rewards-sub" style="text-align:center" data-i18n="duel_wait_host">Хост настраивает лобби — настройки появятся здесь</div>
+      </div>
+    </div>
+    <div class="card" id="duelChatCard" style="display:none">
+      <div class="lbl"><span data-i18n="duel_chat">ЧАТ ДУЭЛИ</span></div>
+      <div class="chat-log" id="duelChatLog"></div>
+      <div class="chat-quick"><button class="chat-q" data-q="50">50 ⭐</button><button class="chat-q" data-q="100">100 ⭐</button><button class="chat-q" data-q="200">200 ⭐</button><button class="chat-q" data-q="500">500 ⭐</button></div>
+      <div class="duel-numrow"><input id="duelChatIn" type="text" maxlength="120" autocomplete="off" placeholder="Сообщение..." /><button class="btn btn-p btn-sm" id="duelChatSend"><span class="mat">send</span></button></div>
+    </div>
+    <!-- БАККАРА: общий шуз, оба ставят прогноз на один купон -->
+    <div class="card" id="duelBacTable" style="display:none">
       <div class="bj-felt">
-      <div class="bj-deck"><span data-i18n="duel_deck">В колоде</span>: <b id="duelDeckN">52</b></div>
-      <div class="bj-side" id="duelOppBox">
-        <div class="bj-who"><span class="bj-ava" id="duelOppAva">?</span><b id="duelOppName">…</b><span class="bj-total" id="duelOppTotal"></span></div>
-        <div class="bj-hand" id="duelOppHand"></div>
+        <div class="bj-deck"><span data-i18n="bac_shoe">Шу</span>: <b id="bacShoeN">416</b> • <span data-i18n="bac_coupon">купон</span> <b id="bacRoundN">0</b></div>
+        <div class="bac-road" id="bacRoad"></div>
+        <div class="bj-side" id="bacPBox">
+          <div class="bj-who"><b data-i18n="bac_p_name">Игрок • Punto</b><span class="bj-total" id="bacPTotal"></span></div>
+          <div class="bj-hand" id="bacPHand"></div>
+        </div>
+        <div class="bj-side" id="bacBBox">
+          <div class="bj-who"><b data-i18n="bac_b_name">Банкир • Banco</b><span class="bj-total" id="bacBTotal"></span></div>
+          <div class="bj-hand" id="bacBHand"></div>
+        </div>
+        <div class="bj-deck" id="bacTableauLine"></div>
       </div>
-      <div class="bj-side" id="duelMyBox">
-        <div class="bj-who"><span class="bj-ava" id="duelMyAva">?</span><b id="duelMyName">…</b><span class="bj-total" id="duelMyTotal"></span></div>
-        <div class="bj-hand" id="duelMyHand"></div>
+      <div class="lbl" data-i18n="bac_pick_lbl">ТВОЙ ПРОГНОЗ НА КУПОН</div>
+      <div class="bac-picks" id="bacPicks">
+        <button data-p="P"><span data-i18n="bac_p">Игрок ×1</span></button>
+        <button data-p="B"><span data-i18n="bac_b">Банкир ×0.95</span></button>
+        <button data-p="T"><span data-i18n="bac_t">Ничья ×8</span></button>
       </div>
+      <div class="bac-versus" id="bacVersus"></div>
+      <div class="duel-result" id="bacResult"></div>
+    </div>
+    <!-- РУЛЕТКА: один спин, у каждого своя ставка на всю сумму -->
+    <div class="card" id="duelRouTable" style="display:none">
+      <div class="rr-wheel" id="duelRouWheel"><div class="rr-ring" id="duelRouRing"></div><div class="rr-num" id="duelRouN">?</div></div>
+      <div class="rr-res" id="duelRouRes"></div>
+      <div class="lbl" data-i18n="rou_pick_lbl">ТВОЯ СТАВКА НА СПИН — НА ВСЮ СУММУ</div>
+      <div class="duel-bets" id="duelRouBets">
+        <button data-b="red">🔴 <span data-i18n="rou_red">Красное ×1</span></button>
+        <button data-b="black">⚫ <span data-i18n="rou_black">Чёрное ×1</span></button>
+        <button data-b="even" data-i18n="rou_even">Чёт ×1</button>
+        <button data-b="odd" data-i18n="rou_odd">Нечет ×1</button>
+        <button data-b="low">1–18 ×1</button>
+        <button data-b="high">19–36 ×1</button>
+        <button data-b="dz1">1st 12 ×2</button>
+        <button data-b="dz2">2nd 12 ×2</button>
+        <button data-b="dz3">3rd 12 ×2</button>
+        <button data-b="col1">Колонка 1 ×2</button>
+        <button data-b="col2">Колонка 2 ×2</button>
+        <button data-b="col3">Колонка 3 ×2</button>
       </div>
-      <div class="bj-row">
-        <button class="btn btn-p btn-sm" id="duelHit"><span data-i18n="duel_hit">Ещё</span></button>
-        <button class="btn btn-s btn-sm" id="duelStand"><span data-i18n="duel_stand">Хватит</span></button>
-        <button class="btn btn-s btn-sm" id="duelDouble"><span data-i18n="duel_double">Удвоить</span></button>
-        <button class="btn btn-s btn-sm" id="duelSplit"><span data-i18n="duel_split">Сплит</span></button>
+      <div class="duel-numrow"><input id="duelRouNum" type="number" min="0" max="36" placeholder="0–36" /><button class="btn btn-s btn-sm" id="duelRouNumGo"><span data-i18n="rou_straight">Число ×35</span></button></div>
+      <div class="bac-versus" id="rouVersus"></div>
+      <div class="rr-hist" id="duelRouHist"></div>
+      <div class="duel-result" id="rouResult"></div>
+    </div>
+    <!-- ПОКЕР: хедз-ап техасский холдем на один банк -->
+    <div class="card" id="duelPokTable" style="display:none">
+      <div class="bj-felt">
+        <div class="bj-deck"><span id="pokStreetLbl">Preflop</span> • <span data-i18n="pok_pot">Банк</span>: <b id="pokPot">0</b></div>
+        <div class="bj-hand" id="pokBoard"></div>
+        <div class="bj-side" id="pokOppBox">
+          <div class="bj-who"><span class="bj-ava" id="pokOppAva">?</span><b id="pokOppName">…</b><span class="bj-total" id="pokOppStack"></span></div>
+          <div class="bj-hand" id="pokOppHand" style="min-height:60px"></div>
+          <div class="bj-deck" id="pokOppLbl"></div>
+        </div>
+        <div class="bj-side" id="pokMyBox">
+          <div class="bj-who"><span class="bj-ava" id="pokMyAva">?</span><b id="pokMyName">…</b><span class="bj-total" id="pokMyStack"></span></div>
+          <div class="bj-hand" id="pokMyHand" style="min-height:60px"></div>
+          <div class="bj-deck" id="pokMyLbl"></div>
+        </div>
       </div>
-      <div class="duel-result" id="duelResult"></div>
+      <div class="pok-callinfo" id="pokCallInfo"></div>
+      <div class="bj-row" id="pokActions">
+        <button class="btn btn-s btn-sm" id="pokFold"><span data-i18n="pok_fold">Фолд</span></button>
+        <button class="btn btn-p btn-sm" id="pokCheckCall"><span data-i18n="pok_check">Чек</span></button>
+      </div>
+      <div class="bj-row" style="margin-top:.4rem">
+        <div class="pok-amt"><button class="btn btn-s btn-sm" id="pokAmtDn">−</button><input id="pokAmt" type="number" value="20" min="1" step="5" /><button class="btn btn-s btn-sm" id="pokAmtUp">+</button></div>
+        <button class="btn btn-s btn-sm" id="pokBetRaise"><span data-i18n="pok_betraise">Бет / Рейз</span></button>
+      </div>
+      <div class="pok-log" id="pokLog"></div>
+      <div class="duel-result" id="pokResult"></div>
     </div>
     <div class="pf-ava-row" id="duelFoot" style="display:none">
       <button class="btn btn-s btn-sm" id="duelLeave"><span class="mat">logout</span><span data-i18n="duel_leave">Покинуть</span></button>
@@ -1260,9 +1350,9 @@ function renderAll(){
 
 // ===== Локализация Alpha 7 (RU/EN/UK) =====
 const I18N={
-ru:{ver_badge:'АЛЬФА 7.4',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'— растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% — возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме — шанс без штрафа',risk1:'Повышенная ставка — шанс −6%',risk2:'Крупная ставка — шанс −13%',risk3:'Высокий риск — шанс −20%',risk4:'Очень высокий риск — шанс −28%',risk5:'Экстремальный риск — шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1–18/19–36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону — выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} из 7 — награда ждёт!',received:'Получено',streak_next:'Стрик {s}/7 • следующая награда завтра',daily_reward_for:'День {d} — +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто — подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-en:{ver_badge:'ALPHA 7.4',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'— grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND — PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee — 97% return',throw:'ROLL',risk0:'Normal bet — no chance penalty',risk1:'Raised bet — chance −6%',risk2:'Big bet — chance −13%',risk3:'High risk — chance −20%',risk4:'Very high risk — chance −28%',risk5:'Extreme risk — chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1–18/19–36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side — payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} of 7 — reward is waiting!',received:'Claimed',streak_next:'Streak {s}/7 • next reward tomorrow',daily_reward_for:'Day {d} — +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto — follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-uk:{ver_badge:'АЛЬФА 7.4',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'— зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ — ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% — повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі — шанс без штрафу',risk1:'Підвищена ставка — шанс −6%',risk2:'Велика ставка — шанс −13%',risk3:'Високий ризик — шанс −20%',risk4:'Дуже високий ризик — шанс −28%',risk5:'Екстремальний ризик — шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1–18/19–36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону — виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} із 7 — нагорода чекає!',received:'Отримано',streak_next:'Стрік {s}/7 • наступна нагорода завтра',daily_reward_for:'День {d} — +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто — підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
+ru:{ver_badge:'АЛЬФА 7.5',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'— растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ — ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% — возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме — шанс без штрафа',risk1:'Повышенная ставка — шанс −6%',risk2:'Крупная ставка — шанс −13%',risk3:'Высокий риск — шанс −20%',risk4:'Очень высокий риск — шанс −28%',risk5:'Экстремальный риск — шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1–18/19–36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону — выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} из 7 — награда ждёт!',received:'Получено',streak_next:'Стрик {s}/7 • следующая награда завтра',daily_reward_for:'День {d} — +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто — подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+en:{ver_badge:'ALPHA 7.5',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'— grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND — PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee — 97% return',throw:'ROLL',risk0:'Normal bet — no chance penalty',risk1:'Raised bet — chance −6%',risk2:'Big bet — chance −13%',risk3:'High risk — chance −20%',risk4:'Very high risk — chance −28%',risk5:'Extreme risk — chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1–18/19–36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side — payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} of 7 — reward is waiting!',received:'Claimed',streak_next:'Streak {s}/7 • next reward tomorrow',daily_reward_for:'Day {d} — +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto — follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+uk:{ver_badge:'АЛЬФА 7.5',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'— зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ — ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% — повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі — шанс без штрафу',risk1:'Підвищена ставка — шанс −6%',risk2:'Велика ставка — шанс −13%',risk3:'Високий ризик — шанс −20%',risk4:'Дуже високий ризик — шанс −28%',risk5:'Екстремальний ризик — шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1–18/19–36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону — виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} із 7 — нагорода чекає!',received:'Отримано',streak_next:'Стрік {s}/7 • наступна нагорода завтра',daily_reward_for:'День {d} — +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто — підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
 };
 // ===== TOWER i18n patch =====
 try{
@@ -1329,7 +1419,7 @@ function gameName(g){var m={slots:'game_slots',dice:'game_dice',roulette:'game_r
 function rrOddsRender(){var el=$('rrOdds');if(!el)return;el.textContent=t('rr_odds',{straight:R_STRAIGHT_MULT.toFixed(2),outside:R_OUTSIDE_MULT.toFixed(2)})}
 function applyI18n(){
   try{document.documentElement.lang=curLang()}catch(e){}
-  try{document.title='Gapera Alpha 7.4'}catch(e){}
+  try{document.title='Gapera Alpha 7.5'}catch(e){}
   try{document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');el.textContent=t(k)})}catch(e){}
   try{var vb=$('verBadge');if(vb)vb.textContent=t('ver_badge')}catch(e){}
   try{rLang()}catch(e){}
@@ -1427,8 +1517,7 @@ const PROMO_CODES={
   gaperafp100:{spins:100,expires:new Date(2026,8,19,23,59,59).getTime()},
   gaperadoxyadeneg:{stars:5000000,expires:new Date(2026,8,19,23,59,59).getTime()},
   gaperabonus10:{stars:10000,bonusX2Minutes:30},
-  gaperaupdate:{stars:100000,spins:300,crashFree:10},
-  geperafrespin:{stars:40000,spins:400,crashFree:16,bonusX2Minutes:2400}
+  gaperaupdate:{stars:100000,spins:300,crashFree:10}
 };
 function applyPromo(){
   const el=$('promoInput');if(!el)return;
@@ -1835,35 +1924,24 @@ $('dGo').addEventListener('click',()=>{
   const d0=$('d0'),d1=$('d1');
   d0.classList.remove('hot');d1.classList.remove('hot');
   d0.classList.add('rolling');d1.classList.add('rolling');
-  // Мигание граней замедляется к концу броска (как у настоящей кости, которая
-  // тормозит перед остановкой), а не идёт равномерно с постоянным шагом —
-  // так финальный результат ощущается как «остановка», а не обрыв мигания.
-  const steps=[55,55,60,65,75,85,100,120,145];
-  let si=0;
-  function tick(){
-    if(si>=steps.length){
-      d0.classList.remove('rolling');d1.classList.remove('rolling');
-      // Штраф крупной ставки применяется ДО броска: если он сработал, кубики
-      // сразу выпадают проигрышной комбинацией. Сумма на экране и исход всегда совпадают.
-      const forceLose=risk.pen>0&&Math.random()<risk.pen;
-      const [a1,b1]=diceRoll(th,forceLose);
-      const tot=a1+b1;
-      setDie(d0,a1);setDie(d1,b1);
-      [d0,d1].forEach(d=>{d.classList.remove('land');void d.offsetWidth;d.classList.add('land');setTimeout(()=>d.classList.remove('land'),320)});
-      Sound.reelStop();
-      const {ml}=diceOdds(th);
-      const isOv=tot>th;
-      const w=isOv&&ml>0?Math.floor(bet*ml):0;
-      [d0,d1].forEach(d=>d.classList.toggle('hot',w>0));
-      S.bal+=w;save();rBal();$('dR').innerHTML=tot+(w>0?' ✅ +'+w:' ❌ −'+bet);$('dR').style.color=w>0?'var(--win)':'var(--e)';aH('dice',w,bet);dLock=false;$('dGo').disabled=false;bz(w?'win':'loss');
-      if(w>0){const r=$('dR').getBoundingClientRect();confetti(r.left+r.width/2,r.top,Math.min(24,8+Math.floor(w/bet)))}
-      return;
-    }
-    Sound.tick();setDie(d0,1+(Math.random()*6|0));setDie(d1,1+(Math.random()*6|0));
-    setTimeout(tick,steps[si]);
-    si++;
-  }
-  tick();
+  const iv=setInterval(()=>{Sound.tick();setDie(d0,1+(Math.random()*6|0));setDie(d1,1+(Math.random()*6|0))},70);
+  setTimeout(()=>{
+    clearInterval(iv);d0.classList.remove('rolling');d1.classList.remove('rolling');
+    // Штраф крупной ставки применяется ДО броска: если он сработал, кубики
+    // сразу выпадают проигрышной комбинацией. Сумма на экране и исход всегда совпадают.
+    const forceLose=risk.pen>0&&Math.random()<risk.pen;
+    const [a1,b1]=diceRoll(th,forceLose);
+    const tot=a1+b1;
+    setDie(d0,a1);setDie(d1,b1);
+    [d0,d1].forEach(d=>{d.classList.remove('land');void d.offsetWidth;d.classList.add('land');setTimeout(()=>d.classList.remove('land'),360)});
+    Sound.reelStop();
+    const {ml}=diceOdds(th);
+    const isOv=tot>th;
+    const w=isOv&&ml>0?Math.floor(bet*ml):0;
+    [d0,d1].forEach(d=>d.classList.toggle('hot',w>0));
+    S.bal+=w;save();rBal();$('dR').innerHTML=tot+(w>0?' ✅ +'+w:' ❌ −'+bet);$('dR').style.color=w>0?'var(--win)':'var(--e)';aH('dice',w,bet);dLock=false;$('dGo').disabled=false;bz(w?'win':'loss');
+    if(w>0){const r=$('dR').getBoundingClientRect();confetti(r.left+r.width/2,r.top,Math.min(24,8+Math.floor(w/bet)))}
+  },700);
 });
 
 // ===== ROULETTE =====
@@ -2732,14 +2810,95 @@ try{
   setInterval(function(){try{if(document.getElementById('s-profile').classList.contains('on')){rProfile();rSt()}}catch(_){}},3000);
   try{rProfile()}catch(_){}
 }catch(e){}
-// ===== DUEL — онлайн блэкджек 1 на 1 через PeerJS (бета) =====
+// ===== DUEL — онлайн-дуэли 1 на 1 через PeerJS: баккара, рулетка, покер =====
 // P2P без своего сервера: создатель стола получает короткий код, друг вводит
 // его у себя — браузеры соединяются напрямую (WebRTC DataChannel).
-// Колоду тасует создатель и рассылает её целиком: оба клиента видят одни и те
-// же карты и применяют одни и те же ходы, поэтому состояние всегда совпадает.
+// Хост — крупье и генератор случайности: тасует шу/колоду, крутит рулетку и
+// рассылает результат целиком. Оба клиента считают по одним и тем же данным,
+// поэтому состояние всегда совпадает.
+// Экономика дуэли единая: каждый вносит ставку, победитель забирает ×1.9,
+/// ничья/дележка — возврат ставки.
 const DUEL_PREFIX='gapera-duel-';
 const DUEL_BOT='gapera_bot';
-let DU={peer:null,conn:null,role:null,code:'',opp:{name:'?',ava:'?'},deck:[],hands:{host:[],guest:[]},idx:0,turn:null,over:true,started:false,winner:null,myStake:50,invested:0,st:{k:'dst_idle',p:null}};
+function duelPayout(stake){return Math.floor(stake*1.9)}
+let DU={peer:null,conn:null,linked:false,chat:[],role:null,code:'',mode:'bac',opp:{name:'?',ava:'?'},myStake:50,invested:0,started:false,over:true,winner:null,st:{k:'dst_idle',p:null},
+ bac:{shoe:[],pos:0,cutAt:0,round:0,hist:[],myPick:null,opPick:null,coup:null,phase:'idle'},
+ rou:{myBet:null,opBet:null,num:null,hist:[],phase:'idle'},
+ pok:null};
+// ===== Дуэльные строки (RU/EN/UK) =====
+try{
+Object.assign(I18N.ru,{duel_title:'ОНЛАЙН-ДУЭЛИ • 1 НА 1',duel_test:'ТЕСТ',duel_mode:'РЕЖИМ ДУЭЛИ',d_bac:'Баккара',d_rou:'Рулетка',d_pok:'Покер',
+d_bac_h:'Punto Banco • шу 8 колод • прогноз: Игрок ×1 / Банкир ×0.95 / Ничья ×8. Чей прогноз точнее — тот забирает банк ×1.9',
+d_rou_h:'European • зеро бьёт всё, кроме прямого номера. Каждый ставит всю сумму на свою позицию — чей возврат выше, тот забирает ×1.9',
+d_pok_h:'Heads-Up Texas Hold\u2019em • блайнды 5/10 • мин. ставка 20. Победитель раздачи забирает ×1.9, дележка — возврат',
+duel_me:'Игрок',duel_you:'вы',duel_opp:'соперник',duel_create:'Создать стол',duel_join:'Войти',duel_code:'КОД СТОЛА',duel_copy:'Копировать код',duel_invite:'Пригласить',duel_leave:'Покинуть',duel_again:'Ещё раз',
+duel_hint:'Победа ×1.9 • ничья — возврат ставки',duel_your_code:'ВАШ КОД',
+dst_idle:'Выбери режим, создай стол и поделись кодом — или введи код друга',dst_wait:'Жди соперника • код: {c}',dst_joining:'Подключаемся...',dst_conn:'Соперник на связи!',
+dst_you:'Твой ход',dst_foe:'Ход соперника...',dst_win:'Ты победил! +{n} ⭐',dst_lose:'Победил {name} • −{n} ⭐',dst_push:'Ничья — ставка возвращена',
+dst_left:'Соперник отключился',dst_err:'Нет соединения — проверь интернет',dst_nofriend:'Стол не найден — проверь код',dst_copied:'Код скопирован',dst_code_err:'Введи код стола',dst_broke:'Не хватило звёзд — стол распущен',
+dst_timeout:'Не дождались ответа — проверь код и что стол открыт',dst_invite:'Заходи в Gapera — Дуэль! Мой код: {c}',
+bac_shoe:'Шу',bac_coupon:'купон',bac_pick_lbl:'ТВОЙ ПРОГНОЗ НА КУПОН',bac_p:'Игрок ×1',bac_b:'Банкир ×0.95',bac_t:'Ничья ×8',
+bac_p_name:'Игрок • Punto',bac_b_name:'Банкир • Banco',bac_lock:'Прогноз принят, ждём соперника...',bac_opp_locked:'Соперник выбрал. Раздаём...',
+bac_nat:'Натурал {v} — третьих карт нет',bac_line:'Игрок {pt} ({pa}) • Банкир {bt} vs {pv} ({ba})',
+bac_take:'берёт',bac_stand:'стоит',bac_reshuffle:'Шу закончился — новый замес 8 колод',
+bac_res_P:'Выигрыш Игрока',bac_res_B:'Выигрыш Банкира',bac_res_T:'Ничья в купоне',bac_pushrefund:'Ничья в купоне — ставки Игрок/Банкир возвращаются в прогнозе',
+rou_pick_lbl:'ТВОЯ СТАВКА НА СПИН — НА ВСЮ СУММУ',rou_red:'Красное ×1',rou_black:'Чёрное ×1',rou_even:'Чёт ×1',rou_odd:'Нечет ×1',rou_straight:'Число ×35',
+rou_lock:'Ставка принята, ждём соперника...',rou_opp_locked:'Соперник поставил. Крутим...',rou_zero:'Зеро! Все внешние ставки биты',
+pok_pot:'Банк',pok_fold:'Фолд',pok_check:'Чек',pok_call:'Колл',pok_betraise:'Бет / Рейз',pok_min20:'Для покера ставка минимум 20 ⭐',
+pok_need:'К коллу: {n}',pok_free:'Бесплатно: чек или бет',pok_allin:'ВА-БАНК!',pok_showdown:'Шоудаун!',pok_win:'Раздачу выиграл {name}: {hand}',
+pok_split:'Дележка банка: {a} = {b}',pok_foldwin:'{name} забирает банк — соперник в фолде',pok_blinds:'Блайнды: {sb} малый / {bb} большой • баттон: {btn}',
+st_pre:'Префлоп',st_flop:'Флоп',st_turn:'Тёрн',st_river:'Ривер',st_show:'Шоудаун',
+pok_h8:'Стрит-флеш',pok_h7:'Каре',pok_h6:'Фул-хаус',pok_h5:'Флеш',pok_h4:'Стрит',pok_h3:'Тройка',pok_h2:'Две пары',pok_h1:'Пара',pok_h0:'Старшая карта'});
+Object.assign(I18N.en,{duel_title:'ONLINE DUELS • 1 ON 1',duel_test:'TEST',duel_mode:'DUEL MODE',d_bac:'Baccarat',d_rou:'Roulette',d_pok:'Poker',
+d_bac_h:'Punto Banco • 8-deck shoe • pick: Player ×1 / Banker ×0.95 / Tie ×8. Better pick takes ×1.9',
+d_rou_h:'European • zero beats everything except straight-up. Each bets the whole stake on one spot — higher return takes ×1.9',
+d_pok_h:'Heads-Up Texas Hold\u2019em • blinds 5/10 • min stake 20. Hand winner takes ×1.9, split — refund',
+duel_me:'Player',duel_you:'you',duel_opp:'opponent',duel_create:'Create table',duel_join:'Join',duel_code:'TABLE CODE',duel_copy:'Copy code',duel_invite:'Invite',duel_leave:'Leave',duel_again:'Rematch',
+duel_hint:'Win ×1.9 • push refunds stake',duel_your_code:'YOUR CODE',
+dst_idle:'Pick a mode, create a table and share the code — or enter a friend\u2019s code',dst_wait:'Waiting for opponent • code: {c}',dst_joining:'Connecting...',dst_conn:'Opponent connected!',
+dst_you:'Your move',dst_foe:'Opponent\u2019s move...',dst_win:'You win! +{n} ⭐',dst_lose:'{name} wins • −{n} ⭐',dst_push:'Push — stake refunded',
+dst_left:'Opponent disconnected',dst_err:'No connection — check internet',dst_nofriend:'Table not found — check the code',dst_copied:'Code copied',dst_code_err:'Enter the table code',dst_broke:'Not enough stars — table closed',
+dst_timeout:'No answer — check the code and that the table is open',dst_invite:'Join me in Gapera — Duel! My code: {c}',
+bac_shoe:'Shoe',bac_coupon:'coup',bac_pick_lbl:'YOUR PICK FOR THE COUP',bac_p:'Player ×1',bac_b:'Banker ×0.95',bac_t:'Tie ×8',
+bac_p_name:'Player • Punto',bac_b_name:'Banker • Banco',bac_lock:'Pick locked, waiting for opponent...',bac_opp_locked:'Opponent picked. Dealing...',
+bac_nat:'Natural {v} — no thirds',bac_line:'Player {pt} ({pa}) • Banker {bt} vs {pv} ({ba})',
+bac_take:'draws',bac_stand:'stands',bac_reshuffle:'Shoe is out — fresh 8-deck shuffle',
+bac_res_P:'Player wins',bac_res_B:'Banker wins',bac_res_T:'Tie coup',bac_pushrefund:'Tie coup — Player/Banker picks count as refunded',
+rou_pick_lbl:'YOUR BET FOR THE SPIN — WHOLE STAKE',rou_red:'Red ×1',rou_black:'Black ×1',rou_even:'Even ×1',rou_odd:'Odd ×1',rou_straight:'Number ×35',
+rou_lock:'Bet locked, waiting for opponent...',rou_opp_locked:'Opponent bet. Spinning...',rou_zero:'Zero! All outside bets lose',
+pok_pot:'Pot',pok_fold:'Fold',pok_check:'Check',pok_call:'Call',pok_betraise:'Bet / Raise',pok_min20:'Poker needs at least 20 ⭐ stake',
+pok_need:'To call: {n}',pok_free:'Free: check or bet',pok_allin:'ALL-IN!',pok_showdown:'Showdown!',pok_win:'{name} wins the hand: {hand}',
+pok_split:'Split pot: {a} = {b}',pok_foldwin:'{name} takes the pot — opponent folded',pok_blinds:'Blinds: {sb} small / {bb} big • button: {btn}',
+st_pre:'Preflop',st_flop:'Flop',st_turn:'Turn',st_river:'River',st_show:'Showdown',
+pok_h8:'Straight flush',pok_h7:'Four of a kind',pok_h6:'Full house',pok_h5:'Flush',pok_h4:'Straight',pok_h3:'Three of a kind',pok_h2:'Two pair',pok_h1:'Pair',pok_h0:'High card'});
+Object.assign(I18N.uk,{duel_title:'ОНЛАЙН-ДУЕЛІ • 1 НА 1',duel_test:'ТЕСТ',duel_mode:'РЕЖИМ ДУЕЛІ',d_bac:'Баккара',d_rou:'Рулетка',d_pok:'Покер',
+d_bac_h:'Punto Banco • шу 8 колод • прогноз: Гравець ×1 / Банкір ×0.95 / Нічия ×8. Чий прогноз точніший — той забирає ×1.9',
+d_rou_h:'European • зеро б\u2019є все, крім прямого номера. Кожен ставить усе на свою позицію — чиє повернення вище, той забирає ×1.9',
+d_pok_h:'Heads-Up Texas Hold\u2019em • блайнди 5/10 • мін. ставка 20. Переможець роздачі забирає ×1.9, поділ — повернення',
+duel_me:'Гравець',duel_you:'ви',duel_opp:'суперник',duel_create:'Створити стіл',duel_join:'Увійти',duel_code:'КОД СТОЛУ',duel_copy:'Копіювати код',duel_invite:'Запросити',duel_leave:'Покинути',duel_again:'Ще раз',
+duel_hint:'Перемога ×1.9 • нічия — повернення ставки',duel_your_code:'ВАШ КОД',
+dst_idle:'Обери режим, створи стіл і поділись кодом — або введи код друга',dst_wait:'Чекай суперника • код: {c}',dst_joining:'Підключаємось...',dst_conn:'Суперник на звʼязку!',
+dst_you:'Твій хід',dst_foe:'Хід суперника...',dst_win:'Ти переміг! +{n} ⭐',dst_lose:'Переміг {name} • −{n} ⭐',dst_push:'Нічия — ставку повернено',
+dst_left:'Суперник відключився',dst_err:'Немає зʼєднання — перевір інтернет',dst_nofriend:'Стіл не знайдено — перевір код',dst_copied:'Код скопійовано',dst_code_err:'Введи код столу',dst_broke:'Не вистачило зірок — стіл розпущено',
+dst_timeout:'Не дочекались відповіді — перевір код і що стіл відкрито',dst_invite:'Заходь у Gapera — Дуель! Мій код: {c}',
+bac_shoe:'Шу',bac_coupon:'купон',bac_pick_lbl:'ТВІЙ ПРОГНОЗ НА КУПОН',bac_p:'Гравець ×1',bac_b:'Банкір ×0.95',bac_t:'Нічия ×8',
+bac_p_name:'Гравець • Punto',bac_b_name:'Банкір • Banco',bac_lock:'Прогноз прийнято, чекаємо суперника...',bac_opp_locked:'Суперник обрав. Роздаємо...',
+bac_nat:'Натурал {v} — третіх карт немає',bac_line:'Гравець {pt} ({pa}) • Банкір {bt} vs {pv} ({ba})',
+bac_take:'бере',bac_stand:'стоїть',bac_reshuffle:'Шу скінчився — новий заміс 8 колод',
+bac_res_P:'Виграш Гравця',bac_res_B:'Виграш Банкіра',bac_res_T:'Нічия в купоні',bac_pushrefund:'Нічия в купоні — ставки Гравець/Банкір як повернення',
+rou_pick_lbl:'ТВОЯ СТАВКА НА СПІН — НА ВСЮ СУМУ',rou_red:'Червоне ×1',rou_black:'Чорне ×1',rou_even:'Парне ×1',rou_odd:'Непарне ×1',rou_straight:'Число ×35',
+rou_lock:'Ставку прийнято, чекаємо суперника...',rou_opp_locked:'Суперник поставив. Крутимо...',rou_zero:'Зеро! Усі зовнішні ставки биті',
+pok_pot:'Банк',pok_fold:'Фолд',pok_check:'Чек',pok_call:'Кол',pok_betraise:'Бет / Рейз',pok_min20:'Для покеру ставка мінімум 20 ⭐',
+pok_need:'До колу: {n}',pok_free:'Безкоштовно: чек або бет',pok_allin:'ВА-БАНК!',pok_showdown:'Шоудаун!',pok_win:'Роздачу виграв {name}: {hand}',
+pok_split:'Поділ банку: {a} = {b}',pok_foldwin:'{name} забирає банк — суперник у фолді',pok_blinds:'Блайнди: {sb} малий / {bb} великий • баттон: {btn}',
+st_pre:'Префлоп',st_flop:'Флоп',st_turn:'Терн',st_river:'Рівер',st_show:'Шоудаун',
+pok_h8:'Стріт-флеш',pok_h7:'Каре',pok_h6:'Фул-хаус',pok_h5:'Флеш',pok_h4:'Стріт',pok_h3:'Трійка',pok_h2:'Дві пари',pok_h1:'Пара',pok_h0:'Старша карта'});
+}catch(e){}
+try{
+Object.assign(I18N.ru,{duel_test:'v1.1',duel_lobby:'ЛОББИ',duel_create:'Создать лобби',duel_start:'НАЧАТЬ ИГРУ',duel_wait_host:'Хост настраивает лобби — настройки появятся здесь',duel_chat:'ЧАТ ДУЭЛИ',duel_chat_ph:'Сообщение...',duel_offer:'Предлагаю ставку: {n} ⭐',duel_cfg:'{mode} • ставка {stake} ⭐',duel_short:'Не хватает звёзд на эту ставку!'});
+Object.assign(I18N.en,{duel_test:'v1.1',duel_lobby:'LOBBY',duel_create:'Create lobby',duel_start:'START GAME',duel_wait_host:'Host is setting up the lobby...',duel_chat:'DUEL CHAT',duel_chat_ph:'Message...',duel_offer:'Stake offer: {n} ⭐',duel_cfg:'{mode} • stake {stake} ⭐',duel_short:'Not enough stars for this stake!'});
+Object.assign(I18N.uk,{duel_test:'v1.1',duel_lobby:'ЛОБІ',duel_create:'Створити лобі',duel_start:'ПОЧАТИ ГРУ',duel_wait_host:'Хост налаштовує лобі...',duel_chat:'ЧАТ ДУЕЛІ',duel_chat_ph:'Повідомлення...',duel_offer:'Пропоную ставку: {n} ⭐',duel_cfg:'{mode} • ставка {stake} ⭐',duel_short:'Не вистачає зірок на цю ставку!'});
+}catch(e){}
 function duelMe(){
   let n='';
   try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user)n=TG.initDataUnsafe.user.first_name||''}catch(e){}
@@ -2762,49 +2921,302 @@ function duelPeerOpts(){
   ]}};
 }
 function duelCode(){const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=A[Math.random()*A.length|0];return s}
+// Карта {r:'A'..'K', s:'♠'|'♥'|'♦'|'♣'} — единый рендер для баккары и покера
+function dcRed(s){return s==='\u2665'||s==='\u2666'}
+function dcCardHTML(c){
+  const red=dcRed(c.s);
+  return '<div class="bj-card'+(red?' red':'')+'"><i class="cnr">'+c.r+'<small>'+c.s+'</small></i><i class="pip">'+c.s+'</i><i class="cnr btm">'+c.r+'<small>'+c.s+'</small></i></div>';
+}
+function dcBackHTML(){return '<div class="bj-card" style="background:linear-gradient(160deg,#4F378B,#211F26);border-color:var(--p)"><i class="pip" style="color:var(--p)">✦</i></div>'}
 function duelNewDeck(){
   const R=['2','3','4','5','6','7','8','9','10','J','Q','K','A'],SU=['\u2660','\u2665','\u2666','\u2663'],d=[];
   R.forEach(r=>SU.forEach(s=>d.push({r:r,s:s})));
   for(let i=d.length-1;i>0;i--){const j=Math.random()*(i+1)|0,tmp=d[i];d[i]=d[j];d[j]=tmp}
   return d;
 }
-function bjVal(hand){
-  let t=0,a=0;
-  hand.forEach(c=>{if(c.r==='A'){a++;t+=11}else if(c.r==='J'||c.r==='Q'||c.r==='K')t+=10;else t+=parseInt(c.r,10)});
-  while(t>21&&a>0){t-=10;a--}
-  return t;
+// ===== ДУЭЛЬ-БАККАРА (Punto Banco, честные правила казино) =====
+// Шу 8 колод (416 карт), карта-срезка, сжигание, натуралы 8/9,
+// игрок тянет на 0–5 / стоит на 6–7, банкир — полное табло.
+// Выплаты купона: игрок 1:1, банкир 0.95:1 (комиссия 5%), ничья 8:1.
+// Ничья в купоне: прогнозы Игрок/Банкир считаются возвратом (0), а не проигрышем.
+function bacCardVal(c){if(c.r==='A')return 1;if(c.r==='K'||c.r==='Q'||c.r==='J'||c.r==='10')return 0;return parseInt(c.r,10)}
+function bacTot(h){let s=0;for(let i=0;i<h.length;i++)s+=bacCardVal(h[i]);return s%10}
+function bacNewShoe(){
+  const d=duelNewDeck();
+  for(let k=1;k<8;k++){const more=duelNewDeck();for(let i=0;i<more.length;i++)d.push(more[i])}
+  for(let i=d.length-1;i>0;i--){const j=Math.random()*(i+1)|0,tmp=d[i];d[i]=d[j];d[j]=tmp}
+  // Сжигание: первая карта задаёт, сколько карт сжечь (фигурные/10 = 10)
+  const burn=Math.max(1,Math.min(10,bacCardVal(d[0])||10));
+  return {shoe:d,pos:1+burn,cutAt:d.length-60};
 }
-function bjCardHTML(c){
-  const red=(c.s==='\u2665'||c.s==='\u2666');
-  return '<div class="bj-card'+(red?' red':'')+'"><i class="wm">'+c.s+'</i><i class="cnr">'+c.r+'<small>'+c.s+'</small></i><i class="pip">'+c.s+'</i><i class="cnr btm">'+c.r+'<small>'+c.s+'</small></i></div>';
+// Чистая функция купона: по шу и позиции всегда один результат на обоих клиентах.
+// Порядок сдачи: P, B, P, B. p3 — третья игрока, b3 — третья банкира.
+function bacDeal(shoe,pos){
+  const p=[shoe[pos],shoe[pos+2]],b=[shoe[pos+1],shoe[pos+3]];
+  let n=4;
+  const pt0=bacTot(p),bt0=bacTot(b);
+  let pt=pt0,bt=bt0,p3=null,b3=null,pv=-1,nat=(pt0>=8||bt0>=8);
+  if(!nat){
+    if(pt0<=5){p3=shoe[pos+n];n++;pv=bacCardVal(p3);p.push(p3);pt=bacTot(p)}
+    if(p3){
+      let draw=false;
+      if(bt0<=2)draw=true;
+      else if(bt0===3)draw=(pv!==8);
+      else if(bt0===4)draw=(pv>=2&&pv<=7);
+      else if(bt0===5)draw=(pv>=4&&pv<=7);
+      else if(bt0===6)draw=(pv===6||pv===7);
+      if(draw){b3=shoe[pos+n];n++;b.push(b3);bt=bacTot(b)}
+    }else if(bt0<=5){b3=shoe[pos+n];n++;b.push(b3);bt=bacTot(b)}
+  }
+  const res=pt>bt?'P':(bt>pt?'B':'T');
+  return {p:p,b:b,p3:p3,b3:b3,pt0:pt0,bt0:bt0,pt:pt,bt:bt,pv:pv,res:res,n:n,nat:nat};
 }
-function duelBestOf(arr){let s=0;(arr||[]).forEach(hh=>{const v=bjVal(hh.c);if(v<=21&&v>s)s=v});return s}
-function duelBest(who){return duelBestOf(DU.hands[who]||[])}
-function duelSideInfo(arr){
-  if(!arr.length||!arr.some(hh=>hh.c.length))return {disp:'',bust:false,bj:false};
-  let best=0,worst=0,allBust=true;
-  arr.forEach(hh=>{const v=bjVal(hh.c);if(v>21){if(v>worst)worst=v}else{allBust=false;if(v>best)best=v}});
-  if(allBust)return {disp:worst,bust:true,bj:false};
-  return {disp:best,bust:false,bj:(best===21)};
+function bacEval(pick,res){
+  if(pick===res)return pick==='T'?8:(pick==='B'?0.95:1);
+  if(res==='T')return 0; // ничья: прогнозы P/B — возврат
+  return -1;
 }
-function duelIsNatural(hh){return hh&&hh.c.length===2&&bjVal(hh.c)===21}
-function duelUnfinished(who){const r=[];(DU.hands[who]||[]).forEach((hh,i)=>{if(!hh.dn)r.push(i)});return r}
-function duelCanSplitSilent(who){
-  const hs=DU.hands[who]||[];
-  return hs.length===1&&hs[0].c.length===2&&hs[0].c[0].r===hs[0].c[1].r&&hs[0].noAct&&!hs[0].dn;
+function bacPickLbl(p){return p==='P'?t('bac_p'):(p==='B'?t('bac_b'):t('bac_t'))}
+function bacResLbl(r){return r==='P'?t('bac_res_P'):(r==='B'?t('bac_res_B'):t('bac_res_T'))}
+function bacChoose(p){
+  try{Sound.click()}catch(e){}
+  const B=DU.bac;
+  if(!DU.conn||!DU.started||DU.over||B.phase!=='pick'||B.myPick)return;
+  B.myPick=p;
+  duelSend({t:'bac_pick',pick:p});
+  bacRender();
+  bacMaybeDeal();
 }
-function duelHandRowHTML(hh){
-  const v=bjVal(hh.c);
-  const cls='bj-total sm'+(v>21?' bust':(v===21?' bj21':''));
-  return '<div class="bj-handrow"><div class="bj-hand">'+hh.c.map(bjCardHTML).join('')+'</div><div class="'+cls+'">'+v+'</div>'+(hh.dbl?'<span class="bj-dbl">×2</span>':'')+'</div>';
+function bacMaybeDeal(){
+  const B=DU.bac;
+  if(DU.role!=='host')return;
+  if(!B.myPick||!B.opPick||B.phase!=='pick')return;
+  if(!ok(DU.myStake)){duelSend({t:'broke'});duelLeave(true);duelSetStatus('dst_broke');return}
+  // Срезка: карт не хватит на купон — новый шу
+  let fresh=false;
+  if(!B.shoe.length||B.pos+12>B.cutAt){const s=bacNewShoe();B.shoe=s.shoe;B.pos=s.pos;B.cutAt=s.cutAt;fresh=true}
+  S.bal-=DU.myStake;save();rBal();
+  DU.invested=DU.myStake;DU.over=false;
+  B.round++;
+  B.phase='reveal';B.coup=null;B.coupPos=B.pos;B.fresh=fresh;
+  duelSend({t:'bac_coup',shoe:B.shoe,pos:B.pos,cutAt:B.cutAt,round:B.round,fresh:fresh,picks:{host:B.myPick,guest:B.opPick}});
+  bacRunCoup();
 }
-function duelAdvance(fromWho){
-  const other=(fromWho==='host')?'guest':'host';
-  let uh=duelUnfinished(other);
-  if(uh.length){DU.turn={who:other,hand:uh[0]};duelSetStatus(other===DU.role?'dst_you':'dst_foe');duelRender();return}
-  uh=duelUnfinished(fromWho);
-  if(uh.length){DU.turn={who:fromWho,hand:uh[0]};duelSetStatus(fromWho===DU.role?'dst_you':'dst_foe');duelRender();return}
-  DU.turn=null;duelFinish(null,false);
+function bacRunCoup(){
+  const B=DU.bac;
+  const coup=bacDeal(B.shoe,B.coupPos);
+  B.coup=coup;B.pos=B.coupPos+coup.n;
+  B.phase='reveal';
+  B.coupShown={p:0,b:0};
+  bacRenderCoup(false);
+  if(B.fresh){B.fresh=false;try{sn(t('bac_reshuffle'))}catch(e){}}
+  // Поэтапное вскрытие: P1 B1 P2 B2 → тоталы → третьи с объяснением табло → итог
+  const steps=bacRevealSteps(coup);
+  let i=0;
+  B.coupShown={p:0,b:0};
+  const timer=setInterval(()=>{
+    if(!DU.started||DU.over&&B.phase!=='reveal'){clearInterval(timer);return}
+    i++;
+    B.coupShown={p:Math.min(coup.p.length,i>=4?coup.p.length:Math.ceil(i/2)),b:0};
+    // Простая схема показа: шаг1: P1,B1; шаг2: +P2,B2; шаг3: третьи; шаг4: итог
+    if(i===1)B.coupShown={p:1,b:1};
+    else if(i===2)B.coupShown={p:2,b:2};
+    else if(i>=3)B.coupShown={p:coup.p.length,b:coup.b.length};
+    bacRenderCoup(false);
+    if(i===2&&coup.p3)try{Sound.gem()}catch(e){}
+    if(i>=3){clearInterval(timer);setTimeout(bacSettleCoup,900)}
+    else{try{Sound.tick()}catch(e){}}
+  },650);
+  bacRender();
+}
+function bacRevealSteps(){return 4}
+function bacSettleCoup(){
+  const B=DU.bac;
+  if(!B.coup||B.phase!=='reveal')return;
+  B.phase='done';
+  B.hist.unshift(B.coup.res);B.hist=B.hist.slice(0,18);
+  const myM=bacEval(B.myPick,B.coup.res),opM=bacEval(B.opPick,B.coup.res);
+  bacRenderCoup(false);
+  let winner='push';
+  if(myM>opM)winner=DU.role;
+  else if(opM>myM)winner=(DU.role==='host')?'guest':'host';
+  duelSettle(winner);
+  bacRender();
+}
+function bacRenderRoad(){
+  const el=$('bacRoad');if(!el)return;el.innerHTML='';
+  const B=DU.bac;
+  B.hist.slice(0,18).forEach(r=>{
+    const i=document.createElement('i');i.className='br-'+r;i.textContent=r==='P'?'И':(r==='B'?'Б':'Н');el.appendChild(i);
+  });
+}
+function bacRenderCoup(anim){
+  const B=DU.bac,coup=B.coup;
+  const ph=$('bacPHand'),bh=$('bacBHand'),pt=$('bacPTotal'),bt=$('bacBTotal'),ln=$('bacTableauLine');
+  if(!ph)return;
+  if(!coup){ph.innerHTML='';bh.innerHTML='';if(pt)pt.textContent='';if(bt)bt.textContent='';if(ln)ln.textContent='';return}
+  const sh=B.coupShown||{p:coup.p.length,b:coup.b.length};
+  ph.innerHTML=coup.p.slice(0,sh.p).map(dcCardHTML).join('');
+  bh.innerHTML=coup.b.slice(0,sh.b).map(dcCardHTML).join('');
+  const full=(sh.p>=coup.p.length&&sh.b>=coup.b.length);
+  if(pt)pt.textContent=full?coup.pt:(sh.p>=2&&sh.b>=2?bacTot(coup.p.slice(0,2))+'?':'');
+  if(bt)bt.textContent=full?coup.bt:(sh.p>=2&&sh.b>=2?bacTot(coup.b.slice(0,2))+'?':'');
+  if(ln){
+    if(!full)ln.textContent='';
+    else if(coup.nat)ln.textContent=t('bac_nat',{v:Math.max(coup.pt0,coup.bt0)});
+    else{
+      const pa=coup.p3?t('bac_take'):t('bac_stand');
+      let ba;
+      if(coup.p3)ba=(coup.b3?t('bac_take'):t('bac_stand'));
+      else ba=(coup.b3?t('bac_take'):t('bac_stand'));
+      ln.textContent=t('bac_line',{pt:coup.pt0,pa:pa,bt:coup.bt0,pv:(coup.p3?coup.pv:'—'),ba:ba});
+    }
+  }
+  duelSetText('bacShoeN',B.shoe.length?String(B.shoe.length-B.pos):'—');
+  duelSetText('bacRoundN',String(B.round||0));
+  bacRenderRoad();
+}
+function bacRender(){
+  const B=DU.bac;
+  document.querySelectorAll('#bacPicks button').forEach(btn=>{
+    btn.classList.toggle('on',B.myPick===btn.dataset.p);
+    btn.disabled=!(DU.conn&&DU.started&&!DU.over&&B.phase==='pick'&&!B.myPick);
+  });
+  const vs=$('bacVersus');
+  if(vs){
+    if(!DU.conn||!DU.started)vs.textContent='';
+    else if(B.myPick&&B.opPick)vs.textContent=bacPickLbl(B.myPick)+' ⚔ '+bacPickLbl(B.opPick);
+    else if(B.myPick)vs.textContent=t('bac_lock');
+    else if(B.opPick)vs.textContent=t('bac_opp_locked');
+    else vs.textContent='';
+  }
+  if(B.phase==='idle'||!B.coup){const ph=$('bacPHand');if(ph&&!B.coup){ph.innerHTML='';const bh=$('bacBHand');if(bh)bh.innerHTML='';duelSetText('bacPTotal','');duelSetText('bacBTotal','');const ln=$('bacTableauLine');if(ln)ln.textContent=B.freshNote||''}}
+  else bacRenderCoup(false);
+  duelSetText('bacShoeN',B.shoe.length?String(Math.max(0,B.shoe.length-B.pos)):'—');
+  duelSetText('bacRoundN',String(B.round||0));
+  bacRenderRoad();
+}
+// ===== ДУЭЛЬ-РУЛЕТКА (European, честные выплаты) =====
+// 37 номеров, зеро бьёт все внешние/дюжины/колонки (без La Partage —
+// прямое зеро 35:1). Каждый ставит ВСЮ сумму на одну позицию:
+// прямое 35:1, дюжины/колонки 2:1, шансы 1:1. Чей возврат выше — тот победил.
+const ROU_RED=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
+const ROU_ORDER=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
+function rouEval(bet,num){
+  if(!bet)return 0;
+  if(bet.k==='num')return num===bet.n?35:0;
+  if(num===0)return 0;
+  switch(bet.k){
+    case 'red':return ROU_RED.has(num)?1:0;
+    case 'black':return ROU_RED.has(num)?0:1;
+    case 'even':return num%2===0?1:0;
+    case 'odd':return num%2===1?1:0;
+    case 'low':return num<=18?1:0;
+    case 'high':return num>=19?1:0;
+    case 'dz1':return num<=12?2:0;
+    case 'dz2':return num>=13&&num<=24?2:0;
+    case 'dz3':return num>=25?2:0;
+    case 'col1':return num%3===1?2:0;
+    case 'col2':return num%3===2?2:0;
+    case 'col3':return num%3===0?2:0;
+  }
+  return 0;
+}
+function rouBetLbl(b){
+  if(!b)return '—';
+  if(b.k==='num')return '№'+b.n+' ×35';
+  const m={red:t('rou_red'),black:t('rou_black'),even:t('rou_even'),odd:t('rou_odd'),low:'1–18 ×1',high:'19–36 ×1',dz1:'1st 12 ×2',dz2:'2nd 12 ×2',dz3:'3rd 12 ×2',col1:'Col 1 ×2',col2:'Col 2 ×2',col3:'Col 3 ×2'};
+  return m[b.k]||b.k;
+}
+function rouChoose(bet){
+  try{Sound.click()}catch(e){}
+  const R=DU.rou;
+  if(!DU.conn||!DU.started||DU.over||R.phase!=='pick'||R.myBet)return;
+  R.myBet=bet;
+  duelSend({t:'rou_bet',bet:bet});
+  rouRender();
+  rouMaybeSpin();
+}
+function rouMaybeSpin(){
+  const R=DU.rou;
+  if(DU.role!=='host')return;
+  if(!R.myBet||!R.opBet||R.phase!=='pick')return;
+  if(!ok(DU.myStake)){duelSend({t:'broke'});duelLeave(true);duelSetStatus('dst_broke');return}
+  S.bal-=DU.myStake;save();rBal();
+  DU.invested=DU.myStake;DU.over=false;
+  R.num=ROU_ORDER[Math.random()*ROU_ORDER.length|0];
+  R.phase='spin';
+  duelSend({t:'rou_spin',bets:{host:R.myBet,guest:R.opBet},num:R.num});
+  rouRunSpin();
+}
+function rouRunSpin(){
+  const R=DU.rou;
+  R.phase='spin';
+  rouRender();
+  // Анимация: мелькание номеров ~1.6с, затем реальный номер
+  const rn=$('duelRouN');
+  let el=0,delay=50;
+  const tick=()=>{
+    if(el>1500){
+      rrDuelPaint(R.num);
+      try{Sound.reelStop()}catch(e){}
+      setTimeout(rouSettleSpin,700);
+      return;
+    }
+    rrDuelPaint(ROU_ORDER[Math.random()*ROU_ORDER.length|0]);
+    try{Sound.tick()}catch(e){}
+    el+=delay;delay=Math.min(200,delay*1.15);
+    setTimeout(tick,delay);
+  };
+  setTimeout(tick,delay);
+}
+function rrDuelPaint(n){
+  const rn=$('duelRouN');if(!rn)return;
+  rn.textContent=n;
+  rn.style.background=ROU_RED.has(n)?'#E53935':(n===0?'#2E7D32':'#212121');
+  rn.style.color='#fff';rn.style.borderColor='rgba(255,255,255,.25)';
+}
+function rouSettleSpin(){
+  const R=DU.rou;
+  if(R.phase!=='spin')return;
+  R.phase='done';
+  R.hist.unshift(R.num);R.hist=R.hist.slice(0,12);
+  const myM=rouEval(R.myBet,R.num),opM=rouEval(R.opBet,R.num);
+  const rr=$('duelRouRes');
+  if(rr){
+    rr.innerHTML=R.num+(R.num===0?' • '+t('rou_zero'):'')+' — '+t('dst_you')+': +'+myM+' • '+t('duel_opp')+': +'+opM;
+    rr.style.color=(myM>=opM)?'var(--win)':'var(--e)';
+  }
+  rouRenderHist();
+  let winner='push';
+  if(myM>opM)winner=DU.role;
+  else if(opM>myM)winner=(DU.role==='host')?'guest':'host';
+  duelSettle(winner);
+  rouRender();
+}
+function rouRenderHist(){
+  const el=$('duelRouHist');if(!el)return;el.innerHTML='';
+  DU.rou.hist.forEach(n=>{
+    const s=document.createElement('span');s.textContent=n;
+    s.className=ROU_RED.has(n)?'hz-r':(n===0?'hz-g':'hz-k');el.appendChild(s);
+  });
+}
+function rouRender(){
+  const R=DU.rou;
+  document.querySelectorAll('#duelRouBets button').forEach(btn=>{
+    btn.classList.toggle('on',!!(R.myBet&&R.myBet.k===btn.dataset.b));
+    btn.disabled=!(DU.conn&&DU.started&&!DU.over&&R.phase==='pick'&&!R.myBet);
+  });
+  const ng=$('duelRouNumGo');if(ng)ng.disabled=!(DU.conn&&DU.started&&!DU.over&&R.phase==='pick'&&!R.myBet);
+  const vs=$('rouVersus');
+  if(vs){
+    if(!DU.conn||!DU.started)vs.textContent='';
+    else if(R.myBet&&R.opBet)vs.textContent=rouBetLbl(R.myBet)+' ⚔ '+rouBetLbl(R.opBet);
+    else if(R.myBet)vs.textContent=t('rou_lock');
+    else if(R.opBet)vs.textContent=t('rou_opp_locked');
+    else vs.textContent='';
+  }
+  rouRenderHist();
 }
 function duelStake(){
   const v=clampBet('duelStakeIn');
@@ -2812,204 +3224,597 @@ function duelStake(){
   return v;
 }
 function duelSend(o){try{if(DU.conn&&DU.conn.open)DU.conn.send(o)}catch(e){}}
+function duelOppRole(){return DU.role?((DU.role==='host')?'guest':'host'):'host'}
+// Единый расчёт дуэли: winner — роль победителя или 'push'
+function duelSettle(winner){
+  if(DU.over&&DU.winner!==null&&winner===DU.winner)return;
+  DU.over=true;DU.winner=winner;
+  const inv=DU.invested||DU.myStake;
+  const T=(typeof t==='function')?t:function(k,p){return k};
+  let payout=0,msg='',cls='';
+  if(winner==='push'){payout=inv;msg=T('dst_push');cls='push'}
+  else if(winner===DU.role){payout=duelPayout(inv);msg=T('dst_win',{n:payout});cls='win'}
+  else{msg=T('dst_lose',{name:(DU.opp.name||'?'),n:inv});cls='lose'}
+  if(payout>0){S.bal+=payout;save();try{rBal()}catch(e){}}
+  try{aH('duel',payout,inv)}catch(e){}
+  ['bacResult','rouResult','pokResult'].forEach(id=>{const e=$(id);if(e){e.textContent=msg;e.className='duel-result '+cls}});
+  if(winner==='push')duelSetStatus('dst_push');
+  else if(winner===DU.role)duelSetStatus('dst_win',{n:payout});
+  else duelSetStatus('dst_lose',{name:(DU.opp.name||'?'),n:inv});
+  if(cls==='win'){
+    try{bz('win')}catch(e){}
+    try{const vis=[$('duelBacTable'),$('duelRouTable'),$('duelPokTable')].find(e=>e&&e.style.display!=='none');if(vis){const b=vis.getBoundingClientRect();confetti(b.left+b.width/2,b.top,22)}}catch(e){}
+  }else{try{bz('loss')}catch(e){}}
+  duelRender();
+}
 function duelNav(){
   try{document.querySelectorAll('.ni[data-s="duel"]').forEach(b=>{b.style.display=''})}catch(e){}
 }
 function duelRender(){
   try{
     const me=duelMe();
-    duelSetText('duelMyName',me.name);duelSetText('duelMyAva',me.ava);
-    duelSetText('duelOppName',DU.opp.name);duelSetText('duelOppAva',DU.opp.ava);
-    const myHands=DU.role?DU.hands[DU.role]:[];
-    const opRole=DU.role?((DU.role==='host')?'guest':'host'):null;
-    const opHands=opRole?DU.hands[opRole]:[];
-    const mh=$('duelMyHand'),oh=$('duelOppHand');
-    if(mh)mh.innerHTML=myHands.map(duelHandRowHTML).join('');
-    if(oh)oh.innerHTML=opHands.map(duelHandRowHTML).join('');
-    const myI=duelSideInfo(myHands),opI=duelSideInfo(opHands);
-    duelSetText('duelMyTotal',myI.disp);
-    duelSetText('duelOppTotal',opI.disp);
-    const mt=$('duelMyTotal'),ot=$('duelOppTotal');
-    if(mt)mt.className='bj-total'+(myI.bust?' bust':(myI.bj?' bj21':''));
-    if(ot)ot.className='bj-total'+(opI.bust?' bust':(opI.bj?' bj21':''));
-    duelSetText('duelDeckN',DU.started?(DU.deck.length-DU.idx):52);
-    const playing=DU.started&&!DU.over;
-    const myTurn=!!(playing&&DU.turn&&DU.turn.who===DU.role);
-    const curH=(myTurn&&DU.role)?((DU.hands[DU.role]||[])[DU.turn.hand]||null):null;
-    const mb=$('duelMyBox'),ob=$('duelOppBox');
-    if(mb)mb.classList.toggle('bj-turn',!!myTurn);
-    if(ob)ob.classList.toggle('bj-turn',!!(playing&&DU.turn&&DU.turn.who!==DU.role));
-    if(mb){mb.classList.toggle('busted',myI.bust);mb.classList.toggle('has21',myI.bj)}
-    if(ob){ob.classList.toggle('busted',opI.bust);ob.classList.toggle('has21',opI.bj)}
-    const w=DU.winner;
-    const iWon=DU.over&&DU.started&&w&&w!=='push'&&w===DU.role;
-    const iLost=DU.over&&DU.started&&w&&w!=='push'&&w!==DU.role;
-    if(mb){mb.classList.toggle('winner',!!iWon);mb.classList.toggle('loser',!!iLost)}
-    if(ob){ob.classList.toggle('winner',!!iLost);ob.classList.toggle('loser',!!iWon)}
-    const hit=$('duelHit'),st=$('duelStand'),db=$('duelDouble'),sp=$('duelSplit');
-    if(hit)hit.disabled=!myTurn;
-    if(st)st.disabled=!myTurn;
-    if(db)db.disabled=!(myTurn&&curH&&curH.c.length===2&&curH.noAct&&!curH.split&&S.bal>=DU.myStake);
-    if(sp)sp.disabled=!(myTurn&&DU.role&&duelCanSplitSilent(DU.role)&&S.bal>=DU.myStake);
-    const si=$('duelStakeIn');if(si)si.disabled=DU.started;
-    const lob=$('duelLobby'),tab=$('duelTable');
-    if(lob)lob.style.display=DU.started?'none':'';
-    if(tab)tab.style.display=DU.started?'':'none';
+    // Шапка лобби
+    const hint=$('duelModeHint');
+    if(hint)hint.textContent=t(DU.mode==='bac'?'d_bac_h':(DU.mode==='rou'?'d_rou_h':'d_pok_h'));
+    document.querySelectorAll('#duelModes .duel-mode').forEach(b=>b.classList.toggle('on',b.dataset.m===DU.mode));
+    const si=$('duelStakeIn');if(si)si.disabled=!!(DU.role&&DU.started);
+    // Вкладка: только создать/войти. Настройки — в лобби после подключения.
+    const lob=$('duelLobby');
+    if(lob)lob.style.display=(!DU.role||(DU.role==='host'&&!DU.linked&&!DU.started))?'':'none';
     const pre=$('duelPre'),wait=$('duelWait');
-    if(pre)pre.style.display=DU.role?'none':'';
-    if(wait)wait.style.display=(!DU.started&&DU.role)?'':'none';
+    if(pre)pre.style.display=!DU.role?'':'none';
+    if(wait)wait.style.display=(DU.role==='host'&&!DU.linked&&!DU.started)?'':'none';
+    // Лобби с настройками: хост правит, гость смотрит
+    const setup=$('duelSetup');
+    if(setup)setup.style.display=(DU.role&&(DU.linked||DU.role==='guest')&&!DU.started)?'':'none';
+    const ch=$('duelCfgHost'),cg=$('duelCfgGuest');
+    if(ch)ch.style.display=DU.role==='host'?'':'none';
+    if(cg)cg.style.display=DU.role==='guest'?'':'none';
+    duelSetText('duelVsMe',me.name);duelSetText('duelVsOpp',(DU.opp&&DU.opp.name)||'?');
+    const cv=$('duelCfgView');
+    if(cv){
+      cv.textContent=t('duel_cfg',{mode:duelModeName(DU.mode),stake:DU.myStake});
+      if(DU.role==='guest'&&S.bal<DU.myStake){cv.textContent+=' • '+t('duel_short');cv.style.color='var(--e)'}
+      else cv.style.color='';
+    }
+    const ci=$('duelChatIn');if(ci)ci.placeholder=t('duel_chat_ph');
+    const chc=$('duelChatCard');
+    if(chc)chc.style.display=(DU.role&&DU.linked)?'':'none';
+    try{duelChatRender()}catch(e){}
     duelSetText('duelCodeBig',DU.code||'——');
-    const cp=$('duelCopy');if(cp)cp.style.display=(DU.role==='host')?'':'none';
-    const iv=$('duelInvite');if(iv)iv.style.display=(DU.role==='host')?'':'none';
+    const cp=$('duelCopy');if(cp)cp.style.display=(DU.role==='host'&&!DU.started)?'':'none';
+    const iv=$('duelInvite');if(iv)iv.style.display=(DU.role==='host'&&!DU.started)?'':'none';
     const ft=$('duelFoot');if(ft)ft.style.display=DU.role?'':'none';
     const ag=$('duelAgain');if(ag)ag.style.display=(DU.role==='host'&&DU.started&&DU.over&&DU.conn)?'':'none';
+    // Столы режимов
+    const on=DU.started&&DU.role;
+    const bt=$('duelBacTable'),rt=$('duelRouTable'),pkt=$('duelPokTable');
+    if(bt)bt.style.display=(on&&DU.mode==='bac')?'':'none';
+    if(rt)rt.style.display=(on&&DU.mode==='rou')?'':'none';
+    if(pkt)pkt.style.display=(on&&DU.mode==='pok')?'':'none';
+    // Имена/аватарки в покере
+    const op=DU.opp||{name:'?',ava:'?'};
+    duelSetText('pokOppName',op.name);duelSetText('pokOppAva',op.ava);
+    duelSetText('pokMyName',me.name);duelSetText('pokMyAva',me.ava);
     const el=$('duelStatus');if(el&&DU.st){try{el.textContent=t(DU.st.k,DU.st.p)}catch(e){}}
+    if(on){
+      if(DU.mode==='bac')bacRender();
+      else if(DU.mode==='rou')rouRender();
+      else if(DU.mode==='pok')pokRender();
+    }
   }catch(e){}
 }
+// ===== ДУЭЛЬ-ПОКЕР: хедз-ап безлимитный техасский холдем на один банк =====
+// Честные правила: колода 52, блайнды SB=5/BB=10 (баттон — малый блайнд,
+// префлоп ходит первым; постфлоп первым ходит большой блайнд), улицы
+// префлоп→флоп→тёрн→ривер→шоудаун, чек/колл/бет/рейз/фолд/ва-банк,
+// мин-бет и мин-рейз = BB / размер последнего рейза, капа нет кроме стеков.
+// Шоудаун: лучшее 5 из 7, полные 9 комбинаций с кикерами (стрит от туза и
+// колесо A-2-3-4-5). Хост — дилер: тасует, сдаёт, ведёт банк; баттон
+// чередуется каждую раздачу. Ставка = стек каждого; победитель — ×1.9.
+const POK_SB=5,POK_BB=10,POK_MIN_STAKE=20;
+const POKR={2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,J:11,Q:12,K:13,A:14};
+const POKRL={14:'A',13:'K',12:'Q',11:'J',10:'10',9:'9',8:'8',7:'7',6:'6',5:'5',4:'4',3:'3',2:'2'};
+function pokEval5(cs){
+  const rs=cs.map(c=>POKR[c.r]).sort((a,b)=>b-a);
+  const flush=cs.every(c=>c.s===cs[0].s);
+  let strH=0;
+  const u=[...new Set(rs)];
+  if(u.length===5){
+    if(u[0]-u[4]===4)strH=u[0];
+    else if(u[0]===14&&u[1]===5)strH=5; // колесо
+  }
+  const cnt={};rs.forEach(r=>cnt[r]=(cnt[r]||0)+1);
+  const groups=Object.keys(cnt).map(Number).sort((a,b)=>((cnt[b]-cnt[a])||(b-a)));
+  const counts=groups.map(g=>cnt[g]);
+  const rest=groups.slice(1).sort((a,b)=>b-a);
+  let cat=0,tb=[];
+  if(flush&&strH){cat=8;tb=[strH]}
+  else if(counts[0]===4){cat=7;tb=[groups[0],groups[1]]}
+  else if(counts[0]===3&&counts[1]===2){cat=6;tb=[groups[0],groups[1]]}
+  else if(flush){cat=5;tb=rs.slice()}
+  else if(strH){cat=4;tb=[strH]}
+  else if(counts[0]===3){cat=3;tb=[groups[0]].concat(rest)}
+  else if(counts[0]===2&&counts[1]===2){const ps=groups.slice(0,2).sort((a,b)=>b-a);cat=2;tb=ps.concat([groups[2]])}
+  else if(counts[0]===2){cat=1;tb=[groups[0]].concat(rest)}
+  else{cat=0;tb=rs.slice()}
+  return {cat:cat,tb:tb};
+}
+function pokCmp(x,y){
+  if(x.cat!==y.cat)return x.cat-y.cat;
+  for(let i=0;i<Math.max(x.tb.length,y.tb.length);i++){
+    const a=x.tb[i]||0,b=y.tb[i]||0;
+    if(a!==b)return a-b;
+  }
+  return 0;
+}
+function pokBest7(seven){
+  let best=null;
+  for(let a=0;a<3;a++)for(let b=a+1;b<4;b++)for(let c=b+1;c<5;c++)for(let d=c+1;d<6;d++)for(let e=d+1;e<7;e++){
+    const v=pokEval5([seven[a],seven[b],seven[c],seven[d],seven[e]]);
+    if(!best||pokCmp(v,best)>0)best=v;
+  }
+  return best;
+}
+function pokHandName(v){
+  try{return t('pok_h'+v.cat)+' • '+v.tb.map(r=>POKRL[r]).join(' ')}catch(e){return 'hand'}
+}
+function pokStreetName(s){return t(s===0?'st_pre':(s===1?'st_flop':(s===2?'st_turn':(s===3?'st_river':'st_show'))))}
+function pokLogAdd(msg){
+  const P=DU.pok;if(!P)return;
+  P.log.push(msg);if(P.log.length>30)P.log=P.log.slice(-30);
+}
+// ---------- ПОКЕР: ведение раздачи (хост — дилер) ----------
+function pokMakeState(button,stake,deck,holeH,holeG,board,handNo){
+  const P={handNo:handNo,button:button,street:0,boardShown:0,board:board,
+    hole:{host:holeH,guest:holeG},
+    stacks:{host:stake,guest:stake},pot:0,
+    committed:{host:0,guest:0},acted:{host:false,guest:false},
+    lastRaise:POK_BB,turn:button,phase:'bet',log:[],result:null,pending:false};
+  const sb=button,bb=(button==='host')?'guest':'host';
+  P.stacks[sb]-=POK_SB;P.committed[sb]=POK_SB;
+  P.stacks[bb]-=POK_BB;P.committed[bb]=POK_BB;
+  P.pot=POK_SB+POK_BB;
+  return P;
+}
+function pokToCall(P,role){return Math.max(P.committed.host,P.committed.guest)-P.committed[role]}
+function pokMinAdd(P,role){
+  const tc=pokToCall(P,role);
+  if(tc<=0)return Math.min(POK_BB,P.stacks[role]);
+  return Math.min(tc+P.lastRaise,P.stacks[role]);
+}
+// Возвращает null если ход невозможен, иначе {end} где end=true — улица/раздача закрыта
+function pokApply(P,role,action,amount){
+  if(!P||P.phase!=='bet'||P.turn!==role)return {err:1};
+  const opp=(role==='host')?'guest':'host';
+  const tc=pokToCall(P,role);
+  const who=role===DU.role?t('duel_you'):(DU.opp.name||t('duel_opp'));
+  if(action==='fold'){
+    P.log.push(who+': FOLD');
+    pokFinish(P,opp,'fold');return {end:1};
+  }
+  if(action==='check'){
+    if(tc>0)return {err:1};
+    P.log.push(who+': CHECK');
+    P.acted[role]=true;
+    pokAdvance(P);return {end:P.phase==='done'?1:0};
+  }
+  if(action==='call'){
+    if(tc<=0)return {err:1};
+    const pay=Math.min(tc,P.stacks[role]);
+    P.stacks[role]-=pay;P.committed[role]+=pay;P.pot+=pay;
+    P.log.push(who+': CALL '+pay+(P.stacks[role]<=0?' (ALL-IN)':''));
+    P.acted[role]=true;
+    pokAdvance(P);return {end:P.phase==='done'?1:0};
+  }
+  if(action==='betraise'){
+    amount=Math.floor(+amount||0);
+    if(!(amount>=1))return {err:1};
+    if(amount>P.stacks[role])return {err:1};
+    const minNeed=pokMinAdd(P,role);
+    if(amount<minNeed)return {err:'min'};
+    const allin=(amount>=P.stacks[role]);
+    P.stacks[role]-=amount;P.committed[role]+=amount;P.pot+=amount;
+    const over=amount-tc;
+    if(over>0){
+      if(!allin||over>=P.lastRaise)P.lastRaise=Math.max(P.lastRaise,over);
+      P.acted[opp]=false;
+    }
+    P.log.push(who+': '+(tc<=0?'BET ':'RAISE +')+amount+(allin?' (ALL-IN)':''));
+    P.acted[role]=true;
+    pokAdvance(P);return {end:P.phase==='done'?1:0};
+  }
+  return {err:1};
+}
+function pokAdvance(P){
+  const ai=r=>P.stacks[r]<=0;
+  // Короткий ва-банк: возвращаем невостребованный излишек
+  if((ai('host')||ai('guest'))&&P.committed.host!==P.committed.guest){
+    const big=P.committed.host>P.committed.guest?'host':'guest';
+    const diff=Math.abs(P.committed.host-P.committed.guest);
+    P.committed[big]-=diff;P.stacks[big]+=diff;P.pot-=diff;
+  }
+  if(ai('host')&&ai('guest')){pokRunout(P);return}
+  if(P.acted.host&&P.acted.guest&&P.committed.host===P.committed.guest){pokNextStreet(P);return}
+  let nxt=(P.turn==='host')?'guest':'host';
+  if(ai(nxt)&&pokToCall(P,nxt)===0){P.acted[nxt]=true;pokAdvance(P);return}
+  P.turn=nxt;
+}
+function pokNextStreet(P){
+  if(ai2(P)){pokRunout(P);return}
+  P.street++;
+  if(P.street>=4){pokRunout(P);return}
+  P.boardShown=(P.street===1)?3:(P.street===2?4:5);
+  P.committed={host:0,guest:0};P.acted={host:false,guest:false};P.lastRaise=POK_BB;
+  // Постфлоп первым ходит большой блайнд (не баттон)
+  P.turn=(P.button==='host')?'guest':'host';
+  if(P.stacks[P.turn]<=0)P.turn=(P.turn==='host')?'guest':'host';
+  P.log.push('— '+pokStreetName(P.street)+' —');
+  function ai2(X){return X.stacks.host<=0||X.stacks.guest<=0}
+}
+function ai2(P){return P.stacks.host<=0||P.stacks.guest<=0}
+function pokRunout(P){
+  P.street=4;P.boardShown=5;
+  pokShowdown(P);
+}
+function pokShowdown(P){
+  const bh=pokBest7(P.hole.host.concat(P.board));
+  const bg=pokBest7(P.hole.guest.concat(P.board));
+  const c=pokCmp(bh,bg);
+  P.phase='done';P.turn=null;
+  if(c>0)P.result={winner:'host',byFold:false,handH:pokHandName(bh),handG:pokHandName(bg)};
+  else if(c<0)P.result={winner:'guest',byFold:false,handH:pokHandName(bh),handG:pokHandName(bg)};
+  else P.result={winner:'split',byFold:false,handH:pokHandName(bh),handG:pokHandName(bg)};
+  P.log.push(t('pok_showdown')+' '+P.result.handH+' / '+P.result.handG);
+  pokFinishLocal(P);
+}
+function pokFinish(P,winner,how){
+  P.phase='done';P.turn=null;
+  if(how==='fold'){
+    P.result={winner:winner,byFold:true,handH:'',handG:''};
+    const nm=winner===DU.role?duelMe().name:(DU.opp.name||t('duel_opp'));
+    P.log.push(t('pok_foldwin',{name:nm}));
+  }
+  pokFinishLocal(P);
+}
+function pokFinishLocal(P){
+  if(!P||!P.result||P.settled)return;
+  P.settled=true;
+  const r=P.result;
+  if(r.winner==='split'){
+    duelSettle('push');
+    const e=$('pokResult');if(e)e.textContent=t('pok_split',{a:r.handH,b:r.handG});
+  }else{
+    duelSettle(r.winner);
+    if(r.byFold){
+      const e=$('pokResult');
+      if(e){const nm=r.winner===DU.role?duelMe().name:(DU.opp.name||t('duel_opp'));e.textContent=t('pok_foldwin',{name:nm});e.className='duel-result '+(r.winner===DU.role?'win':'lose')}
+    }else{
+      const e=$('pokResult');
+      if(e){const nm=r.winner===DU.role?duelMe().name:(DU.opp.name||t('duel_opp'));const hd=r.winner==='host'?r.handH:r.handG;e.textContent=t('pok_win',{name:nm,hand:hd});e.className='duel-result '+(r.winner===DU.role?'win':'lose')}
+    }
+  }
+  // Открываем карты соперника на шоудауне
+  if(!r.byFold)pokRender();
+}
+function pokSnapshot(withReveal){
+  const P=DU.pok;if(!P)return null;
+  return {handNo:P.handNo,button:P.button,street:P.street,boardShown:P.boardShown,pot:P.pot,
+    stacks:{host:P.stacks.host,guest:P.stacks.guest},committed:{host:P.committed.host,guest:P.committed.guest},
+    acted:{host:P.acted.host,guest:P.acted.guest},lastRaise:P.lastRaise,turn:P.turn,phase:P.phase,
+    log:P.log.slice(-12),result:P.result,reveal:withReveal?{host:P.hole.host}:null};
+}
+function pokApplySnap(s){
+  if(!s)return;
+  let P=DU.pok;
+  if(!P||P.handNo!==s.handNo)return;
+  P.street=s.street;P.boardShown=s.boardShown;P.pot=s.pot;
+  P.stacks={host:s.stacks.host,guest:s.stacks.guest};
+  P.committed={host:s.committed.host,guest:s.committed.guest};
+  P.acted={host:s.acted.host,guest:s.acted.guest};
+  P.lastRaise=s.lastRaise;P.turn=s.turn;P.phase=s.phase;
+  P.log=s.log||[];P.result=s.result||null;P.pending=false;
+  if(s.reveal&&s.reveal.host)P.hole.host=s.reveal.host;
+  if(P.phase==='done'&&P.result)pokFinishLocal(P);
+  else pokRender();
+}
+function pokBroadcast(){
+  if(DU.role!=='host')return;
+  const done=DU.pok&&DU.pok.phase==='done';
+  duelSend({t:'pok_state',s:pokSnapshot(done)});
+}
+function pokDo(action){
+  try{Sound.click()}catch(e){}
+  const P=DU.pok;
+  if(!P||P.phase!=='bet'||!DU.conn||DU.over)return;
+  if(action==='betraise'){
+    const amt=Math.floor(Number(($('pokAmt')||{value:0}).value)||0);
+    if(DU.role==='host'){
+      const r=pokApply(P,'host','betraise',amt);
+      if(r&&r.err==='min'){sn(t('pok_need',{n:pokToCall(P,'host')})+' / min +'+pokMinAdd(P,'host'));return}
+      if(r&&r.err){sn(t('dst_foe'));return}
+      pokBroadcast();
+    }else{
+      if(P.turn!=='guest')return;
+      P.pending=true;pokRender();
+      duelSend({t:'pok_want',action:'betraise',amount:amt});
+    }
+    return;
+  }
+  if(DU.role==='host'){
+    const r=pokApply(P,'host',action,0);
+    if(r&&r.err)return;
+    pokBroadcast();
+  }else{
+    if(P.turn!=='guest')return;
+    P.pending=true;pokRender();
+    duelSend({t:'pok_want',action:action,amount:0});
+  }
+  pokRender();
+}
+function pokRender(){
+  const P=DU.pok;
+  const board=$('pokBoard'),mh=$('pokMyHand'),oh=$('pokOppHand');
+  if(!board||!P){
+    if(board)board.innerHTML='';if(mh)mh.innerHTML='';if(oh)oh.innerHTML='';
+    duelSetText('pokPot','0');duelSetText('pokStreetLbl',pokStreetName(0));
+    return;
+  }
+  duelSetText('pokStreetLbl',pokStreetName(Math.min(P.street,4)));
+  duelSetText('pokPot',String(P.pot));
+  board.innerHTML=P.board.slice(0,P.boardShown).map(dcCardHTML).join('');
+  const myHole=P.hole[DU.role]||[];
+  mh.innerHTML=myHole.map(dcCardHTML).join('');
+  const opRole=duelOppRole();
+  const revealed=(P.phase==='done'&&P.result&&!P.result.byFold&&P.hole[opRole]);
+  oh.innerHTML=revealed?P.hole[opRole].map(dcCardHTML).join(''):dcBackHTML()+dcBackHTML();
+  duelSetText('pokMyStack','⭐ '+P.stacks[DU.role]);
+  duelSetText('pokOppStack','⭐ '+P.stacks[opRole]);
+  // Баттон-дилер и названия рук на шоудауне
+  const myLbl=$('pokMyLbl'),opLbl=$('pokOppLbl');
+  const dBadge=r=>(P.button===r?'<span class="d-badge">D</span>':'');
+  if(myLbl)myLbl.innerHTML=dBadge(DU.role)+(revealed&&P.result?(' • '+(DU.role==='host'?P.result.handH:P.result.handG)):'');
+  if(opLbl)opLbl.innerHTML=dBadge(opRole)+(revealed&&P.result?(' • '+(opRole==='host'?P.result.handH:P.result.handG)):'');
+  const mb=$('pokMyBox'),ob=$('pokOppBox');
+  if(mb)mb.classList.toggle('bj-turn',P.phase==='bet'&&P.turn===DU.role);
+  if(ob)ob.classList.toggle('bj-turn',P.phase==='bet'&&P.turn===opRole);
+  // Инфо и кнопки
+  const ci=$('pokCallInfo');
+  const myTurn=P.phase==='bet'&&P.turn===DU.role;
+  const tc=pokToCall(P,DU.role);
+  if(ci){
+    if(P.phase!=='bet')ci.textContent=(P.stacks.host<=0||P.stacks.guest<=0)?t('pok_allin'):'';
+    else if(!myTurn)ci.textContent=t('dst_foe');
+    else if(P.pending)ci.textContent='…';
+    else ci.textContent=tc>0?t('pok_need',{n:Math.min(tc,P.stacks[DU.role])}):t('pok_free');
+  }
+  const f=$('pokFold'),cc=$('pokCheckCall'),br=$('pokBetRaise');
+  const canAct=myTurn&&!P.pending;
+  if(f)f.disabled=!canAct;
+  if(cc){
+    cc.disabled=!canAct;
+    try{cc.innerHTML='<span>'+(tc>0?t('pok_call')+' '+Math.min(tc,P.stacks[DU.role]):t('pok_check'))+'</span>'}catch(e){}
+  }
+  if(br){
+    const oppAllin=P.stacks[opRole]<=0;
+    br.disabled=!(canAct&&P.stacks[DU.role]>0&&!(oppAllin&&tc<=0));
+  }
+  const amt=$('pokAmt');
+  if(amt&&canAct){
+    amt.min=1;amt.max=Math.max(1,P.stacks[DU.role]);
+    let cur=Math.floor(Number(amt.value)||0);
+    if(!(cur>=1))amt.value=pokMinAdd(P,DU.role);
+    else if(cur>P.stacks[DU.role])amt.value=P.stacks[DU.role];
+  }
+  const lg=$('pokLog');
+  if(lg){lg.innerHTML='';P.log.slice(-12).forEach(m=>{const d=document.createElement('div');d.textContent=m;lg.appendChild(d)});lg.scrollTop=lg.scrollHeight}
+  if(myTurn)duelSetStatus('dst_you');else if(P.phase==='bet')duelSetStatus('dst_foe');
+}
+// ---------- Сеть дуэлей ----------
 function duelWire(conn){
   DU.conn=conn;
   const me=duelMe();
-  conn.on('open',()=>{try{conn.send({t:'hello',name:me.name,ava:me.ava})}catch(e){}});
+  conn.on('open',()=>{DU.linked=true;try{conn.send({t:'hello',name:me.name,ava:me.ava})}catch(e){}duelRender()});
   conn.on('data',d=>duelOnData(d));
   conn.on('close',()=>duelOnClose(false));
   conn.on('error',()=>{});
+}
+function duelResetTables(){
+  DU.bac={shoe:[],pos:0,cutAt:0,round:0,hist:[],myPick:null,opPick:null,coup:null,phase:'idle'};
+  DU.rou={myBet:null,opBet:null,num:null,hist:[],phase:'idle'};
+  DU.pok=null;
+  ['bacResult','rouResult','pokResult'].forEach(id=>{const e=$(id);if(e){e.textContent='';e.className='duel-result'}});
+  const rr=$('duelRouRes');if(rr)rr.textContent='';
+  const rn=$('duelRouN');if(rn){rn.textContent='?';rn.style.background='var(--sc)';rn.style.color='var(--on)'}
 }
 function duelOnData(d){
   if(!d||typeof d!=='object')return;
   if(d.t==='hello'){
     DU.opp={name:String(d.name||'?').slice(0,14),ava:String(d.ava||'?').slice(0,2)};
+    DU.linked=true;
     duelSetStatus('dst_conn');duelRender();
-    if(DU.role==='host'&&!DU.started)duelBegin();
+    // Хост не стартует сразу: сначала настраивает лобби (режим/ставку) и жмёт «Начать»
+    if(DU.role==='host'&&!DU.started)duelSendCfg();
     return;
   }
-  if(d.t==='start'&&DU.role==='guest'&&DU.over){
-    DU.deck=Array.isArray(d.deck)?d.deck:[];
-    DU.hands={host:d.host||[],guest:d.guest||[]};
-    if(!DU.deck.length||!ok(DU.myStake)){duelSend({t:'broke'});duelLeave(true);duelSetStatus('dst_broke');return}
-    S.bal-=DU.myStake;save();rBal();
-    DU.invested=DU.myStake;
-    DU.idx=4;DU.turn={who:'host',hand:0};DU.over=false;DU.started=true;DU.winner=null;
-    const rz=$('duelResult');if(rz){rz.textContent='';rz.className='duel-result'}
-    duelSetStatus('dst_foe');duelRender();
-    duelCheckNatural();return;
+  if(d.t==='bac_begin'&&DU.role==='guest'){
+    DU.started=true;DU.over=false;DU.winner=null;DU.invested=0;
+    DU.bac={shoe:[],pos:0,cutAt:0,round:0,hist:[],myPick:null,opPick:null,coup:null,phase:'pick'};
+    duelSetStatus('dst_conn');duelRender();return;
   }
-  if(d.t==='move'&&DU.started&&!DU.over){duelApply(d.who,d.hand,d.action);return}
+  if(d.t==='rou_begin'&&DU.role==='guest'){
+    DU.started=true;DU.over=false;DU.winner=null;DU.invested=0;
+    DU.rou={myBet:null,opBet:null,num:null,hist:[],phase:'pick'};
+    duelSetStatus('dst_conn');duelRender();return;
+  }
+  if(d.t==='bac_pick'){if(d.pick==='P'||d.pick==='B'||d.pick==='T'){DU.bac.opPick=d.pick;bacRender();bacMaybeDeal()}return}
+  if(d.t==='bac_again'&&DU.role==='guest'){
+    DU.bac.myPick=null;DU.bac.opPick=null;DU.bac.coup=null;DU.bac.coupShown=null;DU.bac.phase='pick';
+    DU.over=false;DU.winner=null;DU.invested=0;
+    const e=$('bacResult');if(e){e.textContent='';e.className='duel-result'}
+    bacRender();duelRender();return;
+  }
+  if(d.t==='bac_coup'&&DU.role==='guest'){
+    const B=DU.bac;
+    if(!Array.isArray(d.shoe)||!d.shoe.length||!ok(DU.myStake)){duelSend({t:'broke'});duelLeave(true);duelSetStatus('dst_broke');return}
+    S.bal-=DU.myStake;save();rBal();
+    DU.invested=DU.myStake;DU.over=false;
+    B.shoe=d.shoe;B.cutAt=d.cutAt;B.round=d.round;B.coupPos=d.pos;
+    B.myPick=(d.picks||{}).guest;B.opPick=(d.picks||{}).host;
+    B.fresh=!!d.fresh;
+    bacRunCoup();return;
+  }
+  if(d.t==='rou_bet'){
+    const b=d.bet;
+    const okBet=b&&((b.k==='num'&&b.n>=0&&b.n<=36)||/^(red|black|even|odd|low|high|dz1|dz2|dz3|col1|col2|col3)$/.test(b.k||''));
+    if(okBet){DU.rou.opBet=(b.k==='num')?{k:'num',n:Math.floor(b.n)}:{k:b.k};rouRender();rouMaybeSpin()}
+    return;
+  }
+  if(d.t==='rou_again'&&DU.role==='guest'){
+    DU.rou.myBet=null;DU.rou.opBet=null;DU.rou.num=null;DU.rou.phase='pick';
+    DU.over=false;DU.winner=null;DU.invested=0;
+    const e=$('rouResult');if(e){e.textContent='';e.className='duel-result'}
+    const rr=$('duelRouRes');if(rr)rr.textContent='';
+    rouRender();duelRender();return;
+  }
+  if(d.t==='rou_spin'&&DU.role==='guest'){
+    const R=DU.rou;
+    if(!d.bets||!Number.isFinite(+d.num)||!ok(DU.myStake)){duelSend({t:'broke'});duelLeave(true);duelSetStatus('dst_broke');return}
+    S.bal-=DU.myStake;save();rBal();
+    DU.invested=DU.myStake;DU.over=false;
+    R.myBet=d.bets.guest;R.opBet=d.bets.host;R.num=d.num;
+    rouRunSpin();return;
+  }
+  if(d.t==='pok_start'&&DU.role==='guest'){
+    if(!d.hole||!d.board||!ok(DU.myStake)){duelSend({t:'broke'});duelLeave(true);duelSetStatus('dst_broke');return}
+    S.bal-=DU.myStake;save();rBal();
+    DU.invested=DU.myStake;DU.over=false;DU.winner=null;
+    const P=pokMakeState(d.button,DU.myStake,[],[],d.hole,d.board,d.handNo);
+    P.hole.host=null; // карты хоста скрыты до шоудауна
+    DU.pok=P;
+    DU.started=true;
+    const e=$('pokResult');if(e){e.textContent='';e.className='duel-result'}
+    pokLogAdd(t('pok_blinds',{sb:POK_SB,bb:POK_BB,btn:(d.button===DU.role?duelMe().name:DU.opp.name)}));
+    pokRender();duelRender();return;
+  }
+  if(d.t==='pok_state'&&DU.role==='guest'){
+    pokApplySnap(d.s);duelRender();return;
+  }
+  if(d.t==='pok_want'&&DU.role==='host'){
+    const P=DU.pok;
+    if(!P||P.phase!=='bet'||P.turn!=='guest'){pokBroadcast();return}
+    const r=pokApply(P,'guest',d.action,d.amount);
+    if(r&&r.err){pokBroadcast();return}
+    pokBroadcast();pokRender();duelRender();return;
+  }
+  if(d.t==='lobby_cfg'&&DU.role==='guest'&&!DU.started){
+    if(d.mode==='bac'||d.mode==='rou'||d.mode==='pok')DU.mode=d.mode;
+    if(Number.isFinite(+d.stake)&&+d.stake>=1)DU.myStake=Math.floor(+d.stake);
+    duelRender();return;
+  }
+  if(d.t==='chat'&&typeof d.text==='string'){
+    duelChatPush(false,(DU.opp&&DU.opp.name)||'?',String(d.text).slice(0,120));return;
+  }
   if(d.t==='broke'){
     if(DU.role==='host'&&DU.started&&!DU.over){S.bal+=(DU.invested||0);save();try{rBal()}catch(e){}}
     duelLeave(true);duelSetStatus('dst_broke');return;
   }
   if(d.t==='bye'){duelOnClose(false);return}
 }
-function duelApply(who,hand,action){
-  if(DU.over||!DU.started)return;
-  if(!DU.turn||DU.turn.who!==who||DU.turn.hand!==hand)return;
-  const hs=DU.hands[who]||[],hh=hs[hand];
-  if(!hh||hh.dn||!hh.c.length)return;
-  if(action==='hit'){
-    if(DU.idx>=DU.deck.length){hh.st=true;hh.dn=true}
-    else{hh.c.push(DU.deck[DU.idx]);DU.idx++;hh.noAct=false;if(bjVal(hh.c)>21)hh.dn=true}
-  }else if(action==='stand'){hh.st=true;hh.dn=true}
-  else if(action==='double'){
-    if(!(hh.c.length===2&&hh.noAct&&!hh.split))return;
-    if(who===DU.role){S.bal-=DU.myStake;save();try{rBal()}catch(e){}DU.invested+=DU.myStake}
-    if(DU.idx<DU.deck.length){hh.c.push(DU.deck[DU.idx]);DU.idx++}
-    hh.noAct=false;hh.dbl=true;hh.st=true;hh.dn=true;
-  }else if(action==='split'){
-    if(!(hs.length===1&&hh.c.length===2&&hh.c[0].r===hh.c[1].r&&hh.noAct))return;
-    if(DU.idx+1>=DU.deck.length){hh.st=true;hh.dn=true;duelAdvance(who);return}
-    if(who===DU.role){S.bal-=DU.myStake;save();try{rBal()}catch(e){}DU.invested+=DU.myStake}
-    const mk=c=>({c:c,st:false,dn:false,dbl:false,split:true,noAct:true});
-    const c1=DU.deck[DU.idx++],c2=DU.deck[DU.idx++];
-    DU.hands[who]=[mk([hh.c[0],c1]),mk([hh.c[1],c2])];
-    DU.turn={who:who,hand:0};
-    duelSetStatus(who===DU.role?'dst_you':'dst_foe');
-    duelRender();return;
-  }else return;
-  duelAdvance(who);
-}
-function duelAct(action){
-  try{Sound.click()}catch(e){}
-  if(DU.over||!DU.started||!DU.conn||!DU.turn||DU.turn.who!==DU.role)return;
-  const who=DU.role,hd=DU.turn.hand;
-  const hs=DU.hands[who]||[],hh=hs[hd];
-  if(!hh||hh.dn)return;
-  if(action==='double'){
-    if(!(hh.c.length===2&&hh.noAct&&!hh.split))return;
-    if(S.bal<DU.myStake){sn(t('not_enough'));return}
-  }
-  if(action==='split'){
-    if(!duelCanSplitSilent(who))return;
-    if(S.bal<DU.myStake){sn(t('not_enough'));return}
-  }
-  duelApply(who,hd,action);
-  duelSend({t:'move',who:who,hand:hd,action:action});
-}
-function duelFinish(force,isBJ){
-  if(DU.over)return;
-  DU.over=true;DU.turn=null;
-  let winner=force;
-  if(winner===null||winner===undefined){
-    const a=duelBest('host'),b=duelBest('guest');
-    winner=(a>b)?'host':((b>a)?'guest':'push');
-  }
-  DU.winner=winner;
-  const me=DU.role,inv=DU.invested||0;
-  const T=(typeof t==='function')?t:function(k,p){return k};
-  let payout=0,msg='',cls='';
-  if(winner==='push'){payout=inv;msg=T('dst_push');cls='push'}
-  else if(winner===me){payout=Math.floor(inv*(isBJ?2.5:1.9));msg=T(isBJ?'dst_bj':'dst_win',{n:payout});cls='win'}
-  else{msg=T('dst_lose',{name:(DU.opp.name||'?'),n:inv});cls='lose'}
-  if(payout>0){S.bal+=payout;save();try{rBal()}catch(e){}}
-  try{aH('duel',payout,inv)}catch(e){}
-  const rz=$('duelResult');if(rz){rz.textContent=msg;rz.className='duel-result '+cls}
-  if(winner==='push')duelSetStatus('dst_push');
-  else if(winner===me)duelSetStatus(isBJ?'dst_bj':'dst_win',{n:payout});
-  else duelSetStatus('dst_lose',{name:(DU.opp.name||'?'),n:inv});
-  if(cls==='win'){try{bz('win')}catch(e){}try{const b=$('duelTable').getBoundingClientRect();confetti(b.left+b.width/2,b.top,22)}catch(e){}}
-  else{try{bz('loss')}catch(e){}}
-  duelRender();
-}
-function duelCheckNatural(){
-  const hn=duelIsNatural((DU.hands.host||[])[0]),gn=duelIsNatural((DU.hands.guest||[])[0]);
-  if(!hn&&!gn)return false;
-  duelRender();
-  duelFinish(hn?(gn?'push':'host'):'guest',true);
-  return true;
-}
-function duelBegin(){
+// ---------- Старт матча / раздач ----------
+function duelBeginMatch(){
   if(DU.role!=='host'||DU.started)return;
+  if(DU.mode==='pok'&&DU.myStake<POK_MIN_STAKE){sn(t('pok_min20'));return}
+  if(!ok(DU.myStake)){sn(t('not_enough'));return}
+  DU.started=true;DU.over=false;DU.winner=null;DU.invested=0;
+  duelResetTables();
+  if(DU.mode==='bac'){
+    const s=bacNewShoe();
+    DU.bac.shoe=s.shoe;DU.bac.pos=s.pos;DU.bac.cutAt=s.cutAt;DU.bac.phase='pick';
+    duelSend({t:'bac_begin'});
+  }else if(DU.mode==='rou'){
+    DU.rou.phase='pick';
+    duelSend({t:'rou_begin'});
+  }else{
+    pokBegin(true);
+    return;
+  }
+  duelSetStatus('dst_conn');duelRender();
+}
+function pokBegin(first){
+  if(DU.role!=='host')return;
+  if(!DU.conn)return;
+  if(DU.myStake<POK_MIN_STAKE){sn(t('pok_min20'));return}
   if(!ok(DU.myStake)){sn(t('not_enough'));return}
   S.bal-=DU.myStake;save();rBal();
-  DU.invested=DU.myStake;
-  DU.deck=duelNewDeck();
-  const mk=cards=>({c:cards,st:false,dn:false,dbl:false,split:false,noAct:true});
-  DU.hands={host:[mk([DU.deck[0],DU.deck[1]])],guest:[mk([DU.deck[2],DU.deck[3]])]};
-  DU.idx=4;DU.turn={who:'host',hand:0};DU.over=false;DU.started=true;DU.winner=null;
-  const rz=$('duelResult');if(rz){rz.textContent='';rz.className='duel-result'}
-  duelSend({t:'start',deck:DU.deck,host:DU.hands.host,guest:DU.hands.guest});
-  duelSetStatus('dst_you');duelRender();
-  duelCheckNatural();
+  DU.invested=DU.myStake;DU.over=false;DU.winner=null;DU.started=true;
+  const deck=duelNewDeck();
+  const holeH=[deck[0],deck[2]],holeG=[deck[1],deck[3]];
+  const board=[deck[4],deck[5],deck[6],deck[7],deck[8]];
+  const handNo=(DU.pok?DU.pok.handNo+1:1);
+  const button=first?'host':((DU.pok&&DU.pok.button==='host')?'guest':'host');
+  const P=pokMakeState(button,DU.myStake,deck,holeH,holeG,board,handNo);
+  DU.pok=P;
+  const e=$('pokResult');if(e){e.textContent='';e.className='duel-result'}
+  pokLogAdd(t('pok_blinds',{sb:POK_SB,bb:POK_BB,btn:(button==='host'?duelMe().name:DU.opp.name)}));
+  duelSend({t:'pok_start',hole:holeG,board:board,button:button,handNo:handNo,stake:DU.myStake});
+  duelSetStatus(button==='host'?'dst_you':'dst_foe');
+  pokRender();duelRender();
+}
+// ---------- Лобби: настройки хоста и чат ----------
+function duelModeName(m){return t(m==='rou'?'d_rou':(m==='pok'?'d_pok':'d_bac'))}
+function duelSendCfg(){duelSend({t:'lobby_cfg',mode:DU.mode,stake:DU.myStake})}
+// Хост жмёт «Начать игру» в лобби: ставка читается из настроек лобби
+function duelStartMatch(){
+  try{Sound.click()}catch(e){}
+  if(DU.role!=='host'||!DU.linked||DU.started)return;
+  const stake=duelStake();if(!stake)return;
+  if(DU.mode==='pok'&&stake<POK_MIN_STAKE){sn(t('pok_min20'));return}
+  DU.myStake=stake;
+  duelSendCfg();
+  duelBeginMatch();
+}
+function duelChatPush(me,from,text){
+  DU.chat.push({me:me,from:String(from||'?').slice(0,14),text:String(text||'').slice(0,120)});
+  if(DU.chat.length>30)DU.chat=DU.chat.slice(-30);
+  duelChatRender();
+  try{if(!me)Sound.tick()}catch(e){}
+}
+function duelChatSend(text){
+  text=String(text||'').trim().slice(0,120);
+  if(!text||!DU.conn||!DU.linked)return;
+  try{Sound.click()}catch(e){}
+  duelChatPush(true,duelMe().name,text);
+  duelSend({t:'chat',text:text});
+  const inp=$('duelChatIn');if(inp)inp.value='';
+}
+function duelChatRender(){
+  const log=$('duelChatLog');if(!log)return;
+  log.innerHTML='';
+  DU.chat.forEach(m=>{
+    const d=document.createElement('div');d.className='chat-msg '+(m.me?'me':'op');
+    const sm=document.createElement('small');sm.textContent=m.from;d.appendChild(sm);
+    d.appendChild(document.createTextNode(m.text));
+    log.appendChild(d);
+  });
+  log.scrollTop=log.scrollHeight;
 }
 function duelCreate(){
   try{Sound.click()}catch(e){}
   if(!duelPeerOK()){duelSetStatus('dst_err');return}
   duelLeave(true);
-  const stake=duelStake();if(!stake)return;
-  DU.myStake=stake;DU.role='host';DU.opp={name:'?',ava:'?'};
+  DU.role='host';DU.opp={name:'?',ava:'?'};
   let attempts=0;
   const tryOpen=()=>{
     attempts++;
     DU.code=duelCode();
     let peer=null;
-    try{peer=new Peer(DUEL_PREFIX+DU.code, duelPeerOpts())}catch(e){duelSetStatus('dst_err');return}
+    try{peer=new Peer(DUEL_PREFIX+DU.code,duelPeerOpts())}catch(e){duelSetStatus('dst_err');return}
     DU.peer=peer;
     peer.on('open',()=>{const cb=$('duelCode');if(cb)cb.value=DU.code;duelSetStatus('dst_wait',{c:DU.code});duelRender()});
     peer.on('connection',c=>{if(DU.conn){try{c.close()}catch(e){}return}duelWire(c)});
     peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
     peer.on('error',e=>{
-      // Иногда старый ID стола ещё "занят" на сервере сигналинга сразу после
-      // переподключения/обновления страницы — вместо тупика перегенерируем
-      // код и пробуем снова, а не просто показываем ошибку.
       if(e&&e.type==='unavailable-id'&&attempts<3){try{peer.destroy()}catch(_){}setTimeout(tryOpen,250);return}
       duelSetStatus('dst_err');
     });
@@ -3023,8 +3828,7 @@ function duelJoin(){
   const code=String(($('duelCode')||{value:''}).value||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
   if(code.length<4){sn(t('dst_code_err'));return}
   duelLeave(true);
-  const stake=duelStake();if(!stake)return;
-  DU.myStake=stake;DU.role='guest';DU.code=code;DU.opp={name:'?',ava:'?'};
+  DU.role='guest';DU.code=code;DU.opp={name:'?',ava:'?'};
   let peer=null;
   try{peer=new Peer(duelPeerOpts())}catch(e){duelSetStatus('dst_err');return}
   DU.peer=peer;
@@ -3042,9 +3846,6 @@ function duelJoin(){
   peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
   peer.on('error',e=>{
     if(gaveUp||DU.role!=='guest')return;
-    // "Стол не найден" от сигналинг-сервера бывает и когда стол только что
-    // создан и ID ещё не успел зарегистрироваться — прежде чем сдаваться,
-    // пробуем ещё пару раз с небольшой паузой.
     if(e&&e.type==='peer-unavailable'){
       if(joinAttempts<3){setTimeout(tryConnect,600);return}
       gaveUp=true;duelLeave(true);duelSetStatus('dst_nofriend');return;
@@ -3081,9 +3882,9 @@ function duelOnClose(mine){
   if(DU.started&&!DU.over){S.bal+=(DU.invested||0);save();try{rBal()}catch(e){}}
   try{if(DU.conn)DU.conn.close()}catch(e){}
   try{if(DU.peer)DU.peer.destroy()}catch(e){}
-  DU.conn=null;DU.peer=null;DU.role=null;DU.code='';DU.started=false;DU.over=true;
-  DU.hands={host:[],guest:[]};DU.turn=null;DU.opp={name:'?',ava:'?'};
-  const rz=$('duelResult');if(rz){rz.textContent='';rz.className='duel-result'}
+  DU.conn=null;DU.peer=null;DU.role=null;DU.code='';DU.started=false;DU.over=true;DU.winner=null;
+  DU.linked=false;DU.chat=[];
+  duelResetTables();duelChatRender();
   duelSetStatus(mine===true?'dst_idle':'dst_left');
   duelRender();
   if(had&&mine!==true){try{bz('loss')}catch(e){}}
@@ -3092,24 +3893,70 @@ function duelLeave(mine){
   duelSend({t:'bye'});
   duelOnClose(mine===true);
 }
+// «Ещё раз» (только хост): новый купон / спин / раздача, ставки те же
 function duelAgain(){
   try{Sound.click()}catch(e){}
-  if(DU.role!=='host'||!DU.conn||!DU.over)return;
-  DU.started=false;
-  duelBegin();
+  if(DU.role!=='host'||!DU.conn||!DU.over||!DU.started)return;
+  if(!ok(DU.myStake)){sn(t('not_enough'));return}
+  if(DU.mode==='bac'){
+    DU.bac.myPick=null;DU.bac.opPick=null;DU.bac.coup=null;DU.bac.coupShown=null;DU.bac.phase='pick';DU.bac.freshNote='';
+    DU.over=false;DU.winner=null;DU.invested=0;
+    const e=$('bacResult');if(e){e.textContent='';e.className='duel-result'}
+    duelSend({t:'bac_again'});
+    bacRender();duelRender();
+  }else if(DU.mode==='rou'){
+    DU.rou.myBet=null;DU.rou.opBet=null;DU.rou.num=null;DU.rou.phase='pick';
+    DU.over=false;DU.winner=null;DU.invested=0;
+    const e=$('rouResult');if(e){e.textContent='';e.className='duel-result'}
+    const rr=$('duelRouRes');if(rr)rr.textContent='';
+    duelSend({t:'rou_again'});
+    rouRender();duelRender();
+  }else{
+    pokBegin(false);
+  }
 }
 try{
   sBet('duelStakeIn','duelDn','duelUp');
+  document.querySelectorAll('#duelModes .duel-mode').forEach(b=>b.addEventListener('click',()=>{
+    try{Sound.click()}catch(e){}
+    if(DU.role!=='host'||DU.started)return;
+    DU.mode=b.dataset.m||'bac';
+    duelSendCfg();
+    duelRender();
+  }));
   const _dc=$('duelCreate');if(_dc)_dc.addEventListener('click',duelCreate);
   const _dj=$('duelJoin');if(_dj)_dj.addEventListener('click',duelJoin);
   const _dcp=$('duelCopy');if(_dcp)_dcp.addEventListener('click',duelCopy);
   const _di=$('duelInvite');if(_di)_di.addEventListener('click',duelInvite);
   const _dl=$('duelLeave');if(_dl)_dl.addEventListener('click',function(){try{Sound.click()}catch(e){}duelLeave(true)});
   const _da=$('duelAgain');if(_da)_da.addEventListener('click',duelAgain);
-  const _dh=$('duelHit');if(_dh)_dh.addEventListener('click',function(){duelAct('hit')});
-  const _ds=$('duelStand');if(_ds)_ds.addEventListener('click',function(){duelAct('stand')});
-  const _dd=$('duelDouble');if(_dd)_dd.addEventListener('click',function(){duelAct('double')});
-  const _dsp=$('duelSplit');if(_dsp)_dsp.addEventListener('click',function(){duelAct('split')});
+  document.querySelectorAll('#bacPicks button').forEach(b=>b.addEventListener('click',()=>bacChoose(b.dataset.p)));
+  document.querySelectorAll('#duelRouBets button').forEach(b=>b.addEventListener('click',()=>rouChoose({k:b.dataset.b})));
+  const _rng=$('duelRouNumGo');
+  if(_rng)_rng.addEventListener('click',()=>{
+    try{Sound.click()}catch(e){}
+    const v=Math.floor(Number(($('duelRouNum')||{value:''}).value));
+    if(!(v>=0&&v<=36)){sn('0–36');return}
+    rouChoose({k:'num',n:v});
+  });
+  const _pf=$('pokFold');if(_pf)_pf.addEventListener('click',()=>pokDo('fold'));
+  const _pcc=$('pokCheckCall');if(_pcc)_pcc.addEventListener('click',()=>{
+    const P=DU.pok;if(!P)return;
+    pokDo(pokToCall(P,DU.role)>0?'call':'check');
+  });
+  const _pbr=$('pokBetRaise');if(_pbr)_pbr.addEventListener('click',()=>pokDo('betraise'));
+  const _pad=$('pokAmtDn');if(_pad)_pad.addEventListener('click',()=>{try{Sound.click()}catch(e){}const a=$('pokAmt');if(a)a.value=Math.max(1,(parseInt(a.value)||1)-5)});
+  const _pau=$('pokAmtUp');if(_pau)_pau.addEventListener('click',()=>{try{Sound.click()}catch(e){}const a=$('pokAmt');if(a)a.value=(parseInt(a.value)||1)+5});
+  const _dsi=$('duelStakeIn');
+  if(_dsi){
+    const cfgPush=()=>{try{if(DU.role==='host'&&!DU.started){DU.myStake=clampBet('duelStakeIn');duelSendCfg();duelRender()}}catch(e){}};
+    _dsi.addEventListener('change',cfgPush);
+    ['duelDn','duelUp'].forEach(id=>{const b=$(id);if(b)b.addEventListener('click',()=>setTimeout(cfgPush,0))});
+  }
+  const _dst=$('duelStartBtn');if(_dst)_dst.addEventListener('click',duelStartMatch);
+  const _dcs=$('duelChatSend');if(_dcs)_dcs.addEventListener('click',()=>{const i=$('duelChatIn');duelChatSend(i?i.value:'')});
+  const _dci=$('duelChatIn');if(_dci)_dci.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();duelChatSend(e.target.value)}});
+  document.querySelectorAll('#duelChatCard .chat-quick button').forEach(b=>b.addEventListener('click',()=>duelChatSend(t('duel_offer',{n:b.dataset.q}))));
   duelNav();
   duelSetStatus('dst_idle');duelRender();
   try{
