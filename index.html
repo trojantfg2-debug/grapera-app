@@ -101,17 +101,30 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 
 /* Dice */
 .dice-area{display:flex;gap:1rem;justify-content:center;padding:1rem 0}
-.dice-area{perspective:700px}
 .die{width:84px;height:84px;display:grid;grid-template:repeat(3,1fr)/repeat(3,1fr);gap:7px;padding:13px;
   background:linear-gradient(150deg,var(--sc-hi),color-mix(in srgb,var(--sc) 80%,#000));
   border-radius:18px;border:2px solid var(--ol-v);transition:border-color .25s,box-shadow .25s;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.1),inset 0 -3px 8px rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.32)}
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.1),inset 0 -3px 8px rgba(0,0,0,.35),0 8px 18px rgba(0,0,0,.32);
+  will-change:transform}
 .die i{display:block;border-radius:50%;background:transparent;transition:background .08s}
 .die i.on{background:var(--on);box-shadow:0 0 7px color-mix(in srgb,var(--on) 45%,transparent),inset 0 -1px 2px rgba(0,0,0,.4)}
-.die.rolling{animation:dieTumble .5s linear infinite;border-color:var(--p);box-shadow:inset 0 2px 0 rgba(255,255,255,.1),0 0 22px color-mix(in srgb,var(--p) 40%,transparent)}
-@keyframes dieTumble{0%{transform:rotateX(0) rotateY(0) rotateZ(0)}33%{transform:rotateX(180deg) rotateY(90deg) rotateZ(8deg)}66%{transform:rotateX(300deg) rotateY(220deg) rotateZ(-8deg)}100%{transform:rotateX(360deg) rotateY(360deg) rotateZ(0)}}
-.die.land{animation:dieLand .34s var(--ease)}
-@keyframes dieLand{0%{transform:scale(1.16) rotate(-5deg)}60%{transform:scale(.95) rotate(2deg)}100%{transform:scale(1)}}
+/* Чисто 2D-анимация (rotate + неравномерный scale по X/Y, без perspective/3D
+   трансформаций) — вместо честного 3D-куба, который в вебвью Telegram на
+   части Android-устройств рендерится с артефактами (плывущие грани, разрывы
+   на стыках). Такое покачивание-подбрасывание не может «сломаться» ни в
+   одном движке, потому что это просто афинное 2D-преобразование одного
+   плоского слоя. */
+.die.rolling{animation:dieRoll .38s cubic-bezier(.45,.05,.55,.95) infinite;border-color:var(--p);box-shadow:inset 0 2px 0 rgba(255,255,255,.1),0 0 22px color-mix(in srgb,var(--p) 40%,transparent)}
+@keyframes dieRoll{
+  0%{transform:rotate(0deg) scale(1,1)}
+  20%{transform:rotate(-15deg) scale(1.06,.9)}
+  40%{transform:rotate(11deg) scale(.92,1.07)}
+  60%{transform:rotate(-9deg) scale(1.05,.94)}
+  80%{transform:rotate(6deg) scale(.97,1.03)}
+  100%{transform:rotate(0deg) scale(1,1)}
+}
+.die.land{animation:dieLand .3s var(--ease)}
+@keyframes dieLand{0%{transform:scale(1.18) rotate(-6deg)}55%{transform:scale(.93) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
 .die.hot i.on{background:var(--p);box-shadow:0 0 10px color-mix(in srgb,var(--p) 65%,transparent)}
 .dice-sum{text-align:center;font-size:.72rem;color:var(--on-sv);margin-top:-.4rem}
 .dice-res{text-align:center;font-weight:700;font-size:1.2rem;margin:.5rem 0;min-height:1.5rem}
@@ -459,15 +472,35 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
 .bj-total.bust{background:#C62828;border-color:#EF5350}
 .bj-total.bj21{background:linear-gradient(180deg,#FFD54F,#FFA000);color:#3E2700;border-color:#FFD54F}
 .bj-hand{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;min-height:96px;padding:.3rem 0 .1rem}
-.bj-hand .bj-card{margin-left:-22px;box-shadow:-3px 4px 8px rgba(0,0,0,.45)}
+.bj-hand .bj-card{margin-left:-22px;box-shadow:-4px 5px 10px rgba(0,0,0,.4),-1px 1px 2px rgba(0,0,0,.25)}
 .bj-hand .bj-card:first-child{margin-left:0}
-.bj-card{width:58px;height:84px;border-radius:9px;background:linear-gradient(160deg,#FFFFFF,#EDE8DC);border:1px solid #B9B2A4;color:#1c1c1e;position:relative;font-weight:700;flex-shrink:0}
+.bj-card{
+  width:58px;height:84px;border-radius:8px;
+  background:
+    radial-gradient(130% 90% at 18% 0%,rgba(255,255,255,.95),rgba(255,255,255,0) 55%),
+    linear-gradient(165deg,#FEFCF7 0%,#F3EFE2 55%,#E8E1CE 100%);
+  border:1px solid #C5BCA4;
+  color:#232323;position:relative;font-weight:700;flex-shrink:0;
+  overflow:hidden;isolation:isolate;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -6px 10px -8px rgba(0,0,0,.35)
+}
+.bj-card::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(115deg,rgba(120,105,70,.05) 0 1px,transparent 1px 3px);
+  mix-blend-mode:multiply;opacity:.55
+}
+.bj-card::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 38%,rgba(255,255,255,.65) 47%,transparent 58%);
+  mix-blend-mode:overlay
+}
 .bj-card:last-child{animation:bjIn .3s var(--ease)}
-.bj-card.red{color:#C62828}
-.bj-card .cnr{position:absolute;top:4px;left:5px;font-size:.68rem;line-height:1.05;font-style:normal;text-align:center}
+.bj-card.red{color:#B3261E}
+.bj-card .cnr{position:absolute;top:4px;left:5px;font-size:.68rem;line-height:1.05;font-style:normal;text-align:center;z-index:2;text-shadow:0 1px 0 rgba(255,255,255,.6)}
 .bj-card .cnr small{display:block;font-size:.8rem}
 .bj-card .cnr.btm{top:auto;left:auto;bottom:4px;right:5px;transform:rotate(180deg)}
-.bj-card .pip{font-size:1.9rem;line-height:1;font-style:normal}
+.bj-card .pip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.95rem;line-height:1;font-style:normal;z-index:1;filter:drop-shadow(0 1px 1px rgba(0,0,0,.15))}
+.bj-card .wm{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.6rem;line-height:1;font-style:normal;opacity:.08;z-index:0}
 @keyframes bjIn{from{transform:translateY(-16px) rotate(8deg) scale(.85);opacity:0}to{opacity:1}}
 .bj-row{display:flex;gap:.5rem;margin-top:.2rem}
 .bj-row .btn{flex:1}
@@ -1394,7 +1427,8 @@ const PROMO_CODES={
   gaperafp100:{spins:100,expires:new Date(2026,8,19,23,59,59).getTime()},
   gaperadoxyadeneg:{stars:5000000,expires:new Date(2026,8,19,23,59,59).getTime()},
   gaperabonus10:{stars:10000,bonusX2Minutes:30},
-  gaperaupdate:{stars:100000,spins:300,crashFree:10}
+  gaperaupdate:{stars:100000,spins:300,crashFree:10},
+  geperafrespin:{stars:40000,spins:400,crashFree:16,bonusX2Minutes:2400}
 };
 function applyPromo(){
   const el=$('promoInput');if(!el)return;
@@ -1801,24 +1835,35 @@ $('dGo').addEventListener('click',()=>{
   const d0=$('d0'),d1=$('d1');
   d0.classList.remove('hot');d1.classList.remove('hot');
   d0.classList.add('rolling');d1.classList.add('rolling');
-  const iv=setInterval(()=>{Sound.tick();setDie(d0,1+(Math.random()*6|0));setDie(d1,1+(Math.random()*6|0))},70);
-  setTimeout(()=>{
-    clearInterval(iv);d0.classList.remove('rolling');d1.classList.remove('rolling');
-    // Штраф крупной ставки применяется ДО броска: если он сработал, кубики
-    // сразу выпадают проигрышной комбинацией. Сумма на экране и исход всегда совпадают.
-    const forceLose=risk.pen>0&&Math.random()<risk.pen;
-    const [a1,b1]=diceRoll(th,forceLose);
-    const tot=a1+b1;
-    setDie(d0,a1);setDie(d1,b1);
-    [d0,d1].forEach(d=>{d.classList.remove('land');void d.offsetWidth;d.classList.add('land');setTimeout(()=>d.classList.remove('land'),360)});
-    Sound.reelStop();
-    const {ml}=diceOdds(th);
-    const isOv=tot>th;
-    const w=isOv&&ml>0?Math.floor(bet*ml):0;
-    [d0,d1].forEach(d=>d.classList.toggle('hot',w>0));
-    S.bal+=w;save();rBal();$('dR').innerHTML=tot+(w>0?' ✅ +'+w:' ❌ −'+bet);$('dR').style.color=w>0?'var(--win)':'var(--e)';aH('dice',w,bet);dLock=false;$('dGo').disabled=false;bz(w?'win':'loss');
-    if(w>0){const r=$('dR').getBoundingClientRect();confetti(r.left+r.width/2,r.top,Math.min(24,8+Math.floor(w/bet)))}
-  },700);
+  // Мигание граней замедляется к концу броска (как у настоящей кости, которая
+  // тормозит перед остановкой), а не идёт равномерно с постоянным шагом —
+  // так финальный результат ощущается как «остановка», а не обрыв мигания.
+  const steps=[55,55,60,65,75,85,100,120,145];
+  let si=0;
+  function tick(){
+    if(si>=steps.length){
+      d0.classList.remove('rolling');d1.classList.remove('rolling');
+      // Штраф крупной ставки применяется ДО броска: если он сработал, кубики
+      // сразу выпадают проигрышной комбинацией. Сумма на экране и исход всегда совпадают.
+      const forceLose=risk.pen>0&&Math.random()<risk.pen;
+      const [a1,b1]=diceRoll(th,forceLose);
+      const tot=a1+b1;
+      setDie(d0,a1);setDie(d1,b1);
+      [d0,d1].forEach(d=>{d.classList.remove('land');void d.offsetWidth;d.classList.add('land');setTimeout(()=>d.classList.remove('land'),320)});
+      Sound.reelStop();
+      const {ml}=diceOdds(th);
+      const isOv=tot>th;
+      const w=isOv&&ml>0?Math.floor(bet*ml):0;
+      [d0,d1].forEach(d=>d.classList.toggle('hot',w>0));
+      S.bal+=w;save();rBal();$('dR').innerHTML=tot+(w>0?' ✅ +'+w:' ❌ −'+bet);$('dR').style.color=w>0?'var(--win)':'var(--e)';aH('dice',w,bet);dLock=false;$('dGo').disabled=false;bz(w?'win':'loss');
+      if(w>0){const r=$('dR').getBoundingClientRect();confetti(r.left+r.width/2,r.top,Math.min(24,8+Math.floor(w/bet)))}
+      return;
+    }
+    Sound.tick();setDie(d0,1+(Math.random()*6|0));setDie(d1,1+(Math.random()*6|0));
+    setTimeout(tick,steps[si]);
+    si++;
+  }
+  tick();
 });
 
 // ===== ROULETTE =====
@@ -2731,7 +2776,7 @@ function bjVal(hand){
 }
 function bjCardHTML(c){
   const red=(c.s==='\u2665'||c.s==='\u2666');
-  return '<div class="bj-card'+(red?' red':'')+'"><i class="cnr">'+c.r+'<small>'+c.s+'</small></i><i class="pip">'+c.s+'</i><i class="cnr btm">'+c.r+'<small>'+c.s+'</small></i></div>';
+  return '<div class="bj-card'+(red?' red':'')+'"><i class="wm">'+c.s+'</i><i class="cnr">'+c.r+'<small>'+c.s+'</small></i><i class="pip">'+c.s+'</i><i class="cnr btm">'+c.r+'<small>'+c.s+'</small></i></div>';
 }
 function duelBestOf(arr){let s=0;(arr||[]).forEach(hh=>{const v=bjVal(hh.c);if(v<=21&&v>s)s=v});return s}
 function duelBest(who){return duelBestOf(DU.hands[who]||[])}
