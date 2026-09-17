@@ -1261,6 +1261,13 @@ function normalizeState(x){
   d.stats=Object.assign(d.stats,v.stats||{});
   for(const k of Object.keys(d.stats)) d.stats[k]=Math.max(0,Math.floor(+d.stats[k]||0));
   d.hist=Array.isArray(v.hist)?v.hist.slice(0,50):[];
+  try{
+    let mx=0,run=0,bestRun=0;
+    const hh=d.hist;
+    for(let i=hh.length-1;i>=0;i--){const r=+((hh[i]||{}).r)||0;if(r>mx)mx=r;if(r>0){run++;if(run>bestRun)bestRun=run}else run=0}
+    if(mx>(d.stats.best||0))d.stats.best=mx;
+    if(bestRun>(d.stats.bestStreak||0))d.stats.bestStreak=bestRun;
+  }catch(e){}
   d.crashHist=Array.isArray(v.crashHist)?v.crashHist.slice(0,12).map(n=>Number(n)).filter(Number.isFinite):[];
   d.crashFree=Math.max(0,Math.min(9999,Math.floor(+v.crashFree||0)));
   d.crashAutoOn=(v.crashAutoOn===undefined)?true:!!v.crashAutoOn;
@@ -1749,7 +1756,7 @@ const PL_MULTS={
   med:[8,2.5,1.2,0.9,0.4,0.9,1.2,2.5,8],
   high:[18,3.5,1.3,0.6,0.2,0.6,1.3,3.5,18]
 };
-let plRisk='low',plLock=false,plAnim=null,plRAF=0,plFlashes={},plBinFlash=-1,plBinFlashT=0;
+let plRisk='low',plLock=false,plAnim=null,plRAF=0,plFlashes={},plBinFlash=-1,plBinFlashT=0,plWatchdog=null;
 const plCanvas=$('plCanvas'),plCtx=plCanvas.getContext('2d');
 function plGeom(){
   const W=plCanvas.clientWidth||300,H=300;
@@ -1814,6 +1821,7 @@ function plOnPeg(p){
   try{Sound.tick()}catch(e){}
 }
 function plFrame(now){
+  try{
   const A=plAnim;if(!A)return;
   if(!A.last)A.last=now;
   let move=(now-A.last)/1000*340;A.last=now;
@@ -1826,14 +1834,16 @@ function plFrame(now){
   plDraw();
   if(A.seg>=A.pts.length-1){plLand();return}
   plRAF=requestAnimationFrame(plFrame);
+  }catch(e){try{plLand()}catch(_){plLock=false;const g=$('plGo');if(g)g.disabled=false}}
 }
 function plLand(){
   cancelAnimationFrame(plRAF);
+  try{clearTimeout(plWatchdog)}catch(e){}plWatchdog=null;
   const A=plAnim;plAnim=null;
   const go=$('plGo');
   if(!A){plLock=false;if(go)go.disabled=false;return}
   const mult=PL_MULTS[plRisk][A.bin];
-  const w=Math.floor(A.bet*mult),net=w-A.bet;
+  const w=Math.floor(A.bet*mult+1e-9),net=w-A.bet;
   S.bal+=w;save();rBal();
   plBinFlash=A.bin;plBinFlashT=performance.now();
   plDraw();
@@ -1867,6 +1877,8 @@ $('plGo').addEventListener('click',()=>{
   plAnim={pts:pts,seg:0,ball:{x:pts[0].x,y:pts[0].y},bin:k,bet:bet,last:0};
   cancelAnimationFrame(plRAF);
   plRAF=requestAnimationFrame(plFrame);
+  try{clearTimeout(plWatchdog)}catch(e){}
+  plWatchdog=setTimeout(()=>{try{if(plLock)plLand()}catch(_){plLock=false;const g=$('plGo');if(g)g.disabled=false}},9000);
 });
 document.querySelectorAll('#plRisk button').forEach(b=>b.addEventListener('click',()=>{
   if(plLock)return;try{Sound.click()}catch(e){}
