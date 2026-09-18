@@ -8,7 +8,6 @@
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
@@ -1606,7 +1605,9 @@ try{lockWatch()}catch(e){}
 try{lockOverlay(false)}catch(e){}
 try{pfPullAva()}catch(e){}
 try{pfWatchAva()}catch(e){}
-setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}try{pfPullAva()}catch(e){}try{pfWatchAva()}catch(e){}},1200);
+try{fbPushNick()}catch(e){}
+try{banCheck()}catch(e){}
+setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}try{pfPullAva()}catch(e){}try{pfWatchAva()}catch(e){}try{fbPushNick()}catch(e){}try{banCheck()}catch(e){}},1200);
 rTheme();
 function flushSave(){save(true);try{lockRelease()}catch(e){}}
 window.addEventListener('pagehide',flushSave);
@@ -1665,12 +1666,6 @@ function duelFbReady(){
     if(fbDb)return true;
     if(!window.firebase||!DUEL_FB_CONFIG||!DUEL_FB_CONFIG.apiKey)return false;
     if(!fbApp)fbApp=firebase.initializeApp(DUEL_FB_CONFIG);
-    try{
-      if(!window.__acInit&&window.firebase&&firebase.appCheck){
-        window.__acInit=true;
-        firebase.appCheck().activate('6LfXM8ItAAAAAN0hB3P1K2ULaz52XPgySjQIN39b',true);
-      }
-    }catch(e){}
     fbDb=firebase.database();
     try{fbTimeInit()}catch(e){}
     return !!fbDb;
@@ -3230,7 +3225,58 @@ Object.assign(I18N.ru,{app_upd:'Вышла новая версия - обнов�
 Object.assign(I18N.en,{app_upd:'New version available - refresh the page'});
 Object.assign(I18N.uk,{app_upd:'Вийшла нова версія - онови сторінку'});
 }catch(e){}
-const APP_VER='8.8';
+try{
+Object.assign(I18N.ru,{ban_title:'ДОСТУП ЗАБЛОКИРОВАН',ban_msg:'Твой аккаунт забанен. Обратись к администратору.'});
+Object.assign(I18N.en,{ban_title:'ACCESS BLOCKED',ban_msg:'Your account is banned. Contact the administrator.'});
+Object.assign(I18N.uk,{ban_title:'ДОСТУП ЗАБЛОКОВАНО',ban_msg:'Твій акаунт забанено. Звернись до адміністратора.'});
+}catch(e){}
+function tgNick(){
+  let n='';
+  try{
+    const u=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;
+    if(u)n=u.username?('@'+u.username):((u.first_name||'')+(u.last_name?(' '+u.last_name):''));
+  }catch(e){}
+  return String(n||'').trim().slice(0,32);
+}
+function fbPushNick(){
+  if(!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  const n=tgNick();if(!n)return;
+  try{fbDb.ref('gapera/nicknames/'+id).set(n)}catch(e){}
+}
+let banWatching=false;
+function banShow(on){
+  let o=document.getElementById('banOverlay');
+  if(on){
+    if(!o){
+      o=document.createElement('div');o.id='banOverlay';
+      o.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(10,8,15,.96);text-align:center;padding:24px';
+      const t1=document.createElement('div');t1.style.cssText='font-size:26px;font-weight:700';
+      const t2=document.createElement('div');t2.style.cssText='font-size:15px;opacity:.85;max-width:420px';
+      t1.id='banTitle';t2.id='banMsg';
+      o.appendChild(t1);o.appendChild(t2);document.body.appendChild(o);
+    }
+    try{
+      const T=(typeof t==='function')?t:function(k){return k};
+      document.getElementById('banTitle').textContent=T('ban_title');
+      document.getElementById('banMsg').textContent=T('ban_msg');
+    }catch(e){}
+    o.style.display='flex';
+  }else if(o){o.style.display='none'}
+}
+function banCheck(){
+  if(!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  const apply=v=>{banShow(String(v||'no').toLowerCase()==='yes')};
+  try{
+    fbDb.ref('gapera/banned/'+id).once('value').then(snap=>{let v=null;try{v=snap.val()}catch(e){}apply(v)}).catch(()=>{});
+    if(!banWatching){
+      banWatching=true;
+      try{fbDb.ref('gapera/banned/'+id).on('value',snap=>{let v=null;try{v=snap.val()}catch(e){}apply(v)})}catch(e){banWatching=false}
+    }
+  }catch(e){}
+}
+const APP_VER='8.9';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
