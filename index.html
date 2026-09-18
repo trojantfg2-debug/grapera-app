@@ -1602,7 +1602,9 @@ try{fbStarsWatch()}catch(e){}
 try{fbNetWatch()}catch(e){}
 try{lockWatch()}catch(e){}
 try{lockOverlay(false)}catch(e){}
-setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}},1200);
+try{pfPullAva()}catch(e){}
+try{pfWatchAva()}catch(e){}
+setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}try{pfPullAva()}catch(e){}try{pfWatchAva()}catch(e){}},1200);
 rTheme();
 function flushSave(){save(true);try{lockRelease()}catch(e){}}
 window.addEventListener('pagehide',flushSave);
@@ -2932,7 +2934,7 @@ let pfPhoto=null;
 function pfHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)}
 function pfAvaKey(){try{return 'gapera_avatar_'+getUid()}catch(e){return 'gapera_avatar_anon'}}
 function pfLoadPhoto(){try{pfPhoto=localStorage.getItem(pfAvaKey())||null}catch(e){pfPhoto=null}}
-function pfSavePhoto(d){try{if(d)localStorage.setItem(pfAvaKey(),d);else localStorage.removeItem(pfAvaKey());pfPhoto=d||null;return true}catch(e){return false}}
+function pfSavePhoto(d,ts){try{if(d)localStorage.setItem(pfAvaKey(),d);else localStorage.removeItem(pfAvaKey());try{localStorage.setItem(pfTsKey(),String(ts||Date.now()))}catch(_){}pfPhoto=d||null;try{pfPushAva()}catch(_){}return true}catch(e){return false}}
 function pfRenderAva(uid){
   const ava=$('pfAva'),img=$('pfImg'),ch=$('pfLetter');
   if(!ava)return;
@@ -2941,6 +2943,55 @@ function pfRenderAva(uid){
   const x=pfHash('ava|'+String(uid));
   const dg=String(uid).match(/\d/);if(ch)ch.textContent=dg?dg[0]:String(uid).charAt(0).toUpperCase();
   ava.style.background='linear-gradient(135deg,hsl('+(x%360)+',60%,45%),hsl('+((x+50)%360)+',60%,28%))';
+}
+function pfTsKey(){try{return pfAvaKey()+':ts'}catch(e){return 'gapera_avatar_ts'}}
+function pfLocalTs(){try{return +localStorage.getItem(pfTsKey())||0}catch(e){return 0}}
+let pfPushT=null;
+function pfPushAva(){
+  if(!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  clearTimeout(pfPushT);
+  pfPushT=setTimeout(()=>{
+    if(lockDenied)return;
+    let ts=pfLocalTs();
+    if(!(ts>0)){ts=Date.now();try{localStorage.setItem(pfTsKey(),String(ts))}catch(_){}}
+    const img=pfPhoto||'';
+    if(!img&&!(pfLocalTs()>0))return;
+    try{
+      fbDb.ref('gapera/avatars/'+id).transaction(cur=>{
+        if(cur&&((+cur.ts||0)>=ts))return;
+        return {img:img,ts:ts};
+      });
+    }catch(e){}
+  },400);
+}
+function pfPullAva(){
+  if(!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  fbDb.ref('gapera/avatars/'+id).once('value').then(snap=>{
+    let v=null;try{v=snap.val()}catch(e){}
+    if(!v)return;
+    const rim=(v.img||'');
+    if(rim===(pfPhoto||'')){try{if((+v.ts||0)>pfLocalTs())localStorage.setItem(pfTsKey(),String(+v.ts))}catch(_){}return}
+    if(!rim){if(pfPhoto||pfLocalTs()<=0){try{pfSavePhoto(null,0)}catch(e){}}try{pfPushAva()}catch(e){}return}
+    if((+v.ts||0)>pfLocalTs()){try{pfSavePhoto(rim,+v.ts||Date.now())}catch(e){}try{const u=displayUid();pfRenderAva(u)}catch(e){}try{rProfile()}catch(e){}}
+    else{try{pfPushAva()}catch(e){}}
+  }).catch(()=>{});
+}
+let pfWatching=false;
+function pfWatchAva(){
+  if(pfWatching||!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  pfWatching=true;
+  try{
+    fbDb.ref('gapera/avatars/'+id).on('value',snap=>{
+      let v=null;try{v=snap.val()}catch(e){}
+      if(!v)return;
+      const rim=(v.img||'');
+      if(rim===(pfPhoto||'')){try{if((+v.ts||0)>pfLocalTs())localStorage.setItem(pfTsKey(),String(+v.ts))}catch(_){}return}
+      if((+v.ts||0)>pfLocalTs()){try{pfSavePhoto(rim||null,+v.ts||Date.now())}catch(e){}try{const u=displayUid();pfRenderAva(u)}catch(e){}try{rProfile()}catch(e){}}
+    });
+  }catch(e){pfWatching=false}
 }
 function pfXp(){try{return Math.max(0,(S.stats.total||0)*20+(S.stats.win||0)*30+(S.clicks||0)*2)}catch(e){return 0}}
 function pfLevelInfo(xp){const lvl=1+Math.floor(Math.sqrt(xp/200));const base=200*(lvl-1)*(lvl-1);const next=200*lvl*lvl;const prog=next>base?Math.min(100,Math.max(0,(xp-base)/(next-base)*100)):100;return{lvl,base,next,prog}}
@@ -3024,6 +3075,8 @@ function pfOnFile(e){
 }
 try{
   pfLoadPhoto();
+  try{pfPushAva()}catch(e){}
+  try{pfPullAva()}catch(e){}
   const _up=$('pfUpBtn');if(_up)_up.addEventListener('click',function(){try{Sound.click()}catch(_){}pfPickPhoto()});
   const _av=$('pfAva');if(_av)_av.addEventListener('click',function(){try{Sound.click()}catch(_){}pfPickPhoto()});
   const _fl=$('pfFile');if(_fl)_fl.addEventListener('change',pfOnFile);
@@ -3169,7 +3222,7 @@ Object.assign(I18N.ru,{app_upd:'Вышла новая версия - обнов�
 Object.assign(I18N.en,{app_upd:'New version available - refresh the page'});
 Object.assign(I18N.uk,{app_upd:'Вийшла нова версія - онови сторінку'});
 }catch(e){}
-const APP_VER='8.7';
+const APP_VER='8.8';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
