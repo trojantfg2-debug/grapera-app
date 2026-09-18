@@ -2930,7 +2930,7 @@ const GAME_NAMES={slots:'Слоты',dice:'Кости',roulette:'Рулетка'
 function rSt(){$('xT').textContent=S.stats.total;$('xW').textContent=S.stats.win;$('xL').textContent=S.stats.loss;$('xWo').textContent=S.stats.won;$('xB').textContent=S.stats.bet;$('xP').textContent=S.stats.won-S.stats.bet;$('xP').style.color=S.stats.won-S.stats.bet>=0?'var(--win)':'var(--e)';$('xWR').textContent=S.stats.total?Math.round(S.stats.win/S.stats.total*100)+'%':'-';$('xBest').textContent=(S.stats.best||0).toLocaleString();const _stw=S.stats.streak||0;$('xSt').textContent=_stw+(_stw>=2?'🔥':'');const el=$('hL');if(!S.hist.length){el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">'+t('empty')+'</div>';return}el.innerHTML='';S.hist.slice(0,30).forEach(h=>{const d=document.createElement('div');d.className='h-item';const t=new Date(h.t);const ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');const safeGame=String(gameName(h.g)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 d.innerHTML='<span>'+safeGame+' • '+ts+'</span><span>'+(h.r>0?'<span class="w">+'+h.r+'</span>':'<span class="l">−'+h.a+'</span>')+'</span>';el.appendChild(d)})}
 rSt();
-// ===== PROFILE (уровень, своя аватарка, достижения) =====
+
 let pfPhoto=null;
 function pfHash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0)}
 function pfAvaKey(){try{return 'gapera_avatar_'+getUid()}catch(e){return 'gapera_avatar_anon'}}
@@ -3085,19 +3085,19 @@ try{
   setInterval(function(){try{if(document.getElementById('s-profile').classList.contains('on')){rProfile();rSt()}}catch(_){}},3000);
   try{rProfile()}catch(_){}
 }catch(e){}
-// ===== DUEL - онлайн-дуэли 1 на 1 через PeerJS: баккара, рулетка, покер =====
-// P2P без своего сервера: создатель стола получает короткий код, друг вводит
-// его у себя - браузеры соединяются напрямую (WebRTC DataChannel).
-// Хост - крупье и генератор случайности: тасует шу/колоду, крутит рулетку и
-// рассылает результат целиком. Оба клиента считают по одним и тем же данным,
-// поэтому состояние всегда совпадает.
-// Экономика дуэли единая: каждый вносит ставку, победитель забирает ×1.9,
-/// ничья/дележка - возврат ставки.
+
+
+
+
+
+
+
+
 const DUEL_PREFIX='gapera-duel-';
 const DUEL_BOT='gapera_bot';
 const DUEL_SIG_CLOUD={name:'cloud',host:'0.peerjs.com',port:443,path:'/',key:'peerjs',secure:true};
-// Свой сервер сигналинга (на вашем ПК + туннель). Хранится локально.
-// Формат ввода в приложении: хост:порт/путь, например xxx.trycloudflare.com:443/gaperaduel
+
+
 function duelSrvLoad(){try{const o=JSON.parse(localStorage.getItem('gapera_duel_server')||'null');if(o&&o.host)return o}catch(e){}return null}
 function duelParseSrv(str){
   str=String(str||'').trim().replace(/^https?:\/\//i,'').replace(/\/+$/,'');
@@ -3116,7 +3116,7 @@ function duelCustomSig(){
   const https=(location.protocol==='https:');
   return {name:'custom',host:o.host,port:o.port||(https?443:9000),path:o.path||'/gaperaduel',key:'gaperaduel',secure:https};
 }
-// Свой сервер - первым, облако PeerJS - запасным
+
 function duelSigList(){const c=duelCustomSig();return c?[c,DUEL_SIG_CLOUD]:[DUEL_SIG_CLOUD]}
 function duelPeerOptsFor(sv){
   if(!sv||sv.name==='cloud')return duelPeerOpts();
@@ -3133,7 +3133,7 @@ let DU={peer:null,conn:null,linked:false,chat:[],myReady:false,oppReady:false,ro
  bac:{shoe:[],pos:0,cutAt:0,round:0,hist:[],myPick:null,opPick:null,coup:null,phase:'idle'},
  rou:{myBet:null,opBet:null,num:null,hist:[],phase:'idle'},
  pok:null};
-// ===== Дуэльные строки (RU/EN/UK) =====
+
 try{
 Object.assign(I18N.ru,{duel_title:'ОНЛАЙН-ДУЭЛИ • 1 НА 1',duel_test:'ТЕСТ',duel_mode:'РЕЖИМ ДУЭЛИ',d_bac:'Баккара',d_rou:'Рулетка',d_pok:'Покер',
 d_bac_h:'Punto Banco • шу 8 колод • прогноз: Игрок ×1 / Банкир ×0.95 / Ничья ×8. Чей прогноз точнее - тот забирает банк ×1.9',
@@ -3238,10 +3238,10 @@ function appVerCheck(){
 try{setTimeout(appVerCheck,15000)}catch(e){}
 try{setInterval(appVerCheck,1800000)}catch(e){}
 function duelPeerOpts(){
-  // На разных сетях прямое соединение режут NAT/файрволы - пробиваем через
-  // TURN-релеи. Несколько независимых серверов: если один мёртв, сработает
-  // другой. TCP/443 и TURNS нужны там, где порезан UDP (мобильные операторы,
-  // строгие Wi-Fi). STUN - только узнать свой адрес, трафик не релейит.
+  
+  
+  
+  
   return {debug:0,config:{
     iceTransportPolicy:'all',
     bundlePolicy:'max-bundle',
@@ -3252,11 +3252,11 @@ function duelPeerOpts(){
       {urls:'stun:stun.cloudflare.com:3478'},
       {urls:'stun:global.stun.twilio.com:3478'},
       {urls:'stun:freeturn.net:5349'},
-      // freeTURN - бесплатный TURN (лимита 2 Мбит/пир картам и чату за глаза)
+      
       {urls:'turns:freeturn.tel:5349',username:'free',credential:'free'},
-      // AnyFirewall - открытый демо-TURN, TCP 443 пролезает через строгие сети
+      
       {urls:'turn:turn.anyfirewall.com:443?transport=tcp',username:'webrtc',credential:'webrtc'},
-      // OpenRelay - static-creds часто мертвы, оставляем как запасной вариант
+      
       {urls:'turn:openrelay.metered.ca:80',username:'openrelayproject',credential:'openrelayproject'},
       {urls:'turn:openrelay.metered.ca:80?transport=tcp',username:'openrelayproject',credential:'openrelayproject'},
       {urls:'turn:openrelay.metered.ca:443',username:'openrelayproject',credential:'openrelayproject'},
@@ -3264,7 +3264,7 @@ function duelPeerOpts(){
     ]}};
 }
 function duelCode(){const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let s='';for(let i=0;i<6;i++)s+=A[Math.random()*A.length|0];return s}
-// Карта {r:'A'..'K', s:'♠'|'♥'|'♦'|'♣'} - единый рендер для баккары и покера
+
 function dcRed(s){return s==='\u2665'||s==='\u2666'}
 function dcCardHTML(c){
   const red=dcRed(c.s);
@@ -3277,23 +3277,23 @@ function duelNewDeck(){
   for(let i=d.length-1;i>0;i--){const j=Math.random()*(i+1)|0,tmp=d[i];d[i]=d[j];d[j]=tmp}
   return d;
 }
-// ===== ДУЭЛЬ-БАККАРА (Punto Banco, честные правила казино) =====
-// Шу 8 колод (416 карт), карта-срезка, сжигание, натуралы 8/9,
-// игрок тянет на 0-5 / стоит на 6-7, банкир - полное табло.
-// Выплаты купона: игрок 1:1, банкир 0.95:1 (комиссия 5%), ничья 8:1.
-// Ничья в купоне: прогнозы Игрок/Банкир считаются возвратом (0), а не проигрышем.
+
+
+
+
+
 function bacCardVal(c){if(c.r==='A')return 1;if(c.r==='K'||c.r==='Q'||c.r==='J'||c.r==='10')return 0;return parseInt(c.r,10)}
 function bacTot(h){let s=0;for(let i=0;i<h.length;i++)s+=bacCardVal(h[i]);return s%10}
 function bacNewShoe(){
   const d=duelNewDeck();
   for(let k=1;k<8;k++){const more=duelNewDeck();for(let i=0;i<more.length;i++)d.push(more[i])}
   for(let i=d.length-1;i>0;i--){const j=Math.random()*(i+1)|0,tmp=d[i];d[i]=d[j];d[j]=tmp}
-  // Сжигание: первая карта задаёт, сколько карт сжечь (фигурные/10 = 10)
+  
   const burn=Math.max(1,Math.min(10,bacCardVal(d[0])||10));
   return {shoe:d,pos:1+burn,cutAt:d.length-60};
 }
-// Чистая функция купона: по шу и позиции всегда один результат на обоих клиентах.
-// Порядок сдачи: P, B, P, B. p3 - третья игрока, b3 - третья банкира.
+
+
 function bacDeal(shoe,pos){
   const p=[shoe[pos],shoe[pos+2]],b=[shoe[pos+1],shoe[pos+3]];
   let n=4;
@@ -3316,7 +3316,7 @@ function bacDeal(shoe,pos){
 }
 function bacEval(pick,res){
   if(pick===res)return pick==='T'?8:(pick==='B'?0.95:1);
-  if(res==='T')return 0; // ничья: прогнозы P/B - возврат
+  if(res==='T')return 0; 
   return -1;
 }
 function bacPickLbl(p){return p==='P'?t('bac_p'):(p==='B'?t('bac_b'):t('bac_t'))}
@@ -3335,7 +3335,7 @@ function bacMaybeDeal(){
   if(DU.role!=='host')return;
   if(!B.myPick||!B.opPick||B.phase!=='pick')return;
   if(!ok(DU.myStake)){duelSend({t:'broke'});duelLeave(true);duelSetStatus('dst_broke');return}
-  // Срезка: карт не хватит на купон - новый шу
+  
   let fresh=false;
   if(!B.shoe.length||B.pos+12>B.cutAt){const s=bacNewShoe();B.shoe=s.shoe;B.pos=s.pos;B.cutAt=s.cutAt;fresh=true}
   S.bal-=DU.myStake;save();rBal();
@@ -3353,7 +3353,7 @@ function bacRunCoup(){
   B.coupShown={p:0,b:0};
   bacRenderCoup(false);
   if(B.fresh){B.fresh=false;try{sn(t('bac_reshuffle'))}catch(e){}}
-  // Поэтапное вскрытие: P1 B1 P2 B2 → тоталы → третьи с объяснением табло → итог
+  
   const steps=bacRevealSteps(coup);
   let i=0;
   B.coupShown={p:0,b:0};
@@ -3361,7 +3361,7 @@ function bacRunCoup(){
     if(!DU.started||DU.over&&B.phase!=='reveal'){clearInterval(timer);return}
     i++;
     B.coupShown={p:Math.min(coup.p.length,i>=4?coup.p.length:Math.ceil(i/2)),b:0};
-    // Простая схема показа: шаг1: P1,B1; шаг2: +P2,B2; шаг3: третьи; шаг4: итог
+    
     if(i===1)B.coupShown={p:1,b:1};
     else if(i===2)B.coupShown={p:2,b:2};
     else if(i>=3)B.coupShown={p:coup.p.length,b:coup.b.length};
@@ -3439,10 +3439,10 @@ function bacRender(){
   duelSetText('bacRoundN',String(B.round||0));
   bacRenderRoad();
 }
-// ===== ДУЭЛЬ-РУЛЕТКА (European, честные выплаты) =====
-// 37 номеров, зеро бьёт все внешние/дюжины/колонки (без La Partage -
-// прямое зеро 35:1). Каждый ставит ВСЮ сумму на одну позицию:
-// прямое 35:1, дюжины/колонки 2:1, шансы 1:1. Чей возврат выше - тот победил.
+
+
+
+
 const ROU_RED=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 const ROU_ORDER=[0,32,15,19,4,21,2,25,17,34,6,27,13,36,11,30,8,23,10,5,24,16,33,1,20,14,31,9,22,18,29,7,28,12,35,3,26];
 function rouEval(bet,num){
@@ -3496,7 +3496,7 @@ function rouRunSpin(){
   const R=DU.rou;
   R.phase='spin';
   rouRender();
-  // Анимация: мелькание номеров ~1.6с, затем реальный номер
+  
   const rn=$('duelRouN');
   let el=0,delay=50;
   const tick=()=>{
@@ -3568,7 +3568,7 @@ function duelStake(){
 }
 function duelSend(o){try{if(DU.link==='fb'){duelFbSend(o);return}if(DU.conn&&DU.conn.open)DU.conn.send(o)}catch(e){}}
 function duelOppRole(){return DU.role?((DU.role==='host')?'guest':'host'):'host'}
-// Единый расчёт дуэли: winner - роль победителя или 'push'
+
 function duelSettle(winner){
   if(DU.over&&DU.winner!==null&&winner===DU.winner)return;
   DU.over=true;DU.winner=winner;
@@ -3597,18 +3597,18 @@ function duelNav(){
 function duelRender(){
   try{
     const me=duelMe();
-    // Шапка лобби
+    
     const hint=$('duelModeHint');
     if(hint)hint.textContent=t(DU.mode==='bac'?'d_bac_h':(DU.mode==='rou'?'d_rou_h':'d_pok_h'));
     document.querySelectorAll('#duelModes .duel-mode').forEach(b=>b.classList.toggle('on',b.dataset.m===DU.mode));
     const si=$('duelStakeIn');if(si)si.disabled=!!(DU.role&&DU.started);
-    // Вкладка: только создать/войти. Настройки - в лобби после подключения.
+    
     const lob=$('duelLobby');
     if(lob)lob.style.display=(!DU.role||DU.searching||(DU.role==='host'&&!DU.linked&&!DU.started&&!DU.searching))?'':'none';
     const pre=$('duelPre'),wait=$('duelWait');
     if(pre)pre.style.display=(!DU.role||DU.searching)?'':'none';
     if(wait)wait.style.display=(DU.role==='host'&&!DU.linked&&!DU.started&&!DU.searching)?'':'none';
-    // Лобби с настройками: хост правит, гость смотрит
+    
     const setup=$('duelSetup');
     if(setup)setup.style.display=(DU.role&&!DU.searching&&(DU.linked||DU.role==='guest')&&!DU.started)?'':'none';
     const ch=$('duelCfgHost'),cg=$('duelCfgGuest');
@@ -3645,13 +3645,13 @@ function duelRender(){
     const iv=$('duelInvite');if(iv)iv.style.display=(DU.role==='host'&&!DU.started)?'':'none';
     const ft=$('duelFoot');if(ft)ft.style.display=DU.role?'':'none';
     const ag=$('duelAgain');if(ag)ag.style.display=(DU.role==='host'&&DU.started&&DU.over&&DU.conn)?'':'none';
-    // Столы режимов
+    
     const on=DU.started&&DU.role;
     const bt=$('duelBacTable'),rt=$('duelRouTable'),pkt=$('duelPokTable');
     if(bt)bt.style.display=(on&&DU.mode==='bac')?'':'none';
     if(rt)rt.style.display=(on&&DU.mode==='rou')?'':'none';
     if(pkt)pkt.style.display=(on&&DU.mode==='pok')?'':'none';
-    // Имена/аватарки в покере
+    
     const op=DU.opp||{name:'?',ava:'?'};
     duelSetText('pokOppName',op.name);duelSetText('pokOppAva',op.ava);
     duelSetText('pokMyName',me.name);duelSetText('pokMyAva',me.ava);
@@ -3663,14 +3663,14 @@ function duelRender(){
     }
   }catch(e){}
 }
-// ===== ДУЭЛЬ-ПОКЕР: хедз-ап безлимитный техасский холдем на один банк =====
-// Честные правила: колода 52, блайнды SB=5/BB=10 (баттон - малый блайнд,
-// префлоп ходит первым; постфлоп первым ходит большой блайнд), улицы
-// префлоп→флоп→тёрн→ривер→шоудаун, чек/колл/бет/рейз/фолд/ва-банк,
-// мин-бет и мин-рейз = BB / размер последнего рейза, капа нет кроме стеков.
-// Шоудаун: лучшее 5 из 7, полные 9 комбинаций с кикерами (стрит от туза и
-// колесо A-2-3-4-5). Хост - дилер: тасует, сдаёт, ведёт банк; баттон
-// чередуется каждую раздачу. Ставка = стек каждого; победитель - ×1.9.
+
+
+
+
+
+
+
+
 const POK_SB=5,POK_BB=10,POK_MIN_STAKE=20;
 const POKR={2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,10:10,J:11,Q:12,K:13,A:14};
 const POKRL={14:'A',13:'K',12:'Q',11:'J',10:'10',9:'9',8:'8',7:'7',6:'6',5:'5',4:'4',3:'3',2:'2'};
@@ -3681,7 +3681,7 @@ function pokEval5(cs){
   const u=[...new Set(rs)];
   if(u.length===5){
     if(u[0]-u[4]===4)strH=u[0];
-    else if(u[0]===14&&u[1]===5)strH=5; // колесо
+    else if(u[0]===14&&u[1]===5)strH=5; 
   }
   const cnt={};rs.forEach(r=>cnt[r]=(cnt[r]||0)+1);
   const groups=Object.keys(cnt).map(Number).sort((a,b)=>((cnt[b]-cnt[a])||(b-a)));
@@ -3723,7 +3723,7 @@ function pokLogAdd(msg){
   const P=DU.pok;if(!P)return;
   P.log.push(msg);if(P.log.length>30)P.log=P.log.slice(-30);
 }
-// ---------- ПОКЕР: ведение раздачи (хост - дилер) ----------
+
 function pokMakeState(button,stake,deck,holeH,holeG,board,handNo){
   const P={handNo:handNo,button:button,street:0,boardShown:0,board:board,
     hole:{host:holeH,guest:holeG},
@@ -3742,7 +3742,7 @@ function pokMinAdd(P,role){
   if(tc<=0)return Math.min(POK_BB,P.stacks[role]);
   return Math.min(tc+P.lastRaise,P.stacks[role]);
 }
-// Возвращает null если ход невозможен, иначе {end} где end=true - улица/раздача закрыта
+
 function pokApply(P,role,action,amount){
   if(!P||P.phase!=='bet'||P.turn!==role)return {err:1};
   const opp=(role==='host')?'guest':'host';
@@ -3787,7 +3787,7 @@ function pokApply(P,role,action,amount){
 }
 function pokAdvance(P){
   const ai=r=>P.stacks[r]<=0;
-  // Короткий ва-банк: возвращаем невостребованный излишек
+  
   if((ai('host')||ai('guest'))&&P.committed.host!==P.committed.guest){
     const big=P.committed.host>P.committed.guest?'host':'guest';
     const diff=Math.abs(P.committed.host-P.committed.guest);
@@ -3805,7 +3805,7 @@ function pokNextStreet(P){
   if(P.street>=4){pokRunout(P);return}
   P.boardShown=(P.street===1)?3:(P.street===2?4:5);
   P.committed={host:0,guest:0};P.acted={host:false,guest:false};P.lastRaise=POK_BB;
-  // Постфлоп первым ходит большой блайнд (не баттон)
+  
   P.turn=(P.button==='host')?'guest':'host';
   if(P.stacks[P.turn]<=0)P.turn=(P.turn==='host')?'guest':'host';
   P.log.push('- '+pokStreetName(P.street)+' -');
@@ -3853,7 +3853,7 @@ function pokFinishLocal(P){
       if(e){const nm=r.winner===DU.role?duelMe().name:(DU.opp.name||t('duel_opp'));const hd=r.winner==='host'?r.handH:r.handG;e.textContent=t('pok_win',{name:nm,hand:hd});e.className='duel-result '+(r.winner===DU.role?'win':'lose')}
     }
   }
-  // Открываем карты соперника на шоудауне
+  
   if(!r.byFold)pokRender();
 }
 function pokSnapshot(withReveal){
@@ -3929,7 +3929,7 @@ function pokRender(){
   oh.innerHTML=revealed?P.hole[opRole].map(dcCardHTML).join(''):dcBackHTML()+dcBackHTML();
   duelSetText('pokMyStack','⭐ '+P.stacks[DU.role]);
   duelSetText('pokOppStack','⭐ '+P.stacks[opRole]);
-  // Баттон-дилер и названия рук на шоудауне
+  
   const myLbl=$('pokMyLbl'),opLbl=$('pokOppLbl');
   const dBadge=r=>(P.button===r?'<span class="d-badge">D</span>':'');
   if(myLbl)myLbl.innerHTML=dBadge(DU.role)+(revealed&&P.result?(' • '+(DU.role==='host'?P.result.handH:P.result.handG)):'');
@@ -3937,7 +3937,7 @@ function pokRender(){
   const mb=$('pokMyBox'),ob=$('pokOppBox');
   if(mb)mb.classList.toggle('bj-turn',P.phase==='bet'&&P.turn===DU.role);
   if(ob)ob.classList.toggle('bj-turn',P.phase==='bet'&&P.turn===opRole);
-  // Инфо и кнопки
+  
   const ci=$('pokCallInfo');
   const myTurn=P.phase==='bet'&&P.turn===DU.role;
   const tc=pokToCall(P,DU.role);
@@ -3969,7 +3969,7 @@ function pokRender(){
   if(lg){lg.innerHTML='';P.log.slice(-12).forEach(m=>{const d=document.createElement('div');d.textContent=m;lg.appendChild(d)});lg.scrollTop=lg.scrollHeight}
   if(myTurn)duelSetStatus('dst_you');else if(P.phase==='bet')duelSetStatus('dst_foe');
 }
-// ---------- Сеть дуэлей ----------
+
 function duelWire(conn){
   DU.conn=conn;
   const me=duelMe();
@@ -4055,7 +4055,7 @@ function duelOnData(d){
     S.bal-=DU.myStake;save();rBal();
     DU.invested=DU.myStake;DU.over=false;DU.winner=null;
     const P=pokMakeState(d.button,DU.myStake,[],[],d.hole,d.board,d.handNo);
-    P.hole.host=null; // карты хоста скрыты до шоудауна
+    P.hole.host=null; 
     DU.pok=P;
     DU.started=true;
     const e=$('pokResult');if(e){e.textContent='';e.className='duel-result'}
@@ -4075,7 +4075,7 @@ function duelOnData(d){
   if(d.t==='lobby_cfg'&&DU.role==='guest'&&!DU.started){
     if(d.mode==='bac'||d.mode==='rou'||d.mode==='pok')DU.mode=d.mode;
     if(Number.isFinite(+d.stake)&&+d.stake>=1)DU.myStake=Math.floor(+d.stake);
-    DU.myReady=false; // настройки изменились - нужно подтвердить заново
+    DU.myReady=false; 
     duelRender();return;
   }
   if(d.t==='ready'&&DU.role==='host'&&!DU.started){DU.oppReady=!!d.v;duelRender();return}
@@ -4088,7 +4088,7 @@ function duelOnData(d){
   }
   if(d.t==='bye'){duelOnClose(false);return}
 }
-// ---------- Старт матча / раздач ----------
+
 function duelBeginMatch(){
   if(DU.role!=='host'||DU.started)return;
   if(DU.mode==='pok'&&DU.myStake<POK_MIN_STAKE){sn(t('pok_min20'));return}
@@ -4128,7 +4128,7 @@ function pokBegin(first){
   duelSetStatus(button==='host'?'dst_you':'dst_foe');
   pokRender();duelRender();
 }
-// ---------- Лобби: настройки хоста и чат ----------
+
 try{
 Object.assign(I18N.ru,{duel_ready:'Готово',duel_unready:'Отмена',duel_wait_ready:'Ждём: соперник должен нажать «Готово»',duel_opp_ready:'Соперник готов ✅'});
 Object.assign(I18N.en,{duel_ready:'Ready',duel_unready:'Cancel',duel_wait_ready:'Waiting: opponent must press Ready',duel_opp_ready:'Opponent ready ✅'});
@@ -4171,7 +4171,7 @@ Object.assign(I18N.uk,{lock_title:'Гра вже запущена на іншо�
 }catch(e){}
 function duelModeName(m){return t(m==='rou'?'d_rou':(m==='pok'?'d_pok':'d_bac'))}
 function duelSendCfg(){duelSend({t:'lobby_cfg',mode:DU.mode,stake:DU.myStake})}
-// Хост жмёт «Начать игру» в лобби: ставка читается из настроек лобби
+
 function duelStartMatch(){
   try{Sound.click()}catch(e){}
   if(DU.role!=='host'||!DU.linked||DU.started)return;
@@ -4212,8 +4212,8 @@ Object.assign(I18N.ru,{dst_retry:'Соединение… попытка {n}',ne
 Object.assign(I18N.en,{dst_retry:'Connecting… attempt {n}',net_unstable:'Link to opponent lost - check your internet'});
 Object.assign(I18N.uk,{dst_retry:'Зʼєднання… спроба {n}',net_unstable:'Звʼязок із суперником пропав - перевірте інтернет'});
 }catch(e){}
-// Heartbeat: раз в 15с пингуем соперника. Тишина 45с - предупреждаем, что
-// связь подвисла (мобильные сети любят рвать долгоживущие соединения).
+
+
 function duelHbStart(){
   duelHbStop();
   DU.lastPong=Date.now();
@@ -4551,7 +4551,7 @@ function duelFbCleanup(){
   DU.searching=false;DU.roomId=null;DU.role=null;DU.link=null;DU.fbHadGuest=false;
 }
 function duelNetOK(){return duelFbReady()}
-// Подключение к брокеру с перебором запасных
+
 function duelOnClose(mine){
   const had=!!(DU.conn||DU.role||DU.started);
   if(!had&&mine!==true)return;
@@ -4568,11 +4568,11 @@ function duelOnClose(mine){
   if(had&&mine!==true){try{bz('loss')}catch(e){}}
 }
 function duelLeave(mine){
-  DU.joinSeq=(DU.joinSeq||0)+1; // отменяем висящие попытки входа
+  DU.joinSeq=(DU.joinSeq||0)+1; 
   duelSend({t:'bye'});
   duelOnClose(mine===true);
 }
-// «Ещё раз» (только хост): новый купон / спин / раздача, ставки те же
+
 function duelAgain(){
   try{Sound.click()}catch(e){}
   if(DU.role!=='host'||!DU.conn||!DU.over||!DU.started)return;
