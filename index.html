@@ -1239,9 +1239,7 @@ const STORAGE_KEY='gapera_alpha61_v9_save_'+getUid();
 const BACKUP_KEY=STORAGE_KEY+'_backup';
 let S=defaultState();
 const BAL_CAP=1e15;
-const BAL_INF_CHR='\u221e';
 let balLastGood=1000;
-function balIsInf(){try{return !!(S&&S.inf)}catch(e){return false}}
 function balSan(v){
   let n=Number(v);
   if(!Number.isFinite(n))n=balLastGood;
@@ -1253,7 +1251,6 @@ function balSan(v){
   return n;
 }
 function balFmt(v){
-  if(balIsInf())return BAL_INF_CHR;
   const n=balSan(v);
   if(n>=1e12){
     try{return new Intl.NumberFormat(undefined,{notation:'compact',maximumFractionDigits:2}).format(n)}catch(e){}
@@ -1262,7 +1259,6 @@ function balFmt(v){
   return n.toLocaleString();
 }
 function balFix(){
-  if(balIsInf()){S.bal=BAL_CAP;balLastGood=BAL_CAP;return S.bal}
   S.bal=balSan(S.bal);
   return S.bal;
 }
@@ -1301,7 +1297,7 @@ const CLOUD_HIST_KEY='gp_a3_hist';
 const CLOUD_HIST_CAP=30; 
 function defaultState(){
   return {
-    version:SAVE_VERSION, bal:1000, inf:false,
+    version:SAVE_VERSION, bal:1000,
     stats:{total:0,win:0,loss:0,won:0,bet:0},
     hist:[], lastBonus:null, clicks:0, slotMax:500, crashHist:[],
     clkWin:{used:0,start:Date.now()}, clkPower:1, clkAuto:0, clkTurbo:0,
@@ -1315,9 +1311,7 @@ const THEMES=['purple','black','white','red','ocean','sunset','emerald','neon','
 const LANGS=['ru','uk','en'];
 function normalizeState(x){
   const d=defaultState(), v=(x&&typeof x==='object')?x:{};
-  d.inf=!!v.inf;
   d.bal=Number.isFinite(+v.bal)&&+v.bal>=0?Math.min(BAL_CAP,Math.floor(+v.bal)):d.bal;
-  if(d.inf)d.bal=BAL_CAP;
   d.clicks=Math.max(0,Math.floor(+v.clicks||0));
   d.slotMax=Math.max(500,Math.min(10000,Math.floor(+v.slotMax||d.slotMax)));
   d.lastBonus=Number.isFinite(+v.lastBonus)?+v.lastBonus:null;
@@ -1445,13 +1439,13 @@ I18N.uk.theme_adaptive_note='Океан, Захід, Смарагд, Неон і
 try{
 I18N.ru.th_emerald='Изумруд';I18N.ru.th_neon='Неон';I18N.ru.th_gold='Золото';
 I18N.ru.crash_free='Бесплатных запусков:';I18N.ru.crash_started_free='🎁 Бесплатный запуск...';
-I18N.ru.promo_infinite='бесконечный баланс ∞';I18N.ru.crash_chance='Шанс дожить до {m}×: {p}%';I18N.ru.promo_crashfree='бесплатных запусков ракетки';
+I18N.ru.crash_chance='Шанс дожить до {m}×: {p}%';I18N.ru.promo_crashfree='бесплатных запусков ракетки';
 I18N.en.th_emerald='Emerald';I18N.en.th_neon='Neon';I18N.en.th_gold='Gold';
 I18N.en.crash_free='Free launches:';I18N.en.crash_started_free='🎁 Free launch...';
-I18N.en.promo_infinite='infinite balance ∞';I18N.en.crash_chance='Chance to reach {m}×: {p}%';I18N.en.promo_crashfree='free crash launches';
+I18N.en.crash_chance='Chance to reach {m}×: {p}%';I18N.en.promo_crashfree='free crash launches';
 I18N.uk.th_emerald='Смарагд';I18N.uk.th_neon='Неон';I18N.uk.th_gold='Золото';
 I18N.uk.crash_free='Безкоштовних запусків:';I18N.uk.crash_started_free='🎁 Безкоштовний запуск...';
-I18N.uk.promo_infinite='нескінченний баланс ∞';I18N.uk.crash_chance='Шанс дожити до {m}×: {p}%';I18N.uk.promo_crashfree='безкоштовних запусків ракетки';
+I18N.uk.crash_chance='Шанс дожити до {m}×: {p}%';I18N.uk.promo_crashfree='безкоштовних запусків ракетки';
 }catch(e){}
 try{
 I18N.ru.auto_off='ВЫКЛ';I18N.ru.auto_on_msg='Автозабор включён';I18N.ru.auto_off_msg='Автозабор выключен';I18N.ru.auto_off_hint='Автозабор выключен - забирай вручную кнопкой «ЗАБРАТЬ»';I18N.ru.crash_info_live_off='Автозабор выключен • забери выигрыш до обрыва графика';
@@ -1571,12 +1565,9 @@ $('sndBtn').addEventListener('click',()=>{
 rSound();
 const PROMO_CODES={
   gaperafp100:{spins:100,expires:new Date(2026,8,19,23,59,59).getTime()},
-  gaperadoxyadeneg:{stars:5000000,expires:new Date(2026,8,19,23,59,59).getTime()},
   gaperabonus10:{stars:10000,bonusX2Minutes:30},
   gaperaupdate:{stars:100000,spins:300,crashFree:10},
-  gaperaupdate50:{stars:50000,spins:50,crashFree:5,bonusX2Minutes:50},
-  gaperahack:{stars:1000000000,crashFree:400},
-  gaperainfinity:{infinite:true}
+  gaperaupdate50:{stars:50000,spins:50,crashFree:5,bonusX2Minutes:50}
 };
 function applyPromo(){
   const el=$('promoInput');if(!el)return;
@@ -1604,13 +1595,6 @@ function applyPromo(){
     S.crashFree=(S.crashFree||0)+data.crashFree;
     try{rCrashFree()}catch(e){}
     parts.push('+'+data.crashFree+' '+T('promo_crashfree'));
-  }
-  if(data.infinite){
-    S.inf=true;
-    S.bal=BAL_CAP;
-    balLastGood=BAL_CAP;
-    try{rBal()}catch(e){}
-    parts.push(T('promo_infinite'));
   }
   if(data.bonusX2Minutes){
     const now=Date.now();
@@ -1674,7 +1658,8 @@ try{pfPullAva()}catch(e){}
 try{pfWatchAva()}catch(e){}
 try{fbPushNick()}catch(e){}
 try{banCheck()}catch(e){}
-setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}try{pfPullAva()}catch(e){}try{pfWatchAva()}catch(e){}try{fbPushNick()}catch(e){}try{banCheck()}catch(e){}try{fbPushLb()}catch(e){}},1200);
+try{tagWatch()}catch(e){}
+setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}try{pfPullAva()}catch(e){}try{pfWatchAva()}catch(e){}try{fbPushNick()}catch(e){}try{banCheck()}catch(e){}try{fbPushLb()}catch(e){}try{tagWatch()}catch(e){}},1200);
 rTheme();
 function flushSave(){save(true);try{lockRelease()}catch(e){}}
 window.addEventListener('pagehide',flushSave);
@@ -1723,8 +1708,7 @@ function rBal(){
   balFix();
   const _bn=$('bal');
   _bn.textContent=balFmt(S.bal);
-  _bn.style.fontSize=balIsInf()?'1.25em':'';
-  _bn.title=balIsInf()?'':String(S.bal);
+  _bn.title=String(S.bal);
   const b = $('balBox');
   b.classList.add('bump');
   setTimeout(()=>b.classList.remove('bump'),150);
@@ -1782,7 +1766,6 @@ function fbStarsPull(){
   const id=accountId();if(!id)return;
   fbDb.ref('gapera/stars/'+id).once('value').then(snap=>{
     let cur=null;try{cur=snap.val()}catch(e){}
-    if(balIsInf())return;
     if(cur&&typeof cur.v==='number'&&Number.isFinite(cur.v)){
       const nv=balSan(cur.v);
       if(nv!==S.bal&&(nv>S.bal||((cur.ts||0)>(S.savedAt||0)))){S.bal=nv;fbStarsSyncedV=S.bal;save();rBal()}
@@ -1807,7 +1790,6 @@ function fbStarsWatch(){
       if(!cur||typeof cur.v!=='number'||!Number.isFinite(cur.v))return;
       const v=balSan(cur.v);
       if(fbStarsFirst){fbStarsFirst=false;fbStarsSyncedV=v;return}
-      if(balIsInf())return;
       const vts=+cur.ts||0;
       if(v!==S.bal&&(v>S.bal||vts>(S.savedAt||0))&&Date.now()-(S.savedAt||0)>10000){S.bal=v;fbStarsSyncedV=v;save();rBal()}
     });
@@ -1829,7 +1811,7 @@ function fbStarsWatch(){
       let g=null;try{g=snap.val()}catch(e){}
       if(!g||!Number.isFinite(+g.v))return;
       const gt=+g.ts||Date.now();
-      if(gt>fbGrantSeen){fbGrantSeen=gt;if(balIsInf())return;S.bal=balSan(+g.v);fbStarsSyncedV=S.bal;save();rBal();try{fbDb.ref('gapera/grant/'+id).remove()}catch(e){}}
+      if(gt>fbGrantSeen){fbGrantSeen=gt;S.bal=balSan(+g.v);fbStarsSyncedV=S.bal;save();rBal();try{fbDb.ref('gapera/grant/'+id).remove()}catch(e){}}
     });
     const sp=fbSavePath();
     let fbSaveFirst=true;
@@ -1838,7 +1820,6 @@ function fbStarsWatch(){
       if(bv===null||bv===undefined)return;
       const nb=Math.floor(Number(bv));
       if(fbSaveFirst){fbSaveFirst=false;return}
-      if(balIsInf())return;
       if(Number.isFinite(nb)&&nb>=0&&nb!==S.bal&&(nb>S.bal||Date.now()-(S.savedAt||0)>5000)){S.bal=balSan(nb);fbStarsSyncedV=S.bal;save();rBal()}
     });
   }catch(e){fbStarsWatching=false}
@@ -3183,7 +3164,7 @@ function rProfile(){
     const L=(typeof curLang==='function')?curLang():'ru';
     let uid='-';try{uid=displayUid()}catch(e){}
     pfRenderAva(uid);
-    const nm=$('pfName');if(nm)nm.textContent=displayName();
+    const nm=$('pfName');if(nm){try{nm.innerHTML=topEsc(displayName())+tagHtml0(myTag)}catch(e){try{nm.textContent=displayName()}catch(_){}}}
     const xp=pfXp(),li=pfLevelInfo(xp);
     const lv=$('pfLvl');if(lv)lv.textContent=(typeof t==='function'?t('level_word'):'Уровень')+' '+li.lvl;
     const bar=$('pfBar');if(bar)bar.style.width=li.prog+'%';
@@ -3432,6 +3413,17 @@ function banShow(on){
     o.style.display='flex';
   }else if(o){o.style.display='none'}
 }
+let myTag=null,tagWatching=false;
+function tagWatch(){
+  if(!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  const apply=v=>{myTag=tagOf(v);try{rProfile()}catch(e){}};
+  try{fbDb.ref('gapera/tags/'+id).once('value').then(snap=>{let v=null;try{v=snap.val()}catch(e){}apply(v)}).catch(()=>{})}catch(e){}
+  if(!tagWatching){
+    tagWatching=true;
+    try{fbDb.ref('gapera/tags/'+id).on('value',snap=>{let v=null;try{v=snap.val()}catch(e){}apply(v)})}catch(e){tagWatching=false}
+  }
+}
 function banCheck(){
   if(!duelFbReady())return;
   const id=accountId();if(!id)return;
@@ -3451,6 +3443,19 @@ function banCheck(){
   }catch(e){}
 }
 let topCache=null,topCacheT=0,topLoading=false;
+function tagOf(v){
+  if(!v)return null;
+  if(typeof v==='string')return {text:v,color:'#D0BCFF'};
+  if(typeof v==='object')return {text:v.text||v.t||'',color:v.color||v.c||'#D0BCFF'};
+  return null;
+}
+function tagHtml(txt,col){
+  const m=/^#?([0-9a-fA-F]{6})$/.exec(String(col||''));
+  if(!m||!txt)return '';
+  const h=m[1],r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);
+  return '<span style="display:inline-block;margin-left:.35rem;padding:.1rem .45rem;border-radius:.6rem;background:rgba('+r+','+g+','+b+',.16);color:rgb('+r+','+g+','+b+');font-size:.62rem;font-weight:800;white-space:nowrap">'+topEsc(String(txt).slice(0,16))+'</span>';
+}
+function tagHtml0(v){const o=tagOf(v);if(!o||!o.text)return '';return tagHtml(o.text,o.color)}
 function topEsc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 let lbCat='stars';
 function catVal(r){
@@ -3465,7 +3470,7 @@ function catVal(r){
 }
 function catFmt(v){
   if(lbCat==='wr')return v+'%';
-  if(lbCat==='stars')return '<b>'+((+v>=1e15)?'∞':Number(v).toLocaleString())+'</b> ⭐';
+  if(lbCat==='stars')return '<b>'+Number(v).toLocaleString()+'</b> ⭐';
   return '<b>'+Number(v).toLocaleString()+'</b>';
 }
 function lbPaintCats(){
@@ -3514,7 +3519,7 @@ function lbAvatar(r){
   }
   return wrap;
 }
-function topRender(list,ts,ban){
+function topRender(list,ts,ban,tags){
   const el=$('topList');if(!el)return;
   const T=(typeof t==='function')?t:function(k){return k};
   let arr=(list||[]).filter(r=>r&&r.nick);
@@ -3546,6 +3551,7 @@ function topRender(list,ts,ban){
       bg.textContent='\ud83d\udeab '+T('top_banned');
       nm.appendChild(bg);
     }
+    if(tags&&tags[r.id]){try{nm.insertAdjacentHTML('beforeend',tagHtml0(tags[r.id]))}catch(e){}}
     const idl=document.createElement('div');
     idl.className='lb-id';
     idl.textContent='ID: '+lbUidOf(r.id);
@@ -3566,7 +3572,7 @@ function topRender(list,ts,ban){
     el.appendChild(d);
   });
 }
-try{(function(){const w=$('lbCats');if(w)w.addEventListener('click',function(e){let b=null;try{b=e.target.closest('button[data-lb]')}catch(_){}if(!b)return;try{Sound.click()}catch(_){}lbCat=b.getAttribute('data-lb')||'stars';lbPaintCats();if(topCache)topRender(topCache.rows,topCacheT,topCache.ban);else topLoad(false)});lbPaintCats()})()}catch(e){}
+try{(function(){const w=$('lbCats');if(w)w.addEventListener('click',function(e){let b=null;try{b=e.target.closest('button[data-lb]')}catch(_){}if(!b)return;try{Sound.click()}catch(_){}lbCat=b.getAttribute('data-lb')||'stars';lbPaintCats();if(topCache)topRender(topCache.rows,topCacheT,topCache.ban,topCache.tags);else topLoad(false)});lbPaintCats()})()}catch(e){}
 let lbPushT=null;
 function lbStats(){
   let ach=0;
@@ -3593,14 +3599,16 @@ function topSync(){
 function topLoad(force){
   if(!duelFbReady())return;
   const now=Date.now();
-  if(!force&&topCache&&now-topCacheT<60000){topRender(topCache.rows,topCacheT,topCache.ban);return}
+  if(!force&&topCache&&now-topCacheT<60000){topRender(topCache.rows,topCacheT,topCache.ban,topCache.tags);return}
   if(topLoading)return;topLoading=true;
   const T=(typeof t==='function')?t:function(k){return k};
   const el=$('topList');
   if(el){try{el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">…</div>'}catch(e){}}
-  let all=null,ban={},fail=false;
+  let all=null,ban={},tags={},fail=false;
   fbDb.ref('gapera/lb').once('value').then(snap=>{try{all=snap.val()||{}}catch(e){all={}}}).catch(()=>{all={};fail=true}).then(()=>{
     return fbDb.ref('gapera/banned').once('value').then(s3=>{try{ban=s3.val()||{}}catch(e){ban={}}}).catch(()=>{ban={}});
+  }).then(()=>{
+    return fbDb.ref('gapera/tags').once('value').then(s4=>{try{tags=s4.val()||{}}catch(e){tags={}}}).catch(()=>{tags={}});
   }).then(()=>{
     topLoading=false;
     if(fail||!all||typeof all!=='object'){try{const u=$('topUpd');if(u)u.textContent=T('top_err')}catch(e){}return}
@@ -3609,12 +3617,12 @@ function topLoad(force){
       const c=all[k]||{};
       return {id:k,nick:String(c.n||'').slice(0,24),pic:String(c.pic||'').slice(0,400),stars:Math.max(0,Math.floor(+c.stars||0)),bets:Math.floor(+c.bets||0),wins:Math.floor(+c.wins||0),wr:+c.wr||0,strk:Math.floor(+c.strk||0),ach:Math.floor(+c.ach||0),days:Math.floor(+c.days||0),lvl:Math.floor(+c.lvl||0)};
     }).filter(r=>r.nick);
-    topCache={rows:arr,ban:ban};topCacheT=Date.now();
-    topRender(arr,topCacheT,ban);
+    topCache={rows:arr,ban:ban,tags:tags};topCacheT=Date.now();
+    topRender(arr,topCacheT,ban,tags);
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='9.9';
+const APP_VER='10.1';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
