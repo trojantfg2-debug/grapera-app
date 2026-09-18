@@ -3538,9 +3538,11 @@ function lbAvatar(r){
   wrap.appendChild(fb);
   const pic=String(r.pic||'');
   if(/^https:\/\//.test(pic)){
-    const im=document.createElement('img');
+    const im=new Image();
     im.className='lb-av lb-avp';
     im.loading='lazy';im.referrerPolicy='no-referrer';im.alt='';
+    im.style.opacity='0';im.style.transition='opacity .15s';
+    im.onload=function(){try{im.style.opacity='1'}catch(e){}};
     im.onerror=function(){try{im.remove()}catch(e){}};
     im.src=pic;
     wrap.appendChild(im);
@@ -3549,8 +3551,8 @@ function lbAvatar(r){
 }
 
 const CREDITS=[
-  {id:'cred_schipka',name:'promo schipka',roleKey:'cred_role_founder',tg:'tg8990711442',fallbackColor:'#7C4DFF'},
-  {id:'cred_kor8',name:'\u041a\u043e\u0440\u044c H\u0435bi\u043d\u0443\u0435\u043c\u043e\u0435 8',roleKey:'cred_role_dev',tg:'',fallbackColor:'#00897B'}
+  {id:'cred_schipka',name:'promo schipka',roleKey:'cred_role_founder',tg:'tg8990711442',handle:'',fallbackColor:'#7C4DFF'},
+  {id:'cred_kor8',name:'\u041a\u043e\u0440\u044c H\u0435bi\u043d\u0443\u0435\u043c\u043e\u0435 8',roleKey:'cred_role_dev',tg:'',handle:'',fallbackColor:'#00897B'}
 ];
 function credInitial(name){
   const n=String(name||'').replace(/^@/,'').trim();
@@ -3565,24 +3567,30 @@ function credAvatar(person){
   wrap.appendChild(fb);
   const applyPic=(pic)=>{
     if(!/^https:\/\//.test(String(pic||'')))return;
-    const im=document.createElement('img');
+    const im=new Image();
     im.className='cred-av cred-avp';
     im.loading='lazy';im.referrerPolicy='no-referrer';im.alt='';
+    im.style.opacity='0';im.style.transition='opacity .15s';
+    im.onload=function(){try{im.style.opacity='1'}catch(e){}};
     im.onerror=function(){try{im.remove()}catch(e){}};
     im.src=pic;
     wrap.appendChild(im);
   };
-  if(person.pic)applyPic(person.pic);
-  else if(person.tg){
+  const tryFetch=()=>{
+    if(!person.tg)return;
     try{
       if(duelFbReady()){
         fbDb.ref('gapera/lb/'+person.tg+'/pic').once('value').then(snap=>{
           let v=null;try{v=snap.val()}catch(e){}
           if(v)applyPic(v);
         }).catch(()=>{});
+      }else{
+        setTimeout(tryFetch,1500);
       }
     }catch(e){}
-  }
+  };
+  if(person.pic)applyPic(person.pic);
+  else tryFetch();
   return wrap;
 }
 function renderCredits(){
@@ -3596,8 +3604,8 @@ function renderCredits(){
     const rl=document.createElement('div');rl.className='cred-role';rl.textContent=t(person.roleKey);
     info.appendChild(nm);info.appendChild(rl);
     row.appendChild(info);
-    if(person.tg){
-      const a=document.createElement('a');a.className='cred-tg';a.href='https://t.me/'+person.tg;a.target='_blank';a.rel='noopener';
+    if(person.handle){
+      const a=document.createElement('a');a.className='cred-tg';a.href='https://t.me/'+person.handle.replace(/^@/,'');a.target='_blank';a.rel='noopener';
       a.innerHTML='<span class="mat" style="font-size:18px">send</span>';
       row.appendChild(a);
     }
@@ -3705,7 +3713,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='10.2';
+const APP_VER='10.3';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
