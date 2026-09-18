@@ -3,7 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Gapera Alpha 7.6</title>
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+  <title>Gapera Alpha 8</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -519,16 +520,19 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
 .chat-q{padding:.3rem .6rem;border-radius:var(--sh-full);border:1px solid var(--ol-v);background:transparent;color:var(--on-sv);font:600 .7rem var(--f);cursor:pointer}
 .chat-q:active{transform:scale(.92)}
 .bet-q.on{background:var(--p);color:var(--on-p);border-color:var(--p)}
+#lockOverlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);place-items:center;padding:1.5rem}
+.lock-box{text-align:center;max-width:320px}
+.lock-t{font-weight:700;font-size:1.1rem;margin-bottom:.5rem}
+.lock-s{color:var(--on-sv);font-size:.85rem}
 .plinko-canvas{width:100%;height:300px;display:block;border-radius:var(--sh-l);border:1px solid var(--ol-v);background:radial-gradient(120% 110% at 50% 0%,#35855A,#1E5B3A 55%,#123722)}
-
-.ni[data-s="duel"]{display:none!important}
   </style>
 </head>
 <body>
 
+<div id="lockOverlay" style="display:none"><div class="lock-box"><div class="lock-t" data-i18n="lock_title">Игра уже запущена на другом устройстве</div><div class="lock-s" data-i18n="lock_sub">Закрой её там - доступ откроется сам</div><div class="lock-s" id="lockMeLbl"></div></div></div>
 <div class="topbar">
   <div class="topbar-left">
-    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta" id="verBadge">АЛЬФА 7.6</span></div>
+    <div class="topbar-row"><span class="topbar-name">Gapera</span><span class="topbar-beta" id="verBadge">АЛЬФА 8.2</span></div>
     <span class="topbar-uid" id="uidTxt">ID: -</span>
   </div>
   <div class="bal" id="balBox"><span class="mat">star</span><span id="bal">1000</span><span class="bonus" id="btxt"></span></div>
@@ -762,17 +766,9 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       <div class="duel-status" id="duelStatus"></div>
       <div id="duelLobby">
         <div id="duelPre">
-          <div class="lbl" data-i18n="duel_mode">РЕЖИМ ДУЭЛИ</div>
-          <div class="duel-modes" id="duelModes">
-            <button class="duel-mode on" data-m="bac"><span class="mat">style</span><b data-i18n="d_bac">Баккара</b><small>Punto Banco • 8 колод</small></button>
-            <button class="duel-mode" data-m="rou"><span class="mat">casino</span><b data-i18n="d_rou">Рулетка</b><small>European • зеро</small></button>
-            <button class="duel-mode" data-m="pok"><span class="mat">groups</span><b data-i18n="d_pok">Покер</b><small>Heads-Up Hold'em</small></button>
-          </div>
-          <div class="rewards-sub" id="duelModeHint" style="margin:.4rem 0"></div>
-          <div class="lbl"><span data-i18n="bet">СТАВКА</span></div>
-          <div class="bet-quick" id="duelStakeChips"><button class="bet-q on" data-v="50">50</button><button class="bet-q" data-v="100">100</button><button class="bet-q" data-v="250">250</button><button class="bet-q" data-v="500">500</button></div>
-          <div style="display:none"><div class="bet-row"><button class="btn btn-s btn-sm" id="duelDn">−</button><input id="duelStakeIn" type="number" value="50" min="1" step="10" /><button class="btn btn-s btn-sm" id="duelUp">+</button></div></div>
-          <button class="btn btn-p btn-lg" id="duelFindBtn" style="margin-top:.6rem"><span class="mat">search</span><span data-i18n="duel_find">ИГРАТЬ ОНЛАЙН</span></button>
+          <button class="btn btn-p btn-lg" id="duelCreateBtn" style="margin-top:.2rem"><span class="mat">add</span><span data-i18n="duel_create">Создать лобби</span></button>
+          <button class="btn btn-s btn-lg" id="duelFindBtn" style="margin-top:.4rem"><span class="mat">search</span><span data-i18n="duel_find">НАЙТИ ИГРУ</span></button>
+          <div class="bet-row" style="margin-top:.4rem"><input id="duelCodeIn" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXXXX" style="text-transform:uppercase" /><button class="btn btn-p btn-sm" id="duelJoinBtn"><span data-i18n="duel_join">Войти</span></button></div>
           <button class="btn btn-s btn-lg" id="duelCancelBtn" style="display:none;margin-top:.4rem"><span data-i18n="duel_cancel">Отмена</span></button>
           <div class="bac-versus" id="duelFindStatus"></div>
           <div class="rewards-sub" style="margin-top:.4rem" data-i18n="duel_hint">Победа ×1.9 • ничья - возврат ставки</div>
@@ -791,6 +787,19 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       <div class="lbl"><span data-i18n="duel_lobby">ЛОББИ</span></div>
       <div class="duel-vs"><b id="duelVsMe">…</b><span>⚔️</span><b id="duelVsOpp">…</b></div>
       <div id="duelCfgHost">
+        <div class="lbl" data-i18n="duel_your_code">ВАШ КОД</div>
+        <div class="duel-code-big" id="duelLobbyCode">------</div>
+        <div class="pf-ava-row"><button class="btn btn-s btn-sm" id="duelCopyBtn"><span class="mat">content_copy</span><span data-i18n="duel_copy">Копировать код</span></button></div>
+        <div class="lbl" data-i18n="duel_mode">РЕЖИМ ДУЭЛИ</div>
+        <div class="duel-modes" id="duelModes">
+          <button class="duel-mode on" data-m="bac"><span class="mat">style</span><b data-i18n="d_bac">Баккара</b><small>Punto Banco • 8 колод</small></button>
+          <button class="duel-mode" data-m="rou"><span class="mat">casino</span><b data-i18n="d_rou">Рулетка</b><small>European • зеро</small></button>
+          <button class="duel-mode" data-m="pok"><span class="mat">groups</span><b data-i18n="d_pok">Покер</b><small>Heads-Up Hold'em</small></button>
+        </div>
+        <div class="rewards-sub" id="duelModeHint" style="margin:.4rem 0"></div>
+        <div class="lbl"><span data-i18n="bet">СТАВКА</span></div>
+        <div class="bet-quick" id="duelStakeChips"><button class="bet-q on" data-v="50">50</button><button class="bet-q" data-v="100">100</button><button class="bet-q" data-v="250">250</button><button class="bet-q" data-v="500">500</button></div>
+        <div style="display:none"><div class="bet-row"><button class="btn btn-s btn-sm" id="duelDn">−</button><input id="duelStakeIn" type="number" value="50" min="1" step="10" /><button class="btn btn-s btn-sm" id="duelUp">+</button></div></div>
         <div class="bac-versus" id="duelReadyState"></div>
         <button class="btn btn-p btn-lg" id="duelStartBtn" style="margin-top:.6rem"><span class="mat">play_arrow</span><span data-i18n="duel_start">НАЧАТЬ ИГРУ</span></button>
       </div>
@@ -987,7 +996,6 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
   <button class="ni" data-s="coin"><span class="np"><span class="mat">monetization_on</span></span><span class="nl" data-i18n="nav_coin">Монета</span></button>
   <button class="ni" data-s="plinko"><span class="np"><span class="mat">apps</span></span><span class="nl" data-i18n="nav_plinko">Плинко</span></button>
   <button class="ni" data-s="clicker"><span class="np"><span class="mat">ads_click</span></span><span class="nl" data-i18n="nav_clicker">Кликер</span></button>
-  <button class="ni" data-s="duel"><span class="np"><span class="mat">group</span></span><span class="nl" data-i18n="nav_duel">Дуэль</span></button>
   <button class="ni" data-s="rewards"><span class="np"><span class="mat">card_giftcard</span></span><span class="nl" data-i18n="nav_rewards">Награды</span></button>
   <button class="ni" data-s="profile"><span class="np"><span class="mat">person</span></span><span class="nl" data-i18n="nav_profile">Профиль</span></button>
   <button class="ni" data-s="settings"><span class="np"><span class="mat">settings</span></span><span class="nl" data-i18n="nav_settings">Настройки</span></button>
@@ -1196,10 +1204,9 @@ const R_STRAIGHT_MULT=ROULETTE_EDGE/(1/rNums.length);
 function getUid(){
   try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user&&TG.initDataUnsafe.user.id)return 'tg'+TG.initDataUnsafe.user.id}catch(e){}
   try{
-    let a=localStorage.getItem('gapera_anon_id');
-    if(!a){a='anon'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('gapera_anon_id',a)}
-    return a;
-  }catch(e){return 'anon_fallback'}
+    if(!window.__gx)window.__gx='gx'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+    return window.__gx;
+  }catch(e){return 'gx_fallback'}
 }
 const SAVE_VERSION=9;
 const STORAGE_KEY='gapera_alpha61_v9_save_'+getUid();
@@ -1311,7 +1318,7 @@ function writeLocal(){
 }
 let cloudTimer=null;
 function writeCloud(){
-  if(!CLOUD_OK||!cloudReady)return;
+  if(!CLOUD_OK||!cloudReady||lockDenied)return;
   try{
     const core=Object.assign({},S,{hist:undefined});
     delete core.hist;
@@ -1322,6 +1329,7 @@ function writeCloud(){
 }
 function save(immediate=false){
   S.savedAt=Date.now();
+  try{fbPushSave(immediate)}catch(e){}
   clearTimeout(saveTimer);clearTimeout(cloudTimer);
   if(immediate){
     writeLocal();writeCloud();
@@ -1351,9 +1359,9 @@ function renderAll(){
   try{applyI18n()}catch(e){}
 }
 const I18N={
-ru:{ver_badge:'АЛЬФА 7.6',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'- растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ - ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% - возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме - шанс без штрафа',risk1:'Повышенная ставка - шанс −6%',risk2:'Крупная ставка - шанс −13%',risk3:'Высокий риск - шанс −20%',risk4:'Очень высокий риск - шанс −28%',risk5:'Экстремальный риск - шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1-18/19-36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону - выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} из 7 - награда ждёт!',received:'Получено',streak_next:'Стрик {s}/7 • следующая награда завтра',daily_reward_for:'День {d} - +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто - подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-en:{ver_badge:'ALPHA 7.6',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'- grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND - PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee - 97% return',throw:'ROLL',risk0:'Normal bet - no chance penalty',risk1:'Raised bet - chance −6%',risk2:'Big bet - chance −13%',risk3:'High risk - chance −20%',risk4:'Very high risk - chance −28%',risk5:'Extreme risk - chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1-18/19-36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side - payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} of 7 - reward is waiting!',received:'Claimed',streak_next:'Streak {s}/7 • next reward tomorrow',daily_reward_for:'Day {d} - +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto - follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-uk:{ver_badge:'АЛЬФА 7.6',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'- зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ - ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% - повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі - шанс без штрафу',risk1:'Підвищена ставка - шанс −6%',risk2:'Велика ставка - шанс −13%',risk3:'Високий ризик - шанс −20%',risk4:'Дуже високий ризик - шанс −28%',risk5:'Екстремальний ризик - шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1-18/19-36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону - виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} із 7 - нагорода чекає!',received:'Отримано',streak_next:'Стрік {s}/7 • наступна нагорода завтра',daily_reward_for:'День {d} - +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто - підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
+ru:{ver_badge:'АЛЬФА 8',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'- растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ - ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% - возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме - шанс без штрафа',risk1:'Повышенная ставка - шанс −6%',risk2:'Крупная ставка - шанс −13%',risk3:'Высокий риск - шанс −20%',risk4:'Очень высокий риск - шанс −28%',risk5:'Экстремальный риск - шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1-18/19-36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону - выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} из 7 - награда ждёт!',received:'Получено',streak_next:'Стрик {s}/7 • следующая награда завтра',daily_reward_for:'День {d} - +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто - подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+en:{ver_badge:'ALPHA 8',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'- grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND - PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee - 97% return',throw:'ROLL',risk0:'Normal bet - no chance penalty',risk1:'Raised bet - chance −6%',risk2:'Big bet - chance −13%',risk3:'High risk - chance −20%',risk4:'Very high risk - chance −28%',risk5:'Extreme risk - chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1-18/19-36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side - payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} of 7 - reward is waiting!',received:'Claimed',streak_next:'Streak {s}/7 • next reward tomorrow',daily_reward_for:'Day {d} - +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto - follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+uk:{ver_badge:'АЛЬФА 8',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'- зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ - ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% - повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі - шанс без штрафу',risk1:'Підвищена ставка - шанс −6%',risk2:'Велика ставка - шанс −13%',risk3:'Високий ризик - шанс −20%',risk4:'Дуже високий ризик - шанс −28%',risk5:'Екстремальний ризик - шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1-18/19-36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону - виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} із 7 - нагорода чекає!',received:'Отримано',streak_next:'Стрік {s}/7 • наступна нагорода завтра',daily_reward_for:'День {d} - +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто - підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
 };
 try{
 I18N.ru.nav_tower='Башня';I18N.ru.game_tower='Башня';I18N.ru.tw_easy='Легко 4×';I18N.ru.tw_med='Средне 3×';I18N.ru.tw_hard='Хард 2×';I18N.ru.tw_fee='8 этажей • на каждом одна бомба • множитель уже включает комиссию 4%';I18N.ru.tw_hint='Выбери клетку на каждом этаже и лезь вверх!';I18N.ru.tw_floor='Этаж';I18N.ru.tw_next='Этаж {n} из 8 - выбери клетку!';I18N.ru.tw_hit='💥 Бомба на {n} этаже! −{b}';I18N.ru.tw_took='✅ Забрал <b>{c}</b> (×{m}) • этаж {n}';I18N.ru.tw_max='🏆 Вершина! <b>{c}</b> (×{m}) - автовыплата!';
@@ -1416,7 +1424,7 @@ function gameName(g){var m={slots:'game_slots',dice:'game_dice',roulette:'game_r
 function rrOddsRender(){var el=$('rrOdds');if(!el)return;el.textContent=t('rr_odds',{straight:R_STRAIGHT_MULT.toFixed(2),outside:R_OUTSIDE_MULT.toFixed(2)})}
 function applyI18n(){
   try{document.documentElement.lang=curLang()}catch(e){}
-  try{document.title='Gapera Alpha 7.6'}catch(e){}
+  try{document.title='Gapera Alpha 8'}catch(e){}
   try{document.querySelectorAll('[data-i18n]').forEach(function(el){var k=el.getAttribute('data-i18n');el.textContent=t(k)})}catch(e){}
   try{var vb=$('verBadge');if(vb)vb.textContent=t('ver_badge')}catch(e){}
   try{rLang()}catch(e){}
@@ -1586,9 +1594,17 @@ function load(){
     setTimeout(markCloudReady,6000); 
   }else{cloudReady=true}
 }
+try{localStorage.removeItem('gapera_linked_tg');localStorage.removeItem('gapera_anon_id')}catch(e){}
 load();
+try{fbPullSave(false)}catch(e){}
+try{fbStarsPull()}catch(e){}
+try{fbStarsWatch()}catch(e){}
+try{fbNetWatch()}catch(e){}
+try{lockWatch()}catch(e){}
+try{lockOverlay(false)}catch(e){}
+setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}},1200);
 rTheme();
-function flushSave(){save(true)}
+function flushSave(){save(true);try{lockRelease()}catch(e){}}
 window.addEventListener('pagehide',flushSave);
 window.addEventListener('beforeunload',flushSave);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushSave()});
@@ -1604,7 +1620,7 @@ function claimBonus(){
   Sound.click();
   const T=(typeof t==='function')?t:function(k,p){return k};
   if(!bonusCanClaim()){sn(T('wait_s',{s:Math.ceil(bonusRemain()/1000)}));return}
-  const amt=bonusAmount();S.bal+=amt;S.lastBonus=Date.now();save();rBal();
+  const amt=bonusAmount();S.bal+=amt;S.lastBonus=Date.now();save();rBal();try{fbClaimWrite('bonus',{t:firebase.database.ServerValue.TIMESTAMP})}catch(e){}
   Sound.win();bz('win');sn('+'+amt+' '+T('stars_many')+'!');
   try{const b=$('bonusBtn').getBoundingClientRect();confetti(b.left+b.width/2,b.top,22)}catch(e){}
   tickBonus();
@@ -1636,7 +1652,163 @@ function rBal(){
   const b = $('balBox');
   b.classList.add('bump');
   setTimeout(()=>b.classList.remove('bump'),150);
+  try{fbStarsPush()}catch(e){}
 }
+const DUEL_FB_CONFIG={apiKey:"AIzaSyBBe-vn7Uu63BDOVpxJy9xMSLwmRMEr0Ec",authDomain:"gaperabot.firebaseapp.com",databaseURL:"https://gaperabot-default-rtdb.firebaseio.com",projectId:"gaperabot"};
+let fbApp=null,fbDb=null;
+function duelFbReady(){
+  try{
+    if(fbDb)return true;
+    if(!window.firebase||!DUEL_FB_CONFIG||!DUEL_FB_CONFIG.apiKey)return false;
+    if(!fbApp)fbApp=firebase.initializeApp(DUEL_FB_CONFIG);
+    fbDb=firebase.database();
+    try{fbTimeInit()}catch(e){}
+    return !!fbDb;
+  }catch(e){return false}
+}
+function fbNow(){try{return Date.now()+(window.__fbOff||0)}catch(e){return Date.now()}}
+function fbTimeInit(){
+  if(window.__fbOffInit||!fbDb)return;window.__fbOffInit=true;
+  try{fbDb.ref('.info/serverTimeOffset').on('value',s=>{let v=0;try{v=s.val()||0}catch(e){}try{window.__fbOff=+v||0}catch(e){}})}catch(e){}
+}
+function fbSavePath(){const id=accountId();return id?('gapera/saves/'+id):null}
+let fbStarsTimer=null,fbStarsBusy=false,fbStarsBusyT=null,fbStarsRetryT=null,fbStarsSyncedV=null;
+function fbStarsPush(){
+  if(!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  clearTimeout(fbStarsTimer);
+  fbStarsTimer=setTimeout(()=>{
+    if(lockDenied)return;
+    if(fbStarsBusy){try{clearTimeout(fbStarsRetryT)}catch(e){}fbStarsRetryT=setTimeout(()=>{try{fbStarsPush()}catch(e){}},1000);return}
+    fbStarsBusy=true;
+    try{clearTimeout(fbStarsBusyT)}catch(e){}
+    fbStarsBusyT=setTimeout(()=>{fbStarsBusy=false},15000);
+    const v=Math.floor(S.bal),ts=S.savedAt||Date.now();
+    if(fbStarsSyncedV!==null&&v===fbStarsSyncedV){fbStarsBusy=false;return}
+    try{
+      fbDb.ref('gapera/stars/'+id).transaction(cur=>{
+        if(cur&&((cur.ts||0)>ts))return;
+        return {v:v,ts:ts};
+      },(err,ok,snap)=>{
+        fbStarsBusy=false;
+        try{clearTimeout(fbStarsBusyT)}catch(e){}
+        if(ok)fbStarsSyncedV=v;
+        try{
+          const cur=snap?snap.val():null;
+          if(cur&&typeof cur.v==='number'&&cur.v!==S.bal&&((cur.ts||0)>ts)){S.bal=Math.floor(cur.v);fbStarsSyncedV=S.bal;save();rBal()}
+        }catch(e){}
+      });
+    }catch(e){fbStarsBusy=false}
+  },400);
+}
+function fbStarsPull(){
+  if(!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  fbDb.ref('gapera/stars/'+id).once('value').then(snap=>{
+    let cur=null;try{cur=snap.val()}catch(e){}
+    if(cur&&typeof cur.v==='number'&&cur.v!==S.bal&&((cur.ts||0)>(S.savedAt||0))){
+      S.bal=Math.floor(cur.v);fbStarsSyncedV=S.bal;save();rBal();
+    }
+  }).catch(()=>{});
+}
+function fbClaimWrite(kind,val){
+  try{
+    if(!duelFbReady())return;
+    const id=accountId();if(!id)return;
+    fbDb.ref('gapera/claimed/'+id+'/'+kind).set(val);
+  }catch(e){}
+}
+function fbStarsWatch(){
+  if(fbStarsWatching||!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  fbStarsWatching=true;
+  try{
+    let fbStarsFirst=true;
+    fbDb.ref('gapera/stars/'+id).on('value',snap=>{
+      let cur=null;try{cur=snap.val()}catch(e){}
+      if(!cur||typeof cur.v!=='number')return;
+      const v=Math.floor(cur.v);
+      if(fbStarsFirst){fbStarsFirst=false;fbStarsSyncedV=v;return}
+      if(v!==S.bal&&Date.now()-(S.savedAt||0)>10000){S.bal=v;fbStarsSyncedV=v;save();rBal()}
+    });
+    fbDb.ref('gapera/claimed/'+id).on('value',snap=>{
+      let c=null;try{c=snap.val()}catch(e){}
+      if(!c)return;
+      const bt=+((c.bonus&&c.bonus.t)||c.bonus)||0;
+      if(bt>864000000000&&fbNow()-bt<65000&&bonusRemain()<=0){S.lastBonus=Date.now();save();tickBonus()}
+      const todayUTC=new Date().toISOString().slice(0,10);
+      if(c.daily&&c.daily.day===todayUTC&&dailyCanClaim()){
+        S.daily.lastClaim=Date.now();
+        const rs=+((c.daily||{}).streak)||0;
+        if(rs>(S.daily.streak||0))S.daily.streak=rs;
+        save();dailyTick();
+      }
+    });
+    let fbGrantSeen=0;
+    fbDb.ref('gapera/grant/'+id).on('value',snap=>{
+      let g=null;try{g=snap.val()}catch(e){}
+      if(!g||!Number.isFinite(+g.v))return;
+      const gt=+g.ts||Date.now();
+      if(gt>fbGrantSeen){fbGrantSeen=gt;S.bal=Math.floor(+g.v);fbStarsSyncedV=S.bal;save();rBal();try{fbDb.ref('gapera/grant/'+id).remove()}catch(e){}}
+    });
+    const sp=fbSavePath();
+    let fbSaveFirst=true;
+    if(sp)fbDb.ref(sp+'/state/bal').on('value',snap=>{
+      let bv;try{bv=snap.val()}catch(e){return}
+      if(bv===null||bv===undefined)return;
+      const nb=Math.floor(Number(bv));
+      if(fbSaveFirst){fbSaveFirst=false;return}
+      if(Number.isFinite(nb)&&nb>=0&&nb!==S.bal&&Date.now()-(S.savedAt||0)>5000){S.bal=nb;fbStarsSyncedV=nb;save();rBal()}
+    });
+  }catch(e){fbStarsWatching=false}
+}
+let fbSaveTimer=null,fbStateJson=null;
+function fbPushSave(now){
+  if(!duelFbReady())return;
+  const p=fbSavePath();if(!p)return;
+  clearTimeout(fbSaveTimer);
+  fbSaveTimer=setTimeout(()=>{
+    if(lockDenied)return;
+    let snap='';
+    try{const c=Object.assign({},S);delete c.savedAt;snap=JSON.stringify(c)}catch(e){snap=''}
+    if(snap&&snap===fbStateJson)return;
+    try{
+      fbDb.ref(p).transaction(cur=>{
+        if(cur&&((cur.savedAt||0)>(S.savedAt||0)))return;
+        return {state:S,savedAt:S.savedAt||Date.now()};
+      },(err,ok)=>{if(ok){try{fbStateJson=snap}catch(e){}}});
+    }catch(e){}
+  },now?100:400);
+}
+function fbPullSave(){
+  if(!duelFbReady())return;
+  const p=fbSavePath();if(!p)return;
+  fbDb.ref(p).once('value').then(snap=>{
+    let v=null;try{v=snap.val()}catch(e){}
+    if(v&&v.state&&((v.savedAt||0)>(S.savedAt||0))){
+      applyLoadedState(Object.assign({},v.state,{savedAt:v.savedAt}));
+      try{const c=Object.assign({},S);delete c.savedAt;fbStateJson=JSON.stringify(c)}catch(e){}
+      try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}
+      writeLocal();renderAll();
+    }else{try{fbPushSave(true)}catch(e){}try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}}
+  }).catch(()=>{});
+}
+let fbWasOnline=false;
+function fbNetWatch(){
+  if(!duelFbReady())return;
+  try{
+    fbDb.ref('.info/connected').on('value',snap=>{
+      let on=false;try{on=!!snap.val()}catch(e){}
+      if(on&&!fbWasOnline){
+        try{fbStarsSyncedV=null;fbStateJson=null}catch(e){}
+        try{fbPullSave()}catch(e){}
+        try{fbStarsPush()}catch(e){}
+      }
+      fbWasOnline=on;
+    });
+  }catch(e){}
+}
+let fbStarsWatching=false;
 let snT=null;function sn(m,ms){try{$('sn').textContent=m;$('sn').classList.add('on');clearTimeout(snT);snT=setTimeout(()=>$('sn').classList.remove('on'),ms||2000)}catch(e){}}
 function bz(k){
   if(k==='win'||k==='success') Sound.win();
@@ -2742,7 +2914,7 @@ function claimDaily(){
   if(!dailyCanClaim())return;
   Sound.click();
   const now=Date.now(),streak=dailyNextStreak(),reward=DAILY_REWARDS[streak-1];
-  S.bal+=reward;S.daily.lastClaim=now;S.daily.streak=streak;save();rBal();
+  S.bal+=reward;S.daily.lastClaim=now;S.daily.streak=streak;save();rBal();try{fbClaimWrite('daily',{day:new Date().toISOString().slice(0,10),streak:streak})}catch(e){}
   Sound.win();bz('win');sn(t('daily_claimed_msg',{r:reward,d:streak}));
   try{const r=$('rewardBtn').getBoundingClientRect();confetti(r.left+r.width/2,r.top,24)}catch(e){}
   dailyTick();
@@ -2991,7 +3163,26 @@ function duelMe(){
 }
 function duelSetText(id,v){const e=$(id);if(e)e.textContent=v}
 function duelSetStatus(k,pr){DU.st={k:k,p:pr||null};const el=$('duelStatus');if(el){try{el.textContent=t(k,pr)}catch(e){el.textContent=k}}}
-function duelNetOK(){return duelFbReady()}
+function accountId(){try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user&&TG.initDataUnsafe.user.id)return 'tg'+TG.initDataUnsafe.user.id}catch(e){}return null}
+try{
+Object.assign(I18N.ru,{app_upd:'Вышла новая версия - обнови страницу'});
+Object.assign(I18N.en,{app_upd:'New version available - refresh the page'});
+Object.assign(I18N.uk,{app_upd:'Вийшла нова версія - онови сторінку'});
+}catch(e){}
+const APP_VER='8.7';
+function appVerCheck(){
+  try{
+    fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
+      const m=/APP_VER='([^']+)'/.exec(txt||'');
+      if(m&&m[1]!==APP_VER){
+        try{sn(t('app_upd'))}catch(e){}
+        setTimeout(()=>{try{if(DU.started&&!DU.over)return;location.reload()}catch(e){}},4000);
+      }
+    }).catch(()=>{});
+  }catch(e){}
+}
+try{setTimeout(appVerCheck,15000)}catch(e){}
+try{setInterval(appVerCheck,1800000)}catch(e){}
 function duelPeerOpts(){
   // На разных сетях прямое соединение режут NAT/файрволы - пробиваем через
   // TURN-релеи. Несколько независимых серверов: если один мёртв, сработает
@@ -3346,6 +3537,7 @@ function duelSettle(winner){
   duelRender();
 }
 function duelNav(){
+  if(!DUELS_VISIBLE)return;
   try{document.querySelectorAll('.ni[data-s="duel"]').forEach(b=>{b.style.display=''})}catch(e){}
 }
 function duelRender(){
@@ -3369,6 +3561,7 @@ function duelRender(){
     if(ch)ch.style.display=DU.role==='host'?'':'none';
     if(cg)cg.style.display=DU.role==='guest'?'':'none';
     duelSetText('duelVsMe',me.name);duelSetText('duelVsOpp',(DU.opp&&DU.opp.name)||'?');
+    duelSetText('duelLobbyCode',(DU.role==='host'&&DU.roomId)||'------');
     const cv=$('duelCfgView');
     if(cv){
       cv.textContent=t('duel_cfg',{mode:duelModeName(DU.mode),stake:DU.myStake});
@@ -3747,9 +3940,13 @@ function duelOnData(d){
     DU.opp={name:String(d.name||'?').slice(0,14),ava:String(d.ava||'?').slice(0,2)};
     DU.linked=true;
     duelSetStatus('dst_conn');duelRender();
-    // Хост не стартует сразу: сначала настраивает лобби (режим/ставку) и жмёт «Начать»
-    if(DU.role==='host'&&!DU.started)duelSendCfg();
+    if(DU.role==='host'&&!DU.started){duelSend({t:'match',mode:DU.mode,stake:DU.myStake});setTimeout(function(){try{if(DU.role==='host'&&!DU.started&&DU.conn)duelBeginMatch()}catch(e){}},600)}
     return;
+  }
+  if(d.t==='match'&&DU.role==='guest'&&!DU.started){
+    if(d.mode==='bac'||d.mode==='rou'||d.mode==='pok')DU.mode=d.mode;
+    if(Number.isFinite(+d.stake)&&+d.stake>=1)DU.myStake=Math.floor(+d.stake);
+    duelRender();return;
   }
   if(d.t==='bac_begin'&&DU.role==='guest'){
     DU.started=true;DU.over=false;DU.winner=null;DU.invested=0;
@@ -3889,9 +4086,9 @@ Object.assign(I18N.en,{duel_server:'SIGNALING SERVER',duel_srv_bad:'Check addres
 Object.assign(I18N.uk,{duel_server:'СЕРВЕР СИГНАЛІНГУ',duel_srv_bad:'Перевір адресу: хост:порт/шлях',duel_srv_ok:'Свій сервер збережено',duel_srv_reset_done:'Скинуто на хмару',duel_srv_cur_cloud:'Сервер: хмара PeerJS (за замовчуванням)',duel_srv_cur:'Сервер: {h}'});
 }catch(e){}
 try{
-Object.assign(I18N.ru,{duel_find:'ИГРАТЬ ОНЛАЙН',duel_cancel:'Отмена',duel_searching:'Ищем соперника…',duel_found:'Соперник найден!',duel_fb_setup:'Онлайн не подключён - нужен Firebase (см. FIREBASE_SETUP.md)'});
-Object.assign(I18N.en,{duel_find:'PLAY ONLINE',duel_cancel:'Cancel',duel_searching:'Finding opponent…',duel_found:'Opponent found!',duel_fb_setup:'Online is not connected - Firebase needed (see FIREBASE_SETUP.md)'});
-Object.assign(I18N.uk,{duel_find:'ГРАТИ ОНЛАЙН',duel_cancel:'Скасувати',duel_searching:'Шукаємо суперника…',duel_found:'Суперника знайдено!',duel_fb_setup:'Онлайн не підключено - потрібен Firebase (див. FIREBASE_SETUP.md)'});
+Object.assign(I18N.ru,{duel_find:'НАЙТИ ИГРУ',duel_noroom:'Нет свободных игр - создай лобби',duel_wait_op:'Ждём соперника…',duel_norules:'Нет доступа к базе - открой правила Firebase',duel_cancel:'Отмена',duel_searching:'Ищем соперника…',duel_found:'Соперник найден!',duel_fb_setup:'Онлайн не подключён - проверь интернет'});
+Object.assign(I18N.en,{duel_find:'FIND GAME',duel_noroom:'No free games - create a lobby',duel_wait_op:'Waiting for opponent…',duel_norules:'No database access - open Firebase rules',duel_cancel:'Cancel',duel_searching:'Finding opponent…',duel_found:'Opponent found!',duel_fb_setup:'Online is not connected - check internet'});
+Object.assign(I18N.uk,{duel_find:'ЗНАЙТИ ГРУ',duel_noroom:'Немає вільних ігор - створи лобі',duel_wait_op:'Чекаємо суперника…',duel_norules:'Немає доступу до бази - відкрий правила Firebase',duel_cancel:'Скасувати',duel_searching:'Шукаємо суперника…',duel_found:'Суперника знайдено!',duel_fb_setup:'Онлайн не підключено - перевір інтернет'});
 }catch(e){}
 try{
 Object.assign(I18N.ru,{nav_bj:'21',game_bj:'Блэкджек',bj_title:'БЛЭКДЖЕК • ДО 21',bj_dealer:'Дилер',bj_you:'Вы',bj_deal:'РАЗДАТЬ',bj_hit:'Ещё',bj_stand:'Хватит',bj_double:'Удвоить',bj_ins_q:'У дилера туз. Страховка за {n}?',bj_ins_yes:'Взять',bj_ins_no:'Без',bj_even_q:'Блэкджек! Забрать 1:1 сразу или играть?',bj_take:'Забрать',bj_play_on:'Играть',bj_win:'Победа +{n}',bj_lose:'−{n}',bj_push:'Ничья - возврат',bj_bust:'Перебор! −{n}',bj_dealer_bust:'Дилер перебрал! +{n}',bj_bj:'БЛЭКДЖЕК! +{n}',bj_ins_win:'Страховка сыграла +{n}',bj_shoe:'Шу',bj_rules:'Блэкджек платит 3:2 • дилер стоит на 17 • страховка 2:1 • дабл - одна карта • сплитов нет',bj_reshuffle:'Шу закончился - новый замес (6 колод)'});
@@ -3907,6 +4104,16 @@ try{
 Object.assign(I18N.ru,{nav_plinko:'Плинко',game_plinko:'Плинко',pl_low:'Низкий',pl_med:'Средний',pl_high:'Высокий',pl_drop:'БРОСИТЬ',pl_rules:'Шарик честно прыгает 50/50 на каждом колышке • лунка платит множитель'});
 Object.assign(I18N.en,{nav_plinko:'Plinko',game_plinko:'Plinko',pl_low:'Low',pl_med:'Medium',pl_high:'High',pl_drop:'DROP',pl_rules:'Ball bounces a fair 50/50 on every peg • the bin pays the multiplier'});
 Object.assign(I18N.uk,{nav_plinko:'Плінко',game_plinko:'Плінко',pl_low:'Низький',pl_med:'Середній',pl_high:'Високий',pl_drop:'КИНУТИ',pl_rules:'Кулька чесно стрибає 50/50 на кожному кілочку • лунка платить множник'});
+}catch(e){}
+try{
+Object.assign(I18N.ru,{duel_need_tg:'Онлайн-дуэли только из Telegram'});
+Object.assign(I18N.en,{duel_need_tg:'Online duels only from Telegram'});
+Object.assign(I18N.uk,{duel_need_tg:'Онлайн-дуелі тільки з Telegram'});
+}catch(e){}
+try{
+Object.assign(I18N.ru,{lock_title:'Игра уже запущена на другом устройстве',lock_sub:'Закрой её там - доступ откроется сам'});
+Object.assign(I18N.en,{lock_title:'Game is already running on another device',lock_sub:'Close it there - access will open automatically'});
+Object.assign(I18N.uk,{lock_title:'Гра вже запущена на іншому пристрої',lock_sub:'Закрий її там - доступ відкриється сам'});
 }catch(e){}
 function duelModeName(m){return t(m==='rou'?'d_rou':(m==='pok'?'d_pok':'d_bac'))}
 function duelSendCfg(){duelSend({t:'lobby_cfg',mode:DU.mode,stake:DU.myStake})}
@@ -3963,40 +4170,114 @@ function duelHbStart(){
   },15000);
 }
 function duelHbStop(){try{clearInterval(DU.hbTimer)}catch(e){}DU.hbTimer=null}
-// ===== Онлайн-дуэли через Firebase: без кодов, без P2P, без своего ПК =====
-// Игрок выбирает режим и ставку, жмёт «Играть онлайн» - сервер сам подбирает
-// соперника с тем же режимом и ставкой. Весь трафик идёт через Firebase
-// обычным HTTPS, поэтому никакие NAT не страшны хоть с разных концов земли.
-// Создатель комнаты - хост (крупье): тасует и раздаёт, гость зеркалит.
-// Кодов вводить не нужно вообще.
-//
-// ВКЛЮЧЕНИЕ (один раз, 10 минут, бесплатно): заведи проект в консоли
-// Firebase, создай Realtime Database и вставь сюда её конфиг.
-// Пошагово - в файле FIREBASE_SETUP.md рядом с index.html.
-// Без конфига кнопка онлайн-поиска честно скажет, что сервер не подключён.
-// ВРЕМЕННО: дуэли скрыты из меню. Вернуть: поставить true и удалить CSS-правило .ni[data-s="duel"] выше.
 const DUELS_VISIBLE=false;
-const DUEL_FB_CONFIG=null;
-let fbApp=null,fbDb=null;
-function duelFbReady(){
-  try{
-    if(fbDb)return true;
-    if(!window.firebase||!DUEL_FB_CONFIG||!DUEL_FB_CONFIG.apiKey)return false;
-    if(!fbApp)fbApp=firebase.initializeApp(DUEL_FB_CONFIG);
-    fbDb=firebase.database();
-    return !!fbDb;
-  }catch(e){return false}
-}
 function duelFindStatus(m){const e=$('duelFindStatus');if(e)e.textContent=m||''}
+function duelMatchId(){try{let m=localStorage.getItem('gapera_match_id');if(!m){m='m'+Math.random().toString(36).slice(2,10);localStorage.setItem('gapera_match_id',m)}return m}catch(e){return 'm'+Math.random().toString(36).slice(2,10)}}
+function duelJoinByCode(){
+  try{Sound.click()}catch(e){}
+  if(DU.searching||DU.started||DU.role)return;
+  if(!duelFbReady()){sn(t('duel_fb_setup'));return}
+  const inp=$('duelCodeIn');
+  const code=String((inp?inp.value:'')||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(code.length<4){sn(t('dst_code_err'));return}
+  DU.searching=true;DU.sigId=duelMatchId();
+  duelFindStatus(t('duel_searching'));
+  duelFindUI();duelRender();
+  fbDb.ref('gapera/rooms/'+code).once('value').then(snap=>{
+    if(!DU.searching)return;
+    let r=null;try{r=snap.val()}catch(e){}
+    const tg=accountId();
+    const okRoom=r&&r.status==='open'&&r.host&&r.host.id!==DU.sigId&&!(tg&&r.host.tgOwner&&r.host.tgOwner===tg)&&!(r.guest&&r.guest.id)&&(Date.now()-(+r.ts||0))<45000&&(r.mode==='bac'||r.mode==='rou'||r.mode==='pok')&&+r.stake>=1;
+    if(!okRoom){DU.searching=false;duelFindStatus(t('dst_nofriend'));duelFindUI();duelRender();return}
+    duelFbJoinRoom(code,r.mode,+r.stake);
+  }).catch(()=>{if(!DU.searching)return;DU.searching=false;duelFindStatus(t('dst_nofriend'));duelFindUI();duelRender()});
+}
+function duelCreateLobby(){
+  try{Sound.click()}catch(e){}
+  if(DU.searching||DU.started||DU.role)return;
+  if(!duelFbReady()){sn(t('duel_fb_setup'));return}
+  const me=duelMe();
+  DU.searching=false;
+  DU.sigId='p'+Math.random().toString(36).slice(2,10);
+  DU.role='host';DU.mode=DU.mode||'bac';
+  DU.myStake=Math.max(1,clampBet('duelStakeIn'));
+  DU.opp={name:'?',ava:'?'};
+  DU.myReady=false;DU.oppReady=false;DU.chat=[];
+  try{duelChatRender()}catch(e){}
+  DU.roomId=null;
+  const mkRoom=()=>({mode:DU.mode,stake:DU.myStake,status:'open',host:{id:DU.sigId,name:me.name,ava:me.ava,tgOwner:accountId()||null},guest:null,ts:firebase.database.ServerValue.TIMESTAMP});
+  const tryCode=(left)=>{
+    if(DU.role!=='host'||DU.started||DU.roomId)return;
+    if(left<=0){DU.role=null;duelRender();sn(t('dst_err'));return}
+    const code=duelCode();
+    fbDb.ref('gapera/rooms/'+code).transaction(cur=>{
+      if(!cur)return mkRoom();
+      const stale=(Date.now()-(+cur.ts||0))>60000;
+      const mine=cur.host&&cur.host.id===DU.sigId;
+      if(cur.guest&&cur.guest.id&&!stale)return;
+      if(!stale&&cur.host&&!mine)return;
+      return mkRoom();
+    },(err,committed)=>{
+      if(DU.role!=='host'||DU.started||DU.roomId)return;
+      if(err||!committed){tryCode(left-1);return}
+      DU.roomId=code;
+      try{fbDb.ref('gapera/rooms/'+DU.roomId).onDisconnect().remove()}catch(e){}
+      duelFbHeartbeat();
+      DU.fbRoomRef=fbDb.ref('gapera/rooms/'+DU.roomId);
+      DU.fbRoomRef.on('value',(snap)=>{
+        if(DU.role!=='host'||DU.started||DU.roomId==null)return;
+        let r=null;try{r=snap.val()}catch(e){}
+        if(!r)return;
+        if(r.guest&&r.guest.id){
+          DU.opp={name:String(r.guest.name||'?').slice(0,14),ava:String(r.guest.ava||'?').slice(0,2)};
+          duelSetStatus('dst_conn');duelRender();
+        }else if(!DU.started){DU.opp={name:'?',ava:'?'};duelSetStatus('dst_wait_op');duelRender()}
+      });
+      duelFbEnter();
+      try{fbDb.ref('gapera/rooms/'+DU.roomId+'/status').set('open')}catch(e){}
+      duelSetStatus('dst_wait_op');duelRender();
+    });
+  };
+  tryCode(5);
+}
+function duelRoomSync(){
+  try{
+    if(DU.role!=='host'||!DU.roomId||DU.started||!fbDb)return;
+    fbDb.ref('gapera/rooms/'+DU.roomId).update({mode:DU.mode,stake:DU.myStake,ts:firebase.database.ServerValue.TIMESTAMP});
+  }catch(e){}
+}
+function duelFbFindAny(){
+  if(!DU.searching)return;
+  fbDb.ref('gapera/rooms').once('value').then(snap=>{
+    if(!DU.searching)return;
+    let rooms={};
+    try{rooms=snap.val()||{}}catch(e){rooms={}}
+    const now=Date.now();
+    const tg=accountId();
+    let best=null,bestTs=Infinity;
+    Object.keys(rooms).forEach(id=>{
+      const r=rooms[id]||{};
+      if(r.status==='open'&&r.host&&r.host.id!==DU.sigId&&!(tg&&r.host.tgOwner&&r.host.tgOwner===tg)&&!r.guest&&(now-(+r.ts||0))<45000&&(r.mode==='bac'||r.mode==='rou'||r.mode==='pok')&&+r.stake>=1){
+        if((+r.ts||0)<bestTs){bestTs=+r.ts;best=id}
+      }
+    });
+    if(best){
+      const r=rooms[best];
+      duelFbJoinRoom(best,r.mode,+r.stake);
+    }else{
+      duelFindStatus(t('duel_noroom'));
+      DU.searching=false;duelFindUI();duelRender();
+    }
+  }).catch(()=>{if(DU.searching)setTimeout(()=>{if(DU.searching)duelFbFindAny()},3000)});
+}
 function duelFind(){
   try{Sound.click()}catch(e){}
   if(DU.searching||DU.started||DU.role)return;
   if(!duelFbReady()){sn(t('duel_fb_setup'));return}
-  const stake=Math.max(1,clampBet('duelStakeIn'));
   DU.searching=true;DU.sigId='p'+Math.random().toString(36).slice(2,10);
   duelFindStatus(t('duel_searching'));
   duelFindUI();duelRender();
-  duelFbFind(DU.mode,stake);
+  duelFbFindAny();
 }
 function duelFindUI(){
   const f=$('duelFindBtn'),c=$('duelCancelBtn');
@@ -4018,7 +4299,82 @@ function duelCancelFind(){
   DU.roomId=null;DU.role=null;DU.link=null;
   duelFindUI();duelRender();
 }
-// Ищем открытый стол с тем же режимом и ставкой, иначе создаём свой и ждём
+let lockSid=null,lockHeld=false,lockDenied=false,lockHbT=null,lockPollT=null;
+function lockPath(){const id=accountId();if(!id)return null;return 'gapera/lock/'+id}
+function lockSidGet(){
+  if(lockSid)return lockSid;
+  try{lockSid=sessionStorage.getItem('gapera_lock_sid')||''}catch(e){lockSid=''}
+  if(!lockSid){lockSid='s'+Math.random().toString(36).slice(2,12);try{sessionStorage.setItem('gapera_lock_sid',lockSid)}catch(e){}}
+  return lockSid;
+}
+function lockOverlay(on){try{const e=$('lockOverlay');if(e)e.style.display=on?'grid':'none'}catch(e2){}try{const m=$('lockMeLbl');if(m)m.textContent='ID: '+(accountId()||'guest')}catch(e3){}}
+function lockRead(cb){try{if(!CLOUD_OK){cb(null);return}TG.CloudStorage.getItems(['gapera_lock'],function(err,res){let v=null;try{v=res?res['gapera_lock']:null}catch(e){}cb(err?v||null:v||null)})}catch(e){cb(null)}}
+function lockWrite(obj){try{if(!CLOUD_OK)return;TG.CloudStorage.setItem('gapera_lock',JSON.stringify(obj),function(){})}catch(e){}}
+function lockParse(raw){try{const o=JSON.parse(raw||'');if(o&&o.sid)return o}catch(e){}return null}
+function lockHbStart(){
+  lockHbStop();
+  if(!CLOUD_OK)return;
+  const beat=()=>{try{if(lockHeld)lockWrite({sid:lockSidGet(),ts:Date.now(),ver:(typeof APP_VER!=='undefined'?APP_VER:'?')})}catch(e){}};
+  beat();lockHbT=setInterval(beat,12000);
+}
+function lockApplyHeld(){lockHeld=true;lockDenied=false;lockOverlay(false);lockHbStart();try{cloudRefetch()}catch(e){}}
+function lockApplyDeny(){lockHeld=false;lockDenied=true;lockHbStop();lockOverlay(true);lockPollStart();}
+function lockAcquire(){
+  if(!CLOUD_OK||lockBusyLock())return;
+  lockRead(function(cur){
+    const o=lockParse(cur),now=Date.now(),sid=lockSidGet();
+    if(o&&o.sid!==sid&&(now-(+o.ts||0))<35000){lockApplyDeny();return}
+    setTimeout(function(){
+      lockRead(function(cur2){
+        const o2=lockParse(cur2);
+        if(o2&&o2.sid!==sid&&(Date.now()-(+o2.ts||0))<35000){lockApplyDeny();return}
+        lockWrite({sid:sid,ts:Date.now(),ver:(typeof APP_VER!=='undefined'?APP_VER:'?')});
+        lockApplyHeld();
+      });
+    },400+Math.random()*1200);
+  });
+}
+let _lockBusyFlag=false;
+function lockBusyLock(){if(_lockBusyFlag)return true;_lockBusyFlag=true;setTimeout(function(){_lockBusyFlag=false},3000);return false}
+function lockPollStart(){
+  try{clearInterval(lockPollT)}catch(e){}
+  lockPollT=setInterval(function(){
+    if(lockHeld||!CLOUD_OK)return;
+    lockAcquire();
+  },6000);
+}
+function lockWatch(){
+  if(!CLOUD_OK)return;
+  lockAcquire();
+  lockPollStart();
+}
+function lockRelease(){
+  if(!lockHeld||!CLOUD_OK)return;
+  lockHeld=false;lockHbStop();
+  lockRead(function(cur){
+    const o=lockParse(cur);
+    if(o&&o.sid===lockSidGet())lockWrite('');
+  });
+}
+function cloudRefetch(){
+  if(!CLOUD_OK)return;
+  try{
+    TG.CloudStorage.getItems([CLOUD_STATE_KEY,CLOUD_HIST_KEY],(err,res)=>{
+      if(err||!res)return;
+      try{
+        const coreRaw=res[CLOUD_STATE_KEY]?JSON.parse(res[CLOUD_STATE_KEY]):null;
+        const histRaw=res[CLOUD_HIST_KEY]?JSON.parse(res[CLOUD_HIST_KEY]):null;
+        if(!coreRaw)return;
+        const cloudState=Object.assign({},coreRaw,{hist:Array.isArray(histRaw)?histRaw:[]});
+        if((cloudState.savedAt||0)>(S.savedAt||0)){
+          applyLoadedState(cloudState);
+          writeLocal();
+          renderAll();
+        }
+      }catch(_){}
+    });
+  }catch(e){}
+}
 function duelFbFind(mode,stake){
   if(!DU.searching)return;
   let rooms={};
@@ -4026,10 +4382,11 @@ function duelFbFind(mode,stake){
     if(!DU.searching)return;
     try{rooms=snap.val()||{}}catch(e){rooms={}}
     const now=Date.now();
+    const tg=accountId();
     let best=null,bestTs=Infinity;
     Object.keys(rooms).forEach(id=>{
       const r=rooms[id]||{};
-      if(r.status==='open'&&r.mode===mode&&+r.stake===+stake&&r.host&&r.host.id!==DU.sigId&&!r.guest&&(now-(+r.ts||0))<45000){
+      if(r.status==='open'&&r.mode===mode&&+r.stake===+stake&&r.host&&r.host.id!==DU.sigId&&!(tg&&r.host.tgOwner&&r.host.tgOwner===tg)&&!r.guest&&(now-(+r.ts||0))<45000){
         if((+r.ts||0)<bestTs){bestTs=+r.ts;best=id}
       }
     });
@@ -4037,15 +4394,15 @@ function duelFbFind(mode,stake){
     else duelFbMakeRoom(mode,stake);
   }).catch(()=>{if(DU.searching)setTimeout(()=>{if(DU.searching)duelFbFind(mode,stake)},3000)});
 }
-// Занять место гостя транзакцией: кто успел - тот и сел, второго отшьёт
 function duelFbJoinRoom(id,mode,stake){
   const me=duelMe();
   fbDb.ref('gapera/rooms/'+id+'/guest').transaction(cur=>{
-    if(cur)return; // уже занято
+    if(cur)return;
     return {id:DU.sigId,name:me.name,ava:me.ava,ts:firebase.database.ServerValue.TIMESTAMP};
   },(err,committed)=>{
     if(!DU.searching)return;
-    if(err||!committed){duelFbFind(mode,stake);return} // стол увели - ищем дальше
+    if(err&&err.code==='PERMISSION_DENIED'){DU.searching=false;duelFindStatus(t('duel_norules'));duelFindUI();duelRender();return}
+    if(err||!committed){duelFbFindAny();return}
     DU.roomId=id;DU.role='guest';DU.mode=mode;DU.myStake=stake;
     DU.opp={name:'?',ava:'?'};
     try{fbDb.ref('gapera/rooms/'+id).once('value').then(s=>{let r=null;try{r=s.val()}catch(e){}if(r&&r.host){DU.opp={name:String(r.host.name||'?').slice(0,14),ava:String(r.host.ava||'?').slice(0,2)}}duelRender()})}catch(e){}
@@ -4057,7 +4414,7 @@ function duelFbMakeRoom(mode,stake){
   const me=duelMe();
   const ref=fbDb.ref('gapera/rooms').push({
     mode:mode,stake:stake,status:'open',
-    host:{id:DU.sigId,name:me.name,ava:me.ava},
+    host:{id:DU.sigId,name:me.name,ava:me.ava,tgOwner:accountId()||null},
     guest:null,ts:firebase.database.ServerValue.TIMESTAMP
   });
   DU.roomId=ref.key;DU.role='host';DU.mode=mode;DU.myStake=stake;
@@ -4069,13 +4426,12 @@ function duelFbMakeRoom(mode,stake){
     if(DU.role!=='host'||DU.started||!DU.searching)return;
     let r=null;try{r=snap.val()}catch(e){}
     if(!r)return;
-    if(r.guest&&r.guest.id){ // гость пришёл - начинаем
+    if(r.guest&&r.guest.id){
       DU.opp={name:String(r.guest.name||'?').slice(0,14),ava:String(r.guest.ava||'?').slice(0,2)};
       duelFbEnter();
     }
   });
 }
-// Оба в сборе: поднимаем релейный канал, хост раздаёт
 function duelFbEnter(){
   DU.searching=false;
   DU.link='fb';DU.linked=true;DU.invested=0;DU.over=false;DU.winner=null;DU.fbHadGuest=false;
@@ -4085,21 +4441,7 @@ function duelFbEnter(){
   try{fbDb.ref('gapera/rooms/'+DU.roomId+'/status').set('full')}catch(e){}
   duelFindStatus(t('duel_found'));
   duelSetStatus('dst_conn');duelRender();
-  if(DU.role==='host'){
-    setTimeout(()=>{
-      try{
-        if(DU.role!=='host'||DU.link!=='fb'||DU.started)return;
-        // гость мог передумать в последнюю секунду - проверяем, что он на месте
-        fbDb.ref('gapera/rooms/'+DU.roomId+'/guest').once('value').then(s=>{
-          let g=null;try{g=s.val()}catch(e){}
-          if(!g||!g.id){duelFindStatus(t('duel_searching'));duelRender();return}
-          duelBeginMatch();
-        }).catch(()=>{try{duelBeginMatch()}catch(e){}});
-      }catch(e){}
-    },800);
-  }
 }
-// Релей: исходящие - push в свою ветку, входящие - подписка на чужую
 function duelFbSend(o){
   if(!DU.roomId||!fbDb)return;
   const dir=DU.role==='host'?'host2guest':'guest2host';
@@ -4116,7 +4458,6 @@ function duelFbListen(){
   });
 }
 function duelFbUnlisten(){try{if(DU.fbMsgRef)DU.fbMsgRef.off()}catch(e){}DU.fbMsgRef=null;try{if(DU.fbRoomRef)DU.fbRoomRef.off()}catch(e){}DU.fbRoomRef=null}
-// Присутствие: heartbeat + слежка за соперником и комнатой
 function duelFbHeartbeat(){
   duelFbHbStop();
   if(!DU.roomId||!fbDb)return;
@@ -4133,13 +4474,13 @@ function duelFbWatch(){
   DU.fbWatchRef.on('value',(snap)=>{
     if(!DU.role||DU.link!=='fb')return;
     let r=undefined;try{r=snap.val()}catch(e){return}
-    if(r===null){duelSetStatus('dst_left');duelLeave(true);return} // комнату снесли - соперник ушёл
+    if(r===null){duelSetStatus('dst_left');duelLeave(true);return}
     if(!r)return;
     if(r.guest&&r.guest.id)DU.fbHadGuest=true;
-    else if(DU.role==='host'&&DU.started&&DU.fbHadGuest){duelOnClose(false);return} // гость слился из игры
+    else if(DU.role==='host'&&DU.started&&DU.fbHadGuest){duelOnClose(false);return}
     const opp=DU.role==='host'?'guest':'host';
     const last=+(r.hb&&r.hb[opp]||0);
-    if(DU.started&&last&&Date.now()-last>40000)duelOnClose(false); // зависший соперник
+    if(DU.started&&last&&Date.now()-last>40000)duelOnClose(false);
   });
 }
 function duelFbCleanup(){
@@ -4155,196 +4496,17 @@ function duelFbCleanup(){
   }catch(e){}
   DU.searching=false;DU.roomId=null;DU.role=null;DU.link=null;DU.fbHadGuest=false;
 }
-function duelCreate(){
-  try{Sound.click()}catch(e){}
-  if(!duelNetOK()){duelSetStatus('dst_err');return}
-  duelLeave(true);
-  DU.role='host';DU.opp={name:'?',ava:'?'};
-  DU.sigId='p'+Math.random().toString(36).slice(2,10);
-  DU.code=duelCode();
-  DU.pc=null;DU.pcAt=0;
-  duelSetStatus('dst_joining');duelRender();
-  duelMqttEnsure((client)=>{
-    if(DU.role!=='host')return;
-    if(!client){duelSetStatus('dst_err');duelRender();return}
-    try{client.subscribe(duelSigTopic(DU.code))}catch(e){}
-    const cb=$('duelCode');if(cb)cb.value=DU.code;
-    duelSetStatus('dst_wait',{c:DU.code});duelRender();
-  });
-  duelRender();
-}
-function duelJoin(){
-  try{Sound.click()}catch(e){}
-  if(!duelNetOK()){duelSetStatus('dst_err');return}
-  const code=String(($('duelCode')||{value:''}).value||'').trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
-  if(code.length<4){sn(t('dst_code_err'));return}
-  duelLeave(true);
-  DU.role='guest';DU.code=code;DU.opp={name:'?',ava:'?'};
-  DU.sigId='p'+Math.random().toString(36).slice(2,10);DU.pc=null;DU.pcAt=0;
-  DU.joinSeq=(DU.joinSeq||0)+1;
-  duelJoinAttempt(DU.joinSeq,1);
-  duelRender();
-}
-// Вход с ретраями: мобильные сети и строгие Wi-Fi часто роняют первую попытку
-// (сигналинг не успел, ICE не собрался). Каждую попытку создаём пир заново,
-// пауза растёт экспоненциально. joinSeq отменяет устаревшие попытки.
-// ===== Прямое соединение: MQTT-сигналинг + raw WebRTC DataChannel =====
-// Никакого PeerJS-облака и своего ПК: телефоны знакомятся через бесплатный
-// публичный MQTT-брокер (без регистрации), дальше говорят НАПРЯМУ peer-to-peer
-// по зашифрованному DataChannel. Через брокер летят только offer/answer,
-// сама игра через него не идёт.
-const DUEL_MQTT_BROKERS=['wss://broker.emqx.io:8084/mqtt','wss://broker.hivemq.com:8884/mqtt','wss://test.mosquitto.org:8081/mqtt'];
-function duelSigTopic(code){return 'gapera/duel/v1/'+code}
-function duelRtcConfig(){try{const c=duelPeerOpts().config;if(c&&c.iceServers)return c}catch(e){}return{iceServers:[]}}
-function duelMqttPub(kind,obj){
-  if(!DU.mqtt||!DU.code)return;
-  try{DU.mqtt.publish(duelSigTopic(DU.code),JSON.stringify(Object.assign({from:DU.sigId,kind:kind},obj||{})))}catch(e){}
-}
+function duelNetOK(){return duelFbReady()}
 // Подключение к брокеру с перебором запасных
-function duelMqttEnsure(cb){
-  if(DU.mqtt){cb(DU.mqtt);return}
-  let i=0;
-  const step=()=>{
-    if(i>=DUEL_MQTT_BROKERS.length){cb(null);return}
-    const url=DUEL_MQTT_BROKERS[i++];
-    let client=null;
-    try{client=window.mqtt.connect(url,{connectTimeout:9000,reconnectPeriod:0,clean:true,clientId:'gapera_'+Math.random().toString(36).slice(2,10)})}catch(e){step();return}
-    let done=false;
-    const to=setTimeout(()=>{if(done)return;done=true;try{client.end(true)}catch(e){}step()},12000);
-    client.on('connect',()=>{if(done)return;done=true;clearTimeout(to);DU.mqtt=client;try{client.on('message',(tp,pl)=>duelSigMsg(pl))}catch(e){}cb(client)});
-    client.on('error',()=>{if(done)return;done=true;clearTimeout(to);try{client.end(true)}catch(e){}step()});
-  };
-  step();
-}
-// Обёртка native DataChannel под duelWire/duelSend (on/send/open/close)
-function duelNativeConn(pc,dc){
-  const handlers={};
-  const api={open:false,
-    send(o){try{dc.send(JSON.stringify(o))}catch(e){}},
-    on(ev,cb){(handlers[ev]=handlers[ev]||[]).push(cb)},
-    close(){try{dc.close()}catch(e){}try{pc.close()}catch(e){}}
-  };
-  const fire=(ev,a)=>{(handlers[ev]||[]).forEach(cb=>{try{cb(a)}catch(e){}})};
-  dc.onopen=()=>{api.open=true;fire('open')};
-  dc.onmessage=(ev)=>{try{fire('data',JSON.parse(ev.data))}catch(e){}};
-  dc.onclose=()=>fire('close');
-  dc.onerror=()=>fire('error',{type:'dc'});
-  try{pc.onconnectionstatechange=()=>{try{if(pc.connectionState==='failed')fire('error',{type:'network'})}catch(e){}}}catch(e){}
-  return api;
-}
-function duelWaitGathering(pc,cb){
-  if(!pc||pc.iceGatheringState==='complete'){cb();return}
-  let done=false;
-  const fin=()=>{if(done)return;done=true;cb()};
-  const onCh=()=>{try{if(pc.iceGatheringState==='complete')fin()}catch(e){}};
-  try{pc.addEventListener('icegatheringstatechange',onCh)}catch(e){}
-  setTimeout(fin,8000); // не ждём вечно - шлём что собрали
-}
-function duelPcStuck(){return DU.pc&&!DU.linked&&(Date.now()-(DU.pcAt||0)>15000)}
-function duelPcReset(){try{if(DU.pc)DU.pc.close()}catch(e){}DU.pc=null;DU.pcAt=0}
-// Хост: на join гостя отвечает welcome и делает offer
-function duelHostOffer(){
-  try{
-    const pc=new RTCPeerConnection(duelRtcConfig());
-    DU.pc=pc;DU.pcAt=Date.now();
-    const dc=pc.createDataChannel('gapera');
-    duelWire(duelNativeConn(pc,dc));
-    pc.createOffer().then(o=>pc.setLocalDescription(o)).then(()=>{
-      duelWaitGathering(pc,()=>{duelMqttPub('offer',{sdp:pc.localDescription})});
-    }).catch(()=>duelSetStatus('dst_err'));
-  }catch(e){duelSetStatus('dst_err')}
-}
-// Гость: на offer отвечает answer
-function duelGuestAnswer(offer){
-  try{
-    const pc=new RTCPeerConnection(duelRtcConfig());
-    DU.pc=pc;DU.pcAt=Date.now();
-    pc.ondatachannel=(ev)=>{duelWire(duelNativeConn(pc,ev.channel))};
-    pc.setRemoteDescription(new RTCSessionDescription(offer))
-      .then(()=>pc.createAnswer()).then(a=>pc.setLocalDescription(a))
-      .then(()=>{duelWaitGathering(pc,()=>{duelMqttPub('answer',{sdp:pc.localDescription})})})
-      .catch(()=>duelSetStatus('dst_err'));
-  }catch(e){duelSetStatus('dst_err')}
-}
-function duelSigMsg(raw){
-  let d=null;try{d=JSON.parse(String(raw||''))}catch(e){return}
-  if(!d||d.from===DU.sigId||typeof d.kind!=='string')return;
-  if(DU.role==='host'&&d.kind==='join'&&!DU.started){
-    if(DU.linked)return;
-    if(DU.pc&&!duelPcStuck())return; // уже ведём handshake
-    if(DU.pc)duelPcReset(); // зависший handshake - начинаем заново
-    DU.opp={name:String(d.name||'?').slice(0,14),ava:String(d.ava||'?').slice(0,2)};
-    duelSetStatus('dst_conn');duelRender();
-    const me=duelMe();
-    duelMqttPub('welcome',{name:me.name,ava:me.ava});
-    duelHostOffer();
-    return;
-  }
-  if(DU.role==='guest'){
-    if(d.kind==='welcome'){duelSetStatus('dst_joining');duelRender();return}
-    if(d.kind==='offer'&&d.sdp&&!DU.linked){
-      if(DU.pc&&!duelPcStuck())return;
-      if(DU.pc)duelPcReset();
-      duelSetStatus('dst_joining');duelRender();
-      duelGuestAnswer(d.sdp);return;
-    }
-  }
-  if(DU.role==='host'&&d.kind==='answer'&&d.sdp&&DU.pc){
-    try{DU.pc.setRemoteDescription(new RTCSessionDescription(d.sdp))}catch(e){}
-    return;
-  }
-}
-function duelJoinAttempt(seq,tryNo){
-  if(seq!==DU.joinSeq||DU.role!=='guest')return;
-  if(tryNo>5){duelLeave(true);duelSetStatus('dst_timeout');return}
-  // Стол найден - дальше ждём offer; нет - шлём join снова (это дешево)
-  duelSetStatus(tryNo<=1?'dst_joining':'dst_retry',{n:tryNo});
-  duelRender();
-  duelMqttEnsure((client)=>{
-    if(seq!==DU.joinSeq||DU.role!=='guest')return;
-    if(!client){setTimeout(()=>duelJoinAttempt(seq,tryNo+1),2500);return}
-    try{client.subscribe(duelSigTopic(DU.code))}catch(e){}
-    const me=duelMe();
-    duelMqttPub('join',{name:me.name,ava:me.ava});
-    setTimeout(()=>{
-      if(seq!==DU.joinSeq||DU.role!=='guest'||DU.linked||DU.started)return;
-      duelJoinAttempt(seq,tryNo+1);
-    },8000);
-  });
-}
-function duelInvite(){
-  try{Sound.click()}catch(e){}
-  const T=(typeof t==='function')?t:function(k,p){return k};
-  const c=DU.code||String(($('duelCode')||{value:''}).value||'').trim().toUpperCase();
-  if(!c){sn(T('dst_code_err'));return}
-  const msg=T('dst_invite',{c:c});
-  const link='https://t.me/'+DUEL_BOT+'/app?startapp=duel_'+c;
-  const share='https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(msg);
-  try{
-    if(TG&&typeof TG.openTelegramLink==='function')TG.openTelegramLink(share);
-    else if(typeof window.open==='function')window.open(share,'_blank');
-  }catch(e){try{if(typeof window.open==='function')window.open(share,'_blank')}catch(_){}}
-}
-function duelCopy(){
-  try{Sound.click()}catch(e){}
-  const c=DU.code||String(($('duelCode')||{value:''}).value||'').trim();
-  if(!c)return;
-  try{
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c);sn(t('dst_copied'))}
-    else{sn(c)}
-  }catch(e){sn(c)}
-}
 function duelOnClose(mine){
   const had=!!(DU.conn||DU.role||DU.started);
   if(!had&&mine!==true)return;
   if(DU.started&&!DU.over){S.bal+=(DU.invested||0);save();try{rBal()}catch(e){}}
   try{if(DU.conn)DU.conn.close()}catch(e){}
   try{if(DU.peer)DU.peer.destroy()}catch(e){}
-  DU.conn=null;DU.peer=null;DU.role=null;DU.code='';DU.started=false;DU.over=true;DU.winner=null;
+  DU.conn=null;DU.peer=null;DU.role=null;DU.code='';DU.started=false;DU.over=true;DU.winner=null;DU.waitGuest=false;
   duelHbStop();
   try{duelFbCleanup()}catch(e){}
-  try{if(DU.mqtt)DU.mqtt.end(true)}catch(e){}
-  DU.mqtt=null;DU.pc=null;DU.pcAt=0;
   DU.linked=false;DU.chat=[];DU.myReady=false;DU.oppReady=false;
   duelResetTables();duelChatRender();
   duelSetStatus(mine===true?'dst_idle':'dst_left');
@@ -4384,12 +4546,9 @@ try{
     try{Sound.click()}catch(e){}
     if(DU.started||DU.searching)return;
     DU.mode=b.dataset.m||'bac';
+    try{if(DU.role==='host'&&!DU.started){DU.oppReady=false;duelSendCfg();duelRoomSync();duelRender()}}catch(e){}
     duelRender();
   }));
-  const _dc=$('duelCreate');if(_dc)_dc.addEventListener('click',duelCreate);
-  const _dj=$('duelJoin');if(_dj)_dj.addEventListener('click',duelJoin);
-  const _dcp=$('duelCopy');if(_dcp)_dcp.addEventListener('click',duelCopy);
-  const _di=$('duelInvite');if(_di)_di.addEventListener('click',duelInvite);
   const _dl=$('duelLeave');if(_dl)_dl.addEventListener('click',function(){try{Sound.click()}catch(e){}duelLeave(true)});
   const _da=$('duelAgain');if(_da)_da.addEventListener('click',duelAgain);
   document.querySelectorAll('#bacPicks button').forEach(b=>b.addEventListener('click',()=>bacChoose(b.dataset.p)));
@@ -4411,7 +4570,7 @@ try{
   const _pau=$('pokAmtUp');if(_pau)_pau.addEventListener('click',()=>{try{Sound.click()}catch(e){}const a=$('pokAmt');if(a)a.value=(parseInt(a.value)||1)+5});
   const _dsi=$('duelStakeIn');
   if(_dsi){
-    const cfgPush=()=>{try{if(DU.role==='host'&&!DU.started){DU.myStake=clampBet('duelStakeIn');DU.oppReady=false;duelSendCfg();duelRender()}}catch(e){}};
+    const cfgPush=()=>{try{if(DU.role==='host'&&!DU.started){DU.myStake=clampBet('duelStakeIn');DU.oppReady=false;duelSendCfg();duelRoomSync();duelRender()}}catch(e){}};
     _dsi.addEventListener('change',cfgPush);
     ['duelDn','duelUp'].forEach(id=>{const b=$(id);if(b)b.addEventListener('click',()=>setTimeout(cfgPush,0))});
   }
@@ -4428,9 +4587,13 @@ try{
   const _dci=$('duelChatIn');if(_dci)_dci.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();duelChatSend(e.target.value)}});
   document.querySelectorAll('#duelChatCard .chat-quick button').forEach(b=>b.addEventListener('click',()=>duelChatSend(t('duel_offer',{n:b.dataset.q}))));
   const _dfb=$('duelFindBtn');if(_dfb)_dfb.addEventListener('click',duelFind);
+  const _djb=$('duelJoinBtn');if(_djb)_djb.addEventListener('click',duelJoinByCode);
+  const _dcb2=$('duelCopyBtn');if(_dcb2)_dcb2.addEventListener('click',()=>{try{Sound.click()}catch(e){}const c=DU.roomId||'';if(!c)return;try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c);sn(c)}}catch(e){sn(c)}});
+  const _dcl=$('duelCreateBtn');if(_dcl)_dcl.addEventListener('click',duelCreateLobby);
   const _dcb=$('duelCancelBtn');if(_dcb)_dcb.addEventListener('click',duelCancelFind);
   document.querySelectorAll('#duelStakeChips .bet-q').forEach(b=>b.addEventListener('click',()=>{
     document.querySelectorAll('#duelStakeChips .bet-q').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+    try{if(DU.role==='host'&&!DU.started){DU.myStake=clampBet('duelStakeIn');DU.oppReady=false;duelSendCfg();duelRoomSync();duelRender()}}catch(e){}
   }));
   const _dss=$('duelSrvSave');
   if(_dss)_dss.addEventListener('click',()=>{try{Sound.click()}catch(e){}const i=$('duelSrvIn');const o=duelParseSrv(i?i.value:'');if(!o){sn(t('duel_srv_bad'));return}try{localStorage.setItem('gapera_duel_server',JSON.stringify(o))}catch(_){}duelSrvRenderCur();sn(t('duel_srv_ok'))});
@@ -4439,18 +4602,6 @@ try{
   try{duelSrvRenderCur()}catch(e){}
   duelNav();
   duelSetStatus('dst_idle');duelRender();
-  try{
-    let code='';
-    if(location.hash&&location.hash.indexOf('#duel=')===0)code=location.hash.slice(6);
-    try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.start_param){const sp=String(TG.initDataUnsafe.start_param);if(sp.indexOf('duel_')===0)code=sp.slice(5)}}catch(e){}
-    code=String(code||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
-    if(code&&typeof DUELS_VISIBLE!=='undefined'&&DUELS_VISIBLE){
-      const ci=$('duelCode');if(ci)ci.value=code;
-      duelNav();
-      const nb=document.querySelector('.ni[data-s="duel"]');if(nb)nb.click();
-      setTimeout(function(){try{if(!DU.role)duelJoin()}catch(e){}},900);
-    }
-  }catch(e){}
 }catch(e){}
 try{applyI18n()}catch(e){}
 rBal();
