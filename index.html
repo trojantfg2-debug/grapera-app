@@ -1379,6 +1379,10 @@ function writeCloud(){
 }
 function save(immediate=false){
   try{balFix()}catch(e){}
+  let snap='';
+  try{const c=Object.assign({},S);delete c.savedAt;snap=JSON.stringify(c)}catch(e){snap=''}
+  if(snap&&window.__lastSaveSnap&&snap===window.__lastSaveSnap)return;
+  if(snap)window.__lastSaveSnap=snap;
   S.savedAt=Date.now();
   try{fbPushSave(immediate)}catch(e){}
   clearTimeout(saveTimer);clearTimeout(cloudTimer);
@@ -1391,6 +1395,7 @@ function save(immediate=false){
 }
 function applyLoadedState(raw){
   S=normalizeState(raw||defaultState());
+  try{const c=Object.assign({},S);delete c.savedAt;window.__lastSaveSnap=JSON.stringify(c)}catch(e){}
   applyTheme(S.theme);
 }
 function renderAll(){
@@ -3622,7 +3627,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='10.1';
+const APP_VER='10.2';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
