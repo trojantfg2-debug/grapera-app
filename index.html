@@ -940,11 +940,6 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       </div>
     </div>
     <div class="card"><div class="lbl" data-i18n="history">ИСТОРИЯ</div><div class="hist-list" id="hL"><div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">Пусто</div></div></div>
-    <div class="card">
-      <div class="lbl"><span data-i18n="top_title">ТОП БОГАЧЕЙ</span> • <span id="topUpd"></span></div>
-      <div class="hist-list" id="topList"></div>
-      <button class="btn btn-s btn-lg" id="topGo"><span class="mat">leaderboard</span><span data-i18n="top_refresh">Обновить</span></button>
-    </div>
 <div class="card">
       <div class="lbl"><span data-i18n="ach_title">ДОСТИЖЕНИЯ</span> • <span id="achCount">0/16</span></div>
       <div class="ach-grid" id="achGrid"></div>
@@ -989,6 +984,13 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       <button class="btn btn-p btn-lg" id="promoGo"><span class="mat">redeem</span><span data-i18n="activate">Активировать</span></button>
     </div>
   </section>
+  <section class="scr" id="s-top">
+    <div class="card">
+      <div class="lbl"><span data-i18n="top_title">Лидерборд</span> • <span id="topUpd"></span></div>
+      <div class="hist-list" id="topList"></div>
+      <button class="btn btn-s btn-lg" id="topGo"><span class="mat">leaderboard</span><span data-i18n="top_refresh">Обновить</span></button>
+    </div>
+  </section>
 </main>
 
 <nav class="nav">
@@ -1004,6 +1006,7 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
   <button class="ni" data-s="rewards"><span class="np"><span class="mat">card_giftcard</span></span><span class="nl" data-i18n="nav_rewards">Награды</span></button>
   <button class="ni" data-s="profile"><span class="np"><span class="mat">person</span></span><span class="nl" data-i18n="nav_profile">Профиль</span></button>
   <button class="ni" data-s="settings"><span class="np"><span class="mat">settings</span></span><span class="nl" data-i18n="nav_settings">Настройки</span></button>
+  <button class="ni" data-s="top"><span class="np"><span class="mat">leaderboard</span></span><span class="nl" data-i18n="nav_top">Лидерборд</span></button>
 </nav>
 
 <div class="sn" id="sn"></div>
@@ -1878,7 +1881,8 @@ document.querySelectorAll('.ni').forEach(b=>b.addEventListener('click',()=>{
   $('s-'+b.dataset.s).classList.add('on');
   try{b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}catch(e){}
   window.scrollTo({top:0});
-  if(b.dataset.s==='profile'){try{if(typeof rProfile==='function')rProfile()}catch(e){}try{rSt()}catch(e){}try{if(typeof topLoad==='function')topLoad(false)}catch(e){}}
+  if(b.dataset.s==='profile'){try{if(typeof rProfile==='function')rProfile()}catch(e){}try{rSt()}catch(e){}}
+  if(b.dataset.s==='top'){try{if(typeof topLoad==='function')topLoad(false)}catch(e){}}
   if(b.dataset.s==='duel'&&typeof duelRender==='function')duelRender();
   if(b.dataset.s==='rewards'){dailyTick();tickBonus();if(typeof crashResize==='function')crashResize()}
   if(b.dataset.s==='clicker')rClk();
@@ -3234,9 +3238,9 @@ try{
 Object.assign(I18N.ru,{ban_title:'ДОСТУП ЗАБЛОКИРОВАН',ban_msg:'Твой аккаунт забанен. Обратись к администратору.'});
 Object.assign(I18N.en,{ban_title:'ACCESS BLOCKED',ban_msg:'Your account is banned. Contact the administrator.'});
 Object.assign(I18N.uk,{ban_title:'ДОСТУП ЗАБЛОКОВАНО',ban_msg:'Твій акаунт забанено. Звернись до адміністратора.'});
-Object.assign(I18N.ru,{top_title:'ТОП БОГАЧЕЙ',top_refresh:'Обновить',top_err:'ошибка загрузки'});
-Object.assign(I18N.en,{top_title:'RICHEST',top_refresh:'Refresh',top_err:'load failed'});
-Object.assign(I18N.uk,{top_title:'ТОП БАГАТІЇВ',top_refresh:'Оновити',top_err:'помилка завантаження'});
+Object.assign(I18N.ru,{top_title:'Лидерборд',top_refresh:'Обновить',top_err:'ошибка загрузки',top_banned:'ЗАБАНЕН',nav_top:'Лидерборд'});
+Object.assign(I18N.en,{top_title:'Leaderboard',top_refresh:'Refresh',top_err:'load failed',top_banned:'BANNED',nav_top:'Top'});
+Object.assign(I18N.uk,{top_title:'Лідерборд',top_refresh:'Оновити',top_err:'помилка завантаження',top_banned:'ЗАБАНЕНО',nav_top:'Лідерборд'});
 }catch(e){}
 function tgNick(){
   let n='';
@@ -3292,7 +3296,7 @@ function banCheck(){
 }
 let topCache=null,topCacheT=0,topLoading=false;
 function topEsc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function topRender(list,ts){
+function topRender(list,ts,ban){
   const el=$('topList');if(!el)return;
   const T=(typeof t==='function')?t:function(k){return k};
   try{const u=$('topUpd');if(u)u.textContent=(ts?new Date(ts).toLocaleTimeString():'')+((list&&list.length)?(' • '+list.length):'')}catch(e){}
@@ -3302,21 +3306,24 @@ function topRender(list,ts){
   list.forEach((r,i)=>{
     const d=document.createElement('div');d.className='h-item';
     const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':('#'+(i+1));
-    d.innerHTML='<div style="min-width:2.4rem">'+medal+'</div><div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'+(r.id===me?';font-weight:700':'')+'">'+topEsc(r.nick)+'</div><div><b>'+Number(r.v).toLocaleString()+'</b> ⭐</div>';
+    const bad=ban&&String(ban[r.id]||'no').toLowerCase()==='yes';
+    d.innerHTML='<div style="min-width:2.4rem">'+medal+'</div><div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'+(r.id===me?';font-weight:700':'')+'">'+topEsc(r.nick)+(bad?'<span style="display:inline-block;margin-left:.35rem;padding:.1rem .45rem;border-radius:.6rem;background:rgba(255,70,70,.16);color:#ff7b7b;font-size:.62rem;font-weight:800;white-space:nowrap">🚫 '+T('top_banned')+'</span>':'')+'</div><div><b>'+Number(r.v).toLocaleString()+'</b> ⭐</div>';
     el.appendChild(d);
   });
 }
 function topLoad(force){
   if(!duelFbReady())return;
   const now=Date.now();
-  if(!force&&topCache&&now-topCacheT<60000){topRender(topCache.list,topCacheT);return}
+  if(!force&&topCache&&now-topCacheT<60000){topRender(topCache.list,topCacheT,topCache.ban);return}
   if(topLoading)return;topLoading=true;
   const T=(typeof t==='function')?t:function(k){return k};
   const el=$('topList');
   if(el){try{el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">…</div>'}catch(e){}}
-  let all=null,nn={},starsFail=false;
+  let all=null,nn={},ban={},starsFail=false;
   fbDb.ref('gapera/stars').once('value').then(snap=>{try{all=snap.val()||{}}catch(e){all={}}}).catch(()=>{all={};starsFail=true}).then(()=>{
     return fbDb.ref('gapera/nicknames').once('value').then(s2=>{try{nn=s2.val()||{}}catch(e){nn={}}}).catch(()=>{nn={}});
+  }).then(()=>{
+    return fbDb.ref('gapera/banned').once('value').then(s3=>{try{ban=s3.val()||{}}catch(e){ban={}}}).catch(()=>{ban={}});
   }).then(()=>{
     topLoading=false;
     if(starsFail||!all||typeof all!=='object'){try{const u=$('topUpd');if(u)u.textContent=T('top_err')}catch(e){}return}
@@ -3328,12 +3335,12 @@ function topLoad(force){
       if(typeof nick!=='string')nick='';
       return {id:k,v:v,nick:String(nick).slice(0,24)};
     }).filter(r=>r.v>0&&r.nick).sort((a,b)=>b.v-a.v).slice(0,20);
-    topCache={list:arr};topCacheT=Date.now();
-    topRender(arr,topCacheT);
+    topCache={list:arr,ban:ban};topCacheT=Date.now();
+    topRender(arr,topCacheT,ban);
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='9.0';
+const APP_VER='9.2';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
