@@ -1556,7 +1556,6 @@ function applyPromo(){
   }
   if(data.stars){
     S.bal+=data.stars;
-    S.stats.promo=((S.stats.promo||0)+data.stars);
     try{fbPushLb()}catch(e){}
     try{rBal()}catch(e){}
     parts.push('+'+Number(data.stars).toLocaleString()+' '+T('stars_many'));
@@ -1895,7 +1894,7 @@ document.querySelectorAll('.ni').forEach(b=>b.addEventListener('click',()=>{
   try{b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}catch(e){}
   window.scrollTo({top:0});
   if(b.dataset.s==='profile'){try{if(typeof rProfile==='function')rProfile()}catch(e){}try{rSt()}catch(e){}}
-  if(b.dataset.s==='top'){try{if(typeof topLoad==='function')topLoad(false)}catch(e){}}
+  if(b.dataset.s==='top'){try{if(typeof topSync==='function')topSync()}catch(e){}}
   if(b.dataset.s==='duel'&&typeof duelRender==='function')duelRender();
   if(b.dataset.s==='rewards'){dailyTick();tickBonus();if(typeof crashResize==='function')crashResize()}
   if(b.dataset.s==='clicker')rClk();
@@ -3362,9 +3361,9 @@ function lbStats(){
   try{PF_ACHS.forEach(a=>{let h=false;try{h=!!a.ok()}catch(_){}if(h)ach++})}catch(e){}
   const total=S.stats.total||0,win=S.stats.win||0;
   let lvl=1;try{lvl=pfLevelInfo(pfXp()).lvl}catch(e){}
-  return {n:tgNick(),stars:Math.max(0,Math.floor(S.bal-(S.stats.promo||0))),bets:total,wins:win,wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,ts:Date.now()};
+  return {n:tgNick(),stars:Math.max(0,Math.floor(S.bal)),bets:total,wins:win,wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,ts:Date.now()};
 }
-function fbPushLb(){
+function fbPushLb(now){
   if(!duelFbReady())return;
   const id=accountId();if(!id)return;
   clearTimeout(lbPushT);
@@ -3373,7 +3372,11 @@ function fbPushLb(){
     let d=null;try{d=lbStats()}catch(e){return}
     if(!d||!d.n)return;
     try{fbDb.ref('gapera/lb/'+id).set(d)}catch(e){}
-  },3000);
+  },now?300:3000);
+}
+function topSync(){
+  try{fbPushLb(true)}catch(e){}
+  setTimeout(()=>{try{topLoad(true)}catch(e){}},800);
 }
 function topLoad(force){
   if(!duelFbReady())return;
@@ -3399,7 +3402,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='9.4';
+const APP_VER='9.6';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
