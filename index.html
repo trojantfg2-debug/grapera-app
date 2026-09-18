@@ -1012,12 +1012,12 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
       <div class="lbl"><span data-i18n="top_title">Лидерборд</span> • <span id="topUpd"></span></div>
       <div id="lbCats">
         <button class="btn btn-s btn-sm" data-lb="stars"><span data-i18n="lb_stars">Звёзды</span></button>
+        <button class="btn btn-s btn-sm" data-lb="days">🔥 <span data-i18n="lb_days">Стрик дней</span></button>
         <button class="btn btn-s btn-sm" data-lb="wr"><span data-i18n="lb_wr">Винрейт</span></button>
         <button class="btn btn-s btn-sm" data-lb="streak"><span data-i18n="lb_streak">Серия</span></button>
         <button class="btn btn-s btn-sm" data-lb="ach"><span data-i18n="lb_ach">Достижения</span></button>
         <button class="btn btn-s btn-sm" data-lb="bets"><span data-i18n="lb_bets">Ставки</span></button>
         <button class="btn btn-s btn-sm" data-lb="wins"><span data-i18n="lb_wins">Победы</span></button>
-        <button class="btn btn-s btn-sm" data-lb="days"><span data-i18n="lb_days">Стрик дней</span></button>
         <button class="btn btn-s btn-sm" data-lb="lvl"><span data-i18n="lb_lvl">Уровень</span></button>
       </div>
       <div class="hist-list" id="topList"></div>
@@ -3485,7 +3485,7 @@ function banCheck(){
 }
 let topCache=null,topCacheT=0,topLoading=false;
 function topEsc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-let lbCat='stars';
+let lbCat='days';
 function catVal(r){
   if(lbCat==='wr')return r.wr;
   if(lbCat==='streak')return r.strk;
@@ -3499,6 +3499,7 @@ function catVal(r){
 function catFmt(v){
   if(lbCat==='wr')return v+'%';
   if(lbCat==='stars')return '<b>'+((+v>=1e15)?'∞':Number(v).toLocaleString())+'</b> ⭐';
+  if(lbCat==='days')return '<b>'+Number(v).toLocaleString()+'</b> 🔥';
   return '<b>'+Number(v).toLocaleString()+'</b>';
 }
 function lbPaintCats(){
@@ -3551,8 +3552,8 @@ function lbAvatar(r){
 }
 
 const CREDITS=[
-  {id:'cred_schipka',name:'promo schipka',roleKey:'cred_role_founder',tg:'tg8990711442',handle:'',fallbackColor:'#7C4DFF'},
-  {id:'cred_kor8',name:'\u041a\u043e\u0440\u044c H\u0435bi\u043d\u0443\u0435\u043c\u043e\u0435 8',roleKey:'cred_role_dev',tg:'',handle:'',fallbackColor:'#00897B'}
+  {id:'cred_schipka',name:'promo schipka',roleKey:'cred_role_founder',tg:'tg8990711442',handle:'',pic:'https://i.ibb.co/chx0WMPw/photo-2026-09-16-13-23-09.jpg',fallbackColor:'#7C4DFF'},
+  {id:'cred_kor8',name:'\u041a\u043e\u0440\u044c H\u0435bi\u043d\u0443\u0435\u043c\u043e\u0435 8',roleKey:'cred_role_dev',tg:'',handle:'',pic:'https://i.ibb.co/JWGrRnMs/photo-2026-09-13-00-44-52.jpg',fallbackColor:'#00897B'}
 ];
 function credInitial(name){
   const n=String(name||'').replace(/^@/,'').trim();
@@ -3713,7 +3714,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='10.3';
+const APP_VER='10.4';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
