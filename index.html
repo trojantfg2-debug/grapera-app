@@ -3326,9 +3326,8 @@ function topLoad(force){
       const v=Math.floor(((c&&typeof c==='object')?(+c.v):(+c))||0);
       let nick=nn[k]||'';
       if(typeof nick!=='string')nick='';
-      if(!nick)nick=String(k).replace(/^tg/,'id');
       return {id:k,v:v,nick:String(nick).slice(0,24)};
-    }).filter(r=>r.v>0).sort((a,b)=>b.v-a.v).slice(0,20);
+    }).filter(r=>r.v>0&&r.nick).sort((a,b)=>b.v-a.v).slice(0,20);
     topCache={list:arr};topCacheT=Date.now();
     topRender(arr,topCacheT);
   });
