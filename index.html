@@ -1709,6 +1709,7 @@ $('bonusBtn').addEventListener('click',claimBonus);
 $('bonusBtnTop').addEventListener('click',claimBonus);
 tickBonus();
 setInterval(tickBonus,1000);
+try{setInterval(function(){try{fbPushSave(false)}catch(e){}try{fbStarsPush()}catch(e){}try{fbPushLb()}catch(e){}},15000)}catch(e){}
 function rBal(){
   balFix();
   const _bn=$('bal');
@@ -1843,7 +1844,7 @@ function fbPushSave(now){
       fbDb.ref(p).transaction(cur=>{
         if(cur&&((cur.savedAt||0)>(S.savedAt||0)))return;
         return {state:S,savedAt:S.savedAt||Date.now()};
-      },(err,ok)=>{if(ok){try{fbStateJson=snap}catch(e){}}});
+      },(err,ok)=>{if(ok){try{fbStateJson=snap}catch(e){}return}try{setTimeout(()=>{try{fbStateJson=null;fbPushSave(false)}catch(e){}},5000)}catch(e){}});
     }catch(e){}
   },now?100:400);
 }
@@ -3627,7 +3628,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='10.2';
+const APP_VER='10.3';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
