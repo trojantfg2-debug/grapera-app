@@ -304,6 +304,7 @@ main{max-width:560px;margin:0 auto;padding:.8rem 1rem}
 .stat .v{font-weight:700;font-size:1.2rem}.stat .l{font-size:.65rem;color:var(--on-sv)}
 .hist-list{max-height:300px;overflow-y:auto}
 .h-item{display:flex;justify-content:space-between;align-items:center;padding:.45rem .6rem;border-radius:var(--sh-m);margin-bottom:.2rem;font-size:.8rem}
+#lbCats{display:flex;gap:.35rem;overflow-x:auto;padding:.1rem 0 .55rem}#lbCats .btn{flex:none}
 .h-item:nth-child(odd){background:var(--sc)}
 .h-item .w{color:var(--win);font-weight:700}.h-item .l{color:var(--e);font-weight:700}
 
@@ -987,6 +988,16 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
   <section class="scr" id="s-top">
     <div class="card">
       <div class="lbl"><span data-i18n="top_title">Лидерборд</span> • <span id="topUpd"></span></div>
+      <div id="lbCats">
+        <button class="btn btn-s btn-sm" data-lb="stars"><span data-i18n="lb_stars">Звёзды</span></button>
+        <button class="btn btn-s btn-sm" data-lb="wr"><span data-i18n="lb_wr">Винрейт</span></button>
+        <button class="btn btn-s btn-sm" data-lb="streak"><span data-i18n="lb_streak">Серия</span></button>
+        <button class="btn btn-s btn-sm" data-lb="ach"><span data-i18n="lb_ach">Достижения</span></button>
+        <button class="btn btn-s btn-sm" data-lb="bets"><span data-i18n="lb_bets">Ставки</span></button>
+        <button class="btn btn-s btn-sm" data-lb="wins"><span data-i18n="lb_wins">Победы</span></button>
+        <button class="btn btn-s btn-sm" data-lb="days"><span data-i18n="lb_days">Стрик дней</span></button>
+        <button class="btn btn-s btn-sm" data-lb="lvl"><span data-i18n="lb_lvl">Уровень</span></button>
+      </div>
       <div class="hist-list" id="topList"></div>
       <button class="btn btn-s btn-lg" id="topGo"><span class="mat">leaderboard</span><span data-i18n="top_refresh">Обновить</span></button>
     </div>
@@ -1228,7 +1239,7 @@ function displayUid(){
   const el=$('uidTxt');
   if(!el)return;
   const uid=displayUid();
-  el.textContent='ID: '+uid;
+  el.textContent=displayName();
   el.addEventListener('click',()=>{
     Sound.click();
     try{
@@ -1545,6 +1556,8 @@ function applyPromo(){
   }
   if(data.stars){
     S.bal+=data.stars;
+    S.stats.promo=((S.stats.promo||0)+data.stars);
+    try{fbPushLb()}catch(e){}
     try{rBal()}catch(e){}
     parts.push('+'+Number(data.stars).toLocaleString()+' '+T('stars_many'));
   }
@@ -1615,7 +1628,7 @@ try{pfPullAva()}catch(e){}
 try{pfWatchAva()}catch(e){}
 try{fbPushNick()}catch(e){}
 try{banCheck()}catch(e){}
-setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}try{pfPullAva()}catch(e){}try{pfWatchAva()}catch(e){}try{fbPushNick()}catch(e){}try{banCheck()}catch(e){}},1200);
+setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}try{pfPullAva()}catch(e){}try{pfWatchAva()}catch(e){}try{fbPushNick()}catch(e){}try{banCheck()}catch(e){}try{fbPushLb()}catch(e){}},1200);
 rTheme();
 function flushSave(){save(true);try{lockRelease()}catch(e){}}
 window.addEventListener('pagehide',flushSave);
@@ -1828,7 +1841,7 @@ function bz(k){
   else if(k==='loss'||k==='error') Sound.loss();
   if(TG&&TG.HapticFeedback)try{TG.HapticFeedback.notificationOccurred(k==='win'?'success':'error')}catch(e){}
 }
-function aH(g,r,a){S.stats.total++;S.stats.bet+=a;if(r>0){S.stats.win++;S.stats.won+=r;S.stats.streak=(S.stats.streak||0)+1;if(S.stats.streak>(S.stats.bestStreak||0))S.stats.bestStreak=S.stats.streak;if(r>(S.stats.best||0))S.stats.best=r}else{S.stats.loss++;S.stats.streak=0}S.hist.unshift({g,r,a,t:Date.now()});if(S.hist.length>50)S.hist.pop();save();rSt()}
+function aH(g,r,a){S.stats.total++;S.stats.bet+=a;if(r>0){S.stats.win++;S.stats.won+=r;S.stats.streak=(S.stats.streak||0)+1;if(S.stats.streak>(S.stats.bestStreak||0))S.stats.bestStreak=S.stats.streak;if(r>(S.stats.best||0))S.stats.best=r}else{S.stats.loss++;S.stats.streak=0}S.hist.unshift({g,r,a,t:Date.now()});if(S.hist.length>50)S.hist.pop();save();rSt();try{fbPushLb()}catch(e){}}
 function ok(v){
   return Number.isFinite(v) && v>=1 && S.bal>=v;
 }
@@ -2928,7 +2941,7 @@ function claimDaily(){
   if(!dailyCanClaim())return;
   Sound.click();
   const now=Date.now(),streak=dailyNextStreak(),reward=DAILY_REWARDS[streak-1];
-  S.bal+=reward;S.daily.lastClaim=now;S.daily.streak=streak;save();rBal();try{fbClaimWrite('daily',{day:new Date().toISOString().slice(0,10),streak:streak})}catch(e){}
+  S.bal+=reward;S.daily.lastClaim=now;S.daily.streak=streak;save();rBal();try{fbPushLb()}catch(e){}try{fbClaimWrite('daily',{day:new Date().toISOString().slice(0,10),streak:streak})}catch(e){}
   Sound.win();bz('win');sn(t('daily_claimed_msg',{r:reward,d:streak}));
   try{const r=$('rewardBtn').getBoundingClientRect();confetti(r.left+r.width/2,r.top,24)}catch(e){}
   dailyTick();
@@ -3030,7 +3043,7 @@ function rProfile(){
     const L=(typeof curLang==='function')?curLang():'ru';
     let uid='-';try{uid=displayUid()}catch(e){}
     pfRenderAva(uid);
-    const nm=$('pfName');if(nm)nm.textContent='ID: '+uid;
+    const nm=$('pfName');if(nm)nm.textContent=displayName();
     const xp=pfXp(),li=pfLevelInfo(xp);
     const lv=$('pfLvl');if(lv)lv.textContent=(typeof t==='function'?t('level_word'):'Уровень')+' '+li.lvl;
     const bar=$('pfBar');if(bar)bar.style.width=li.prog+'%';
@@ -3238,9 +3251,9 @@ try{
 Object.assign(I18N.ru,{ban_title:'ДОСТУП ЗАБЛОКИРОВАН',ban_msg:'Твой аккаунт забанен. Обратись к администратору.'});
 Object.assign(I18N.en,{ban_title:'ACCESS BLOCKED',ban_msg:'Your account is banned. Contact the administrator.'});
 Object.assign(I18N.uk,{ban_title:'ДОСТУП ЗАБЛОКОВАНО',ban_msg:'Твій акаунт забанено. Звернись до адміністратора.'});
-Object.assign(I18N.ru,{top_title:'Лидерборд',top_refresh:'Обновить',top_err:'ошибка загрузки',top_banned:'ЗАБАНЕН',nav_top:'Лидерборд'});
-Object.assign(I18N.en,{top_title:'Leaderboard',top_refresh:'Refresh',top_err:'load failed',top_banned:'BANNED',nav_top:'Top'});
-Object.assign(I18N.uk,{top_title:'Лідерборд',top_refresh:'Оновити',top_err:'помилка завантаження',top_banned:'ЗАБАНЕНО',nav_top:'Лідерборд'});
+Object.assign(I18N.ru,{top_title:'Лидерборд',top_refresh:'Обновить',top_err:'ошибка загрузки',top_banned:'ЗАБАНЕН',nav_top:'Лидерборд',lb_stars:'Звёзды',lb_wr:'Винрейт',lb_streak:'Серия',lb_ach:'Достижения',lb_bets:'Ставки',lb_wins:'Победы',lb_days:'Стрик дней',lb_lvl:'Уровень'});
+Object.assign(I18N.en,{top_title:'Leaderboard',top_refresh:'Refresh',top_err:'load failed',top_banned:'BANNED',nav_top:'Top',lb_stars:'Stars',lb_wr:'Winrate',lb_streak:'Streak',lb_ach:'Achievements',lb_bets:'Bets',lb_wins:'Wins',lb_days:'Day streak',lb_lvl:'Level'});
+Object.assign(I18N.uk,{top_title:'Лідерборд',top_refresh:'Оновити',top_err:'помилка завантаження',top_banned:'ЗАБАНЕНО',nav_top:'Лідерборд',lb_stars:'Зірки',lb_wr:'Вінрейт',lb_streak:'Серія',lb_ach:'Досягнення',lb_bets:'Ставки',lb_wins:'Перемоги',lb_days:'Стрік днів',lb_lvl:'Рівень'});
 }catch(e){}
 function tgNick(){
   let n='';
@@ -3250,6 +3263,8 @@ function tgNick(){
   }catch(e){}
   return String(n||'').trim().slice(0,32);
 }
+function tgUsername(){let u='';try{const p=TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user;if(p&&p.username)u='@'+String(p.username)}catch(e){}return u.slice(0,33)}
+function displayName(){const u=tgUsername();if(u)return u;let uid='-';try{uid=displayUid()}catch(e){}return 'ID: '+uid}
 function fbPushNick(){
   if(!duelFbReady())return;
   const id=accountId();if(!id)return;
@@ -3296,51 +3311,95 @@ function banCheck(){
 }
 let topCache=null,topCacheT=0,topLoading=false;
 function topEsc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let lbCat='stars';
+function catVal(r){
+  if(lbCat==='wr')return r.wr;
+  if(lbCat==='streak')return r.strk;
+  if(lbCat==='ach')return r.ach;
+  if(lbCat==='bets')return r.bets;
+  if(lbCat==='wins')return r.wins;
+  if(lbCat==='days')return r.days;
+  if(lbCat==='lvl')return r.lvl;
+  return r.stars;
+}
+function catFmt(v){
+  if(lbCat==='wr')return v+'%';
+  if(lbCat==='stars')return '<b>'+Number(v).toLocaleString()+'</b> ⭐';
+  return '<b>'+Number(v).toLocaleString()+'</b>';
+}
+function lbPaintCats(){
+  try{
+    const w=$('lbCats');if(!w)return;
+    w.querySelectorAll('button[data-lb]').forEach(b=>{
+      const on=b.getAttribute('data-lb')===lbCat;
+      b.style.borderColor=on?'var(--p)':'';
+      b.style.fontWeight=on?'800':'';
+    });
+  }catch(e){}
+}
 function topRender(list,ts,ban){
   const el=$('topList');if(!el)return;
   const T=(typeof t==='function')?t:function(k){return k};
-  try{const u=$('topUpd');if(u)u.textContent=(ts?new Date(ts).toLocaleTimeString():'')+((list&&list.length)?(' • '+list.length):'')}catch(e){}
-  if(!list||!list.length){try{el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">'+T('empty')+'</div>'}catch(e){}return}
+  let arr=(list||[]).filter(r=>r&&r.nick);
+  if(lbCat==='wr')arr=arr.filter(r=>(r.bets||0)>=10);
+  arr=arr.slice().sort((a,b)=>catVal(b)-catVal(a)).slice(0,20);
+  try{const u=$('topUpd');if(u)u.textContent=(ts?new Date(ts).toLocaleTimeString():'')+' • '+arr.length}catch(e){}
+  if(!arr.length){try{el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">'+T('empty')+'</div>'}catch(e){}return}
   const me=accountId();
   el.innerHTML='';
-  list.forEach((r,i)=>{
+  arr.forEach((r,i)=>{
     const d=document.createElement('div');d.className='h-item';
     const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':('#'+(i+1));
     const bad=ban&&String(ban[r.id]||'no').toLowerCase()==='yes';
-    d.innerHTML='<div style="min-width:2.4rem">'+medal+'</div><div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'+(r.id===me?';font-weight:700':'')+'">'+topEsc(r.nick)+(bad?'<span style="display:inline-block;margin-left:.35rem;padding:.1rem .45rem;border-radius:.6rem;background:rgba(255,70,70,.16);color:#ff7b7b;font-size:.62rem;font-weight:800;white-space:nowrap">🚫 '+T('top_banned')+'</span>':'')+'</div><div><b>'+Number(r.v).toLocaleString()+'</b> ⭐</div>';
+    d.innerHTML='<div style="min-width:2.4rem">'+medal+'</div><div style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'+(r.id===me?';font-weight:700':'')+'">'+topEsc(r.nick)+(bad?'<span style="display:inline-block;margin-left:.35rem;padding:.1rem .45rem;border-radius:.6rem;background:rgba(255,70,70,.16);color:#ff7b7b;font-size:.62rem;font-weight:800;white-space:nowrap">🚫 '+T('top_banned')+'</span>':'')+'</div><div>'+catFmt(catVal(r))+'</div>';
     el.appendChild(d);
   });
+}
+try{(function(){const w=$('lbCats');if(w)w.addEventListener('click',function(e){let b=null;try{b=e.target.closest('button[data-lb]')}catch(_){}if(!b)return;try{Sound.click()}catch(_){}lbCat=b.getAttribute('data-lb')||'stars';lbPaintCats();if(topCache)topRender(topCache.rows,topCacheT,topCache.ban);else topLoad(false)});lbPaintCats()})()}catch(e){}
+let lbPushT=null;
+function lbStats(){
+  let ach=0;
+  try{PF_ACHS.forEach(a=>{let h=false;try{h=!!a.ok()}catch(_){}if(h)ach++})}catch(e){}
+  const total=S.stats.total||0,win=S.stats.win||0;
+  let lvl=1;try{lvl=pfLevelInfo(pfXp()).lvl}catch(e){}
+  return {n:tgNick(),stars:Math.max(0,Math.floor(S.bal-(S.stats.promo||0))),bets:total,wins:win,wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,ts:Date.now()};
+}
+function fbPushLb(){
+  if(!duelFbReady())return;
+  const id=accountId();if(!id)return;
+  clearTimeout(lbPushT);
+  lbPushT=setTimeout(()=>{
+    if(lockDenied)return;
+    let d=null;try{d=lbStats()}catch(e){return}
+    if(!d||!d.n)return;
+    try{fbDb.ref('gapera/lb/'+id).set(d)}catch(e){}
+  },3000);
 }
 function topLoad(force){
   if(!duelFbReady())return;
   const now=Date.now();
-  if(!force&&topCache&&now-topCacheT<60000){topRender(topCache.list,topCacheT,topCache.ban);return}
+  if(!force&&topCache&&now-topCacheT<60000){topRender(topCache.rows,topCacheT,topCache.ban);return}
   if(topLoading)return;topLoading=true;
   const T=(typeof t==='function')?t:function(k){return k};
   const el=$('topList');
   if(el){try{el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">…</div>'}catch(e){}}
-  let all=null,nn={},ban={},starsFail=false;
-  fbDb.ref('gapera/stars').once('value').then(snap=>{try{all=snap.val()||{}}catch(e){all={}}}).catch(()=>{all={};starsFail=true}).then(()=>{
-    return fbDb.ref('gapera/nicknames').once('value').then(s2=>{try{nn=s2.val()||{}}catch(e){nn={}}}).catch(()=>{nn={}});
-  }).then(()=>{
+  let all=null,ban={},fail=false;
+  fbDb.ref('gapera/lb').once('value').then(snap=>{try{all=snap.val()||{}}catch(e){all={}}}).catch(()=>{all={};fail=true}).then(()=>{
     return fbDb.ref('gapera/banned').once('value').then(s3=>{try{ban=s3.val()||{}}catch(e){ban={}}}).catch(()=>{ban={}});
   }).then(()=>{
     topLoading=false;
-    if(starsFail||!all||typeof all!=='object'){try{const u=$('topUpd');if(u)u.textContent=T('top_err')}catch(e){}return}
-    if(nn==null||typeof nn!=='object')nn={};
+    if(fail||!all||typeof all!=='object'){try{const u=$('topUpd');if(u)u.textContent=T('top_err')}catch(e){}return}
+    if(ban==null||typeof ban!=='object')ban={};
     const arr=Object.keys(all).map(k=>{
-      const c=all[k];
-      const v=Math.floor(((c&&typeof c==='object')?(+c.v):(+c))||0);
-      let nick=nn[k]||'';
-      if(typeof nick!=='string')nick='';
-      return {id:k,v:v,nick:String(nick).slice(0,24)};
-    }).filter(r=>r.v>0&&r.nick).sort((a,b)=>b.v-a.v).slice(0,20);
-    topCache={list:arr,ban:ban};topCacheT=Date.now();
+      const c=all[k]||{};
+      return {id:k,nick:String(c.n||'').slice(0,24),stars:Math.max(0,Math.floor(+c.stars||0)),bets:Math.floor(+c.bets||0),wins:Math.floor(+c.wins||0),wr:+c.wr||0,strk:Math.floor(+c.strk||0),ach:Math.floor(+c.ach||0),days:Math.floor(+c.days||0),lvl:Math.floor(+c.lvl||0)};
+    }).filter(r=>r.nick);
+    topCache={rows:arr,ban:ban};topCacheT=Date.now();
     topRender(arr,topCacheT,ban);
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='9.2';
+const APP_VER='9.4';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
