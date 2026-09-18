@@ -3267,7 +3267,13 @@ function banShow(on){
 function banCheck(){
   if(!duelFbReady())return;
   const id=accountId();if(!id)return;
-  const apply=v=>{banShow(String(v||'no').toLowerCase()==='yes')};
+  const bk='gapera_ban_'+id;
+  const apply=v=>{
+    const bad=String(v||'no').toLowerCase()==='yes';
+    try{localStorage.setItem(bk,bad?'yes':'no')}catch(e){}
+    banShow(bad);
+  };
+  try{if(localStorage.getItem(bk)==='yes')banShow(true)}catch(e){}
   try{
     fbDb.ref('gapera/banned/'+id).once('value').then(snap=>{let v=null;try{v=snap.val()}catch(e){}apply(v)}).catch(()=>{});
     if(!banWatching){
