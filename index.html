@@ -3234,9 +3234,9 @@ try{
 Object.assign(I18N.ru,{ban_title:'ДОСТУП ЗАБЛОКИРОВАН',ban_msg:'Твой аккаунт забанен. Обратись к администратору.'});
 Object.assign(I18N.en,{ban_title:'ACCESS BLOCKED',ban_msg:'Your account is banned. Contact the administrator.'});
 Object.assign(I18N.uk,{ban_title:'ДОСТУП ЗАБЛОКОВАНО',ban_msg:'Твій акаунт забанено. Звернись до адміністратора.'});
-Object.assign(I18N.ru,{top_title:'ТОП БОГАЧЕЙ',top_refresh:'Обновить'});
-Object.assign(I18N.en,{top_title:'RICHEST',top_refresh:'Refresh'});
-Object.assign(I18N.uk,{top_title:'ТОП БАГАТІЇВ',top_refresh:'Оновити'});
+Object.assign(I18N.ru,{top_title:'ТОП БОГАЧЕЙ',top_refresh:'Обновить',top_err:'ошибка загрузки'});
+Object.assign(I18N.en,{top_title:'RICHEST',top_refresh:'Refresh',top_err:'load failed'});
+Object.assign(I18N.uk,{top_title:'ТОП БАГАТІЇВ',top_refresh:'Оновити',top_err:'помилка завантаження'});
 }catch(e){}
 function tgNick(){
   let n='';
@@ -3311,23 +3311,27 @@ function topLoad(force){
   const now=Date.now();
   if(!force&&topCache&&now-topCacheT<60000){topRender(topCache.list,topCacheT);return}
   if(topLoading)return;topLoading=true;
+  const T=(typeof t==='function')?t:function(k){return k};
   const el=$('topList');
   if(el){try{el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">…</div>'}catch(e){}}
-  fbDb.ref('gapera/stars').once('value').then(snap=>{
-    let all={};try{all=snap.val()||{}}catch(e){}
-    return fbDb.ref('gapera/nicknames').once('value').then(s2=>{
-      let nn={};try{nn=s2.val()||{}}catch(e){}
-      const arr=Object.keys(all).map(k=>{
-        const c=all[k]||{};
-        const v=Math.floor(+c.v||0);
-        let nick=nn[k]||'';
-        if(!nick)nick=String(k).replace(/^tg/,'id');
-        return {id:k,v:v,nick:String(nick).slice(0,24)};
-      }).filter(r=>r.v>0).sort((a,b)=>b.v-a.v).slice(0,20);
-      topCache={list:arr};topCacheT=Date.now();topLoading=false;
-      topRender(arr,topCacheT);
-    });
-  }).catch(()=>{topLoading=false});
+  let all=null,nn={},starsFail=false;
+  fbDb.ref('gapera/stars').once('value').then(snap=>{try{all=snap.val()||{}}catch(e){all={}}}).catch(()=>{all={};starsFail=true}).then(()=>{
+    return fbDb.ref('gapera/nicknames').once('value').then(s2=>{try{nn=s2.val()||{}}catch(e){nn={}}}).catch(()=>{nn={}});
+  }).then(()=>{
+    topLoading=false;
+    if(starsFail||!all||typeof all!=='object'){try{const u=$('topUpd');if(u)u.textContent=T('top_err')}catch(e){}return}
+    if(nn==null||typeof nn!=='object')nn={};
+    const arr=Object.keys(all).map(k=>{
+      const c=all[k];
+      const v=Math.floor(((c&&typeof c==='object')?(+c.v):(+c))||0);
+      let nick=nn[k]||'';
+      if(typeof nick!=='string')nick='';
+      if(!nick)nick=String(k).replace(/^tg/,'id');
+      return {id:k,v:v,nick:String(nick).slice(0,24)};
+    }).filter(r=>r.v>0).sort((a,b)=>b.v-a.v).slice(0,20);
+    topCache={list:arr};topCacheT=Date.now();
+    topRender(arr,topCacheT);
+  });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
 const APP_VER='9.0';
