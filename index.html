@@ -1238,6 +1238,34 @@ const SAVE_VERSION=9;
 const STORAGE_KEY='gapera_alpha61_v9_save_'+getUid();
 const BACKUP_KEY=STORAGE_KEY+'_backup';
 let S=defaultState();
+const BAL_CAP=1e15;
+const BAL_INF_CHR='\u221e';
+let balLastGood=1000;
+function balIsInf(){try{return !!(S&&S.inf)}catch(e){return false}}
+function balSan(v){
+  let n=Number(v);
+  if(!Number.isFinite(n))n=balLastGood;
+  if(n<0)n=0;
+  if(n>BAL_CAP)n=BAL_CAP;
+  n=Math.floor(n);
+  if(!Number.isFinite(n))n=balLastGood;
+  balLastGood=n;
+  return n;
+}
+function balFmt(v){
+  if(balIsInf())return BAL_INF_CHR;
+  const n=balSan(v);
+  if(n>=1e12){
+    try{return new Intl.NumberFormat(undefined,{notation:'compact',maximumFractionDigits:2}).format(n)}catch(e){}
+    return (n/1e12).toFixed(2)+'T';
+  }
+  return n.toLocaleString();
+}
+function balFix(){
+  if(balIsInf()){S.bal=BAL_CAP;balLastGood=BAL_CAP;return S.bal}
+  S.bal=balSan(S.bal);
+  return S.bal;
+}
 function displayUid(){
   const uid=getUid();
   return uid.startsWith('tg')?uid.slice(2):uid;
@@ -1273,7 +1301,7 @@ const CLOUD_HIST_KEY='gp_a3_hist';
 const CLOUD_HIST_CAP=30; 
 function defaultState(){
   return {
-    version:SAVE_VERSION, bal:1000,
+    version:SAVE_VERSION, bal:1000, inf:false,
     stats:{total:0,win:0,loss:0,won:0,bet:0},
     hist:[], lastBonus:null, clicks:0, slotMax:500, crashHist:[],
     clkWin:{used:0,start:Date.now()}, clkPower:1, clkAuto:0, clkTurbo:0,
@@ -1287,7 +1315,9 @@ const THEMES=['purple','black','white','red','ocean','sunset','emerald','neon','
 const LANGS=['ru','uk','en'];
 function normalizeState(x){
   const d=defaultState(), v=(x&&typeof x==='object')?x:{};
-  d.bal=Number.isFinite(+v.bal)&&+v.bal>=0?Math.floor(+v.bal):d.bal;
+  d.inf=!!v.inf;
+  d.bal=Number.isFinite(+v.bal)&&+v.bal>=0?Math.min(BAL_CAP,Math.floor(+v.bal)):d.bal;
+  if(d.inf)d.bal=BAL_CAP;
   d.clicks=Math.max(0,Math.floor(+v.clicks||0));
   d.slotMax=Math.max(500,Math.min(10000,Math.floor(+v.slotMax||d.slotMax)));
   d.lastBonus=Number.isFinite(+v.lastBonus)?+v.lastBonus:null;
@@ -1354,6 +1384,7 @@ function writeCloud(){
   }catch(e){}
 }
 function save(immediate=false){
+  try{balFix()}catch(e){}
   S.savedAt=Date.now();
   try{fbPushSave(immediate)}catch(e){}
   clearTimeout(saveTimer);clearTimeout(cloudTimer);
@@ -1414,13 +1445,13 @@ I18N.uk.theme_adaptive_note='Океан, Захід, Смарагд, Неон і
 try{
 I18N.ru.th_emerald='Изумруд';I18N.ru.th_neon='Неон';I18N.ru.th_gold='Золото';
 I18N.ru.crash_free='Бесплатных запусков:';I18N.ru.crash_started_free='🎁 Бесплатный запуск...';
-I18N.ru.crash_chance='Шанс дожить до {m}×: {p}%';I18N.ru.promo_crashfree='бесплатных запусков ракетки';
+I18N.ru.promo_infinite='бесконечный баланс ∞';I18N.ru.crash_chance='Шанс дожить до {m}×: {p}%';I18N.ru.promo_crashfree='бесплатных запусков ракетки';
 I18N.en.th_emerald='Emerald';I18N.en.th_neon='Neon';I18N.en.th_gold='Gold';
 I18N.en.crash_free='Free launches:';I18N.en.crash_started_free='🎁 Free launch...';
-I18N.en.crash_chance='Chance to reach {m}×: {p}%';I18N.en.promo_crashfree='free crash launches';
+I18N.en.promo_infinite='infinite balance ∞';I18N.en.crash_chance='Chance to reach {m}×: {p}%';I18N.en.promo_crashfree='free crash launches';
 I18N.uk.th_emerald='Смарагд';I18N.uk.th_neon='Неон';I18N.uk.th_gold='Золото';
 I18N.uk.crash_free='Безкоштовних запусків:';I18N.uk.crash_started_free='🎁 Безкоштовний запуск...';
-I18N.uk.crash_chance='Шанс дожити до {m}×: {p}%';I18N.uk.promo_crashfree='безкоштовних запусків ракетки';
+I18N.uk.promo_infinite='нескінченний баланс ∞';I18N.uk.crash_chance='Шанс дожити до {m}×: {p}%';I18N.uk.promo_crashfree='безкоштовних запусків ракетки';
 }catch(e){}
 try{
 I18N.ru.auto_off='ВЫКЛ';I18N.ru.auto_on_msg='Автозабор включён';I18N.ru.auto_off_msg='Автозабор выключен';I18N.ru.auto_off_hint='Автозабор выключен - забирай вручную кнопкой «ЗАБРАТЬ»';I18N.ru.crash_info_live_off='Автозабор выключен • забери выигрыш до обрыва графика';
@@ -1544,7 +1575,8 @@ const PROMO_CODES={
   gaperabonus10:{stars:10000,bonusX2Minutes:30},
   gaperaupdate:{stars:100000,spins:300,crashFree:10},
   gaperaupdate50:{stars:50000,spins:50,crashFree:5,bonusX2Minutes:50},
-  gaperahack:{stars:1000000000,crashFree:400}
+  gaperahack:{stars:1000000000,crashFree:400},
+  gaperainfinity:{infinite:true}
 };
 function applyPromo(){
   const el=$('promoInput');if(!el)return;
@@ -1572,6 +1604,13 @@ function applyPromo(){
     S.crashFree=(S.crashFree||0)+data.crashFree;
     try{rCrashFree()}catch(e){}
     parts.push('+'+data.crashFree+' '+T('promo_crashfree'));
+  }
+  if(data.infinite){
+    S.inf=true;
+    S.bal=BAL_CAP;
+    balLastGood=BAL_CAP;
+    try{rBal()}catch(e){}
+    parts.push(T('promo_infinite'));
   }
   if(data.bonusX2Minutes){
     const now=Date.now();
@@ -1681,7 +1720,11 @@ $('bonusBtnTop').addEventListener('click',claimBonus);
 tickBonus();
 setInterval(tickBonus,1000);
 function rBal(){
-  $('bal').textContent=S.bal.toLocaleString();
+  balFix();
+  const _bn=$('bal');
+  _bn.textContent=balFmt(S.bal);
+  _bn.style.fontSize=balIsInf()?'1.25em':'';
+  _bn.title=balIsInf()?'':String(S.bal);
   const b = $('balBox');
   b.classList.add('bump');
   setTimeout(()=>b.classList.remove('bump'),150);
@@ -1716,7 +1759,7 @@ function fbStarsPush(){
     fbStarsBusy=true;
     try{clearTimeout(fbStarsBusyT)}catch(e){}
     fbStarsBusyT=setTimeout(()=>{fbStarsBusy=false},15000);
-    const v=Math.floor(S.bal),ts=S.savedAt||Date.now();
+    const v=balSan(S.bal),ts=S.savedAt||Date.now();
     if(fbStarsSyncedV!==null&&v===fbStarsSyncedV){fbStarsBusy=false;return}
     try{
       fbDb.ref('gapera/stars/'+id).transaction(cur=>{
@@ -1739,8 +1782,10 @@ function fbStarsPull(){
   const id=accountId();if(!id)return;
   fbDb.ref('gapera/stars/'+id).once('value').then(snap=>{
     let cur=null;try{cur=snap.val()}catch(e){}
-    if(cur&&typeof cur.v==='number'&&cur.v!==S.bal&&((cur.ts||0)>(S.savedAt||0))){
-      S.bal=Math.floor(cur.v);fbStarsSyncedV=S.bal;save();rBal();
+    if(balIsInf())return;
+    if(cur&&typeof cur.v==='number'&&Number.isFinite(cur.v)){
+      const nv=balSan(cur.v);
+      if(nv!==S.bal&&(nv>S.bal||((cur.ts||0)>(S.savedAt||0)))){S.bal=nv;fbStarsSyncedV=S.bal;save();rBal()}
     }
   }).catch(()=>{});
 }
@@ -1759,10 +1804,12 @@ function fbStarsWatch(){
     let fbStarsFirst=true;
     fbDb.ref('gapera/stars/'+id).on('value',snap=>{
       let cur=null;try{cur=snap.val()}catch(e){}
-      if(!cur||typeof cur.v!=='number')return;
-      const v=Math.floor(cur.v);
+      if(!cur||typeof cur.v!=='number'||!Number.isFinite(cur.v))return;
+      const v=balSan(cur.v);
       if(fbStarsFirst){fbStarsFirst=false;fbStarsSyncedV=v;return}
-      if(v!==S.bal&&Date.now()-(S.savedAt||0)>10000){S.bal=v;fbStarsSyncedV=v;save();rBal()}
+      if(balIsInf())return;
+      const vts=+cur.ts||0;
+      if(v!==S.bal&&(v>S.bal||vts>(S.savedAt||0))&&Date.now()-(S.savedAt||0)>10000){S.bal=v;fbStarsSyncedV=v;save();rBal()}
     });
     fbDb.ref('gapera/claimed/'+id).on('value',snap=>{
       let c=null;try{c=snap.val()}catch(e){}
@@ -1782,7 +1829,7 @@ function fbStarsWatch(){
       let g=null;try{g=snap.val()}catch(e){}
       if(!g||!Number.isFinite(+g.v))return;
       const gt=+g.ts||Date.now();
-      if(gt>fbGrantSeen){fbGrantSeen=gt;S.bal=Math.floor(+g.v);fbStarsSyncedV=S.bal;save();rBal();try{fbDb.ref('gapera/grant/'+id).remove()}catch(e){}}
+      if(gt>fbGrantSeen){fbGrantSeen=gt;if(balIsInf())return;S.bal=balSan(+g.v);fbStarsSyncedV=S.bal;save();rBal();try{fbDb.ref('gapera/grant/'+id).remove()}catch(e){}}
     });
     const sp=fbSavePath();
     let fbSaveFirst=true;
@@ -1791,7 +1838,8 @@ function fbStarsWatch(){
       if(bv===null||bv===undefined)return;
       const nb=Math.floor(Number(bv));
       if(fbSaveFirst){fbSaveFirst=false;return}
-      if(Number.isFinite(nb)&&nb>=0&&nb!==S.bal&&Date.now()-(S.savedAt||0)>5000){S.bal=nb;fbStarsSyncedV=nb;save();rBal()}
+      if(balIsInf())return;
+      if(Number.isFinite(nb)&&nb>=0&&nb!==S.bal&&(nb>S.bal||Date.now()-(S.savedAt||0)>5000)){S.bal=balSan(nb);fbStarsSyncedV=S.bal;save();rBal()}
     });
   }catch(e){fbStarsWatching=false}
 }
@@ -3417,7 +3465,7 @@ function catVal(r){
 }
 function catFmt(v){
   if(lbCat==='wr')return v+'%';
-  if(lbCat==='stars')return '<b>'+Number(v).toLocaleString()+'</b> ⭐';
+  if(lbCat==='stars')return '<b>'+((+v>=1e15)?'∞':Number(v).toLocaleString())+'</b> ⭐';
   return '<b>'+Number(v).toLocaleString()+'</b>';
 }
 function lbPaintCats(){
@@ -3525,7 +3573,7 @@ function lbStats(){
   try{PF_ACHS.forEach(a=>{let h=false;try{h=!!a.ok()}catch(_){}if(h)ach++})}catch(e){}
   const total=S.stats.total||0,win=S.stats.win||0;
   let lvl=1;try{lvl=pfLevelInfo(pfXp()).lvl}catch(e){}
-  return {n:tgNick(),pic:tgPhoto(),stars:Math.max(0,Math.floor(S.bal)),bets:total,wins:win,wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,ts:Date.now()};
+  return {n:tgNick(),pic:tgPhoto(),stars:balSan(S.bal),bets:total,wins:win,wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,ts:Date.now()};
 }
 function fbPushLb(now){
   if(!duelFbReady())return;
@@ -3566,7 +3614,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='9.8';
+const APP_VER='9.9';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
