@@ -62,6 +62,23 @@ main{max-width:560px;margin:0 auto;padding:.6rem 1rem calc(88px + env(safe-area-
 .lbl{font-size:.6875rem;font-weight:500;letter-spacing:.5px;color:var(--on-sv);margin-bottom:.4rem}
 .page-t{font-family:var(--fh);font-weight:700;font-size:1.65rem;letter-spacing:.2px;margin:.2rem 0 .9rem}
 .sec-t{font-family:var(--fh);font-weight:700;font-size:1.25rem;margin:1rem 0 .7rem;padding-left:.7rem;border-left:2px solid var(--ol-v)}
+@media(max-width:400px){
+  .topbar{padding:.6rem .7rem .3rem;gap:.4rem}
+  .topbar-name{font-size:1.05rem}
+  .topbar-beta{font-size:.5rem;padding:.2rem .45rem}
+  .topbar-uid{font-size:.62rem;max-width:110px}
+  .bal{padding:.4rem .6rem;font-size:.72rem;gap:.25rem;max-width:52%}
+  .bal .mat{font-size:17px}
+  .bonus{display:none}
+  .pf-head{grid-template-columns:auto 1fr;gap:.5rem}
+  .pf-ava{width:64px;height:64px;font-size:1.5rem}
+  .pf-name{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:normal}
+  .pf-lvl{font-size:.62rem}
+  .pf-btns{grid-column:1/-1;flex-direction:row;min-width:0}
+  .pf-btns .btn{flex:1;padding:.45rem .5rem;font-size:.72rem}
+  .page-t{font-size:1.3rem}
+  .sec-t{font-size:1.05rem}
+}
 
 
 .btn{position:relative;overflow:hidden;touch-action:manipulation;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;border-radius:18px;padding:.85rem 1.4rem;font-size:.9rem;font-weight:700;cursor:pointer;border:1px solid transparent;font-family:var(--fh);transition:transform .12s var(--ease), background-color .15s, opacity .15s, box-shadow .2s}
@@ -3936,7 +3953,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='13.16';
+const APP_VER='13.17';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
