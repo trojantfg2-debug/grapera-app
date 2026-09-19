@@ -76,7 +76,8 @@ main{max-width:560px;margin:0 auto;padding:.6rem 1rem calc(88px + env(safe-area-
   .bal .mat{font-size:17px}
   .bonus{display:none}
   .pf-head{grid-template-columns:auto 1fr;gap:.5rem}
-  .pf-ava{width:64px;height:64px;font-size:1.5rem}
+  .pf-ava{width:80px;height:80px;font-size:1.6rem}
+  #opAva{width:90px;height:90px;font-size:1.9rem}
   .pf-name{font-size:.82rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:normal}
   .pf-lvl{font-size:.62rem}
   .pf-btns{grid-column:1/-1;flex-direction:row;min-width:0}
@@ -466,7 +467,8 @@ main{max-width:560px;margin:0 auto;padding:.6rem 1rem calc(88px + env(safe-area-
 button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2px solid var(--p);outline-offset:2px}
   
 .pf-head{display:flex;align-items:center;gap:.9rem}
-.pf-ava{width:72px;height:72px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-size:1.9rem;font-weight:700;border:2px solid var(--ol-v);overflow:hidden;position:relative;color:#fff;cursor:pointer;transition:transform .15s var(--ease)}
+.pf-ava{width:96px;height:96px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-size:2.2rem;font-weight:700;border:2px solid var(--ol-v);overflow:hidden;position:relative;color:#fff;cursor:pointer;transition:transform .15s var(--ease)}
+#opAva{width:110px;height:110px;font-size:2.6rem}
 .pf-ava:active{transform:scale(.93)}
 .pf-ava img{width:100%;height:100%;object-fit:cover;display:block}
 .pf-name{font-family:var(--fh);font-weight:700;font-size:1.05rem;word-break:break-all}
@@ -592,7 +594,7 @@ body::before{display:none}
 .bet-q.on,.m-cnt button.on,.tw-diff button.on,.coin-ch button.on,.duel-bets button.on,.bac-picks button.on{background:var(--on);color:var(--bg);border-color:transparent}
 .bet-q:hover,.chat-q:hover{background:var(--sc-hi)}
 .pf-head{display:grid;grid-template-columns:auto 1fr auto;gap:.7rem;align-items:center}
-.pf-ava{width:76px;height:76px}
+.pf-ava{width:96px;height:96px}
 .pf-idcol{min-width:0}
 .pf-name{font-family:var(--fh);font-weight:700;font-size:.98rem;word-break:break-all}
 .pf-lvl{font-size:.7rem;color:var(--on-sv);margin-top:.2rem}
@@ -1086,7 +1088,55 @@ body::before{display:none}
     </div>
   </section>
 
+  <section class="scr" id="s-other">
+    <div class="card">
+      <button class="btn btn-s btn-sm" id="opBackBtn"><span class="mat">arrow_back</span>Назад</button>
+      <div class="sec-t" style="margin-top:.7rem">ПРОФИЛЬ ИГРОКА</div>
+      <div class="pf-head">
+        <div class="pf-ava" id="opAva"><img id="opImg" alt="" style="display:none"><span id="opLetter">?</span></div>
+        <div class="pf-idcol">
+          <div class="pf-name" id="opName">-</div>
+          <div class="pf-lvl" id="opLvl">Уровень 1</div>
+        </div>
+      </div>
+      <div class="pf-bar"><div class="pf-bar-fill" id="opBar" style="width:0%"></div></div>
+      <div class="pf-xp" id="opXp">0 XP</div>
+      <div class="pf-grid">
+        <div class="pf-mini"><div class="v" id="opStreak">0</div><div class="l" data-i18n="pf_streak">стрик дней</div></div>
+        <div class="pf-mini"><div class="v" id="opAch">0/16</div><div class="l" data-i18n="pf_ach_done">достижений</div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="sec-t" data-i18n="stats">СТАТИСТИКА</div>
+      <div class="stat-row">
+        <div class="stat"><div class="v" id="opT">0</div><div class="l" data-i18n="bets">ставок</div></div>
+        <div class="stat"><div class="v" id="opW">0</div><div class="l" data-i18n="wins">побед</div></div>
+        <div class="stat"><div class="v" id="opL">0</div><div class="l" data-i18n="losses">проигрышей</div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="v" id="opWo">0</div><div class="l" data-i18n="won">выиграно</div></div>
+        <div class="stat"><div class="v" id="opB">0</div><div class="l" data-i18n="betted">поставлено</div></div>
+        <div class="stat"><div class="v" id="opP">0</div><div class="l" data-i18n="profit">профит</div></div>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="v" id="opWR">-</div><div class="l" data-i18n="winrate">винрейт</div></div>
+        <div class="stat"><div class="v" id="opBest">0</div><div class="l" data-i18n="best_win">лучший выигрыш</div></div>
+        <div class="stat"><div class="v" id="opSt">0</div><div class="l" data-i18n="streak">серия побед</div></div>
+      </div>
+    </div>
+  </section>
 
+  <div id="avaSheet" style="display:none;position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);align-items:flex-end;justify-content:center;padding:1rem">
+    <div style="background:var(--sc);border-radius:20px;padding:1rem;width:100%;max-width:360px">
+      <div style="width:36px;height:4px;border-radius:9999px;background:var(--sv);margin:0 auto .8rem"></div>
+      <button class="btn btn-p btn-lg" id="avaViewBtn"><span class="mat">visibility</span> Посмотреть профиль</button>
+      <button class="btn btn-s btn-lg" id="avaCancelBtn" style="margin-top:.5rem">Отмена</button>
+    </div>
+  </div>
+  <div id="avaFull" style="display:none;position:fixed;inset:0;z-index:130;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem">
+    <button id="avaFullClose" style="position:absolute;top:calc(env(safe-area-inset-top) + 14px);right:14px;width:44px;height:44px;border-radius:50%;background:var(--sc-hi);color:var(--on);border:1px solid var(--ol-v);display:grid;place-items:center;cursor:pointer"><span class="mat">close</span></button>
+    <img id="avaFullImg" alt="" style="width:min(88vw,420px);height:auto;max-width:88vw;max-height:88vh;object-fit:contain;border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.7)">
+  </div>
   
   <section class="scr" id="s-settings">
     <div class="page-t"><span data-i18n="nav_settings">Настройки</span></div>
@@ -3585,12 +3635,17 @@ function pfOnFile(e){
     try{e.target.value=''}catch(_){}
   }catch(e){}
 }
+function showAvaFull(src){const w=$('avaFull'),im=$('avaFullImg');if(!w||!im||!src)return;try{im.src=src}catch(e){} w.style.display='flex';}
+function hideAvaFull(){const w=$('avaFull');if(w)w.style.display='none';}
 try{
   pfLoadPhoto();
   try{pfPushAva()}catch(e){}
   try{pfPullAva()}catch(e){}
   const _up=$('pfUpBtn');if(_up)_up.addEventListener('click',function(){try{Sound.click()}catch(_){}pfPickPhoto()});
-  const _av=$('pfAva');if(_av)_av.addEventListener('click',function(){try{Sound.click()}catch(_){}pfPickPhoto()});
+  const _av=$('pfAva');if(_av)_av.addEventListener('click',function(){try{Sound.click()}catch(_){}const src=pfPhoto||tgPhoto()||''; if(src)showAvaFull(src);});
+  const _opAv=$('opAva');if(_opAv)_opAv.addEventListener('click',function(){try{Sound.click()}catch(_){}const im=$('opImg');let src=''; if(im&&im.style.display!=='none'&&im.src)src=im.src; else if(avaSheetData&&avaSheetData.pic)src=avaSheetData.pic; if(src)showAvaFull(src);});
+  const _af=$('avaFull');if(_af)_af.addEventListener('click',(e)=>{if(e.target===_af)hideAvaFull();});
+  const _afc=$('avaFullClose');if(_afc)_afc.addEventListener('click',()=>{try{Sound.click()}catch(_){} hideAvaFull();});
   const _fl=$('pfFile');if(_fl)_fl.addEventListener('change',pfOnFile);
   const _dl=$('pfDelBtn');if(_dl)_dl.addEventListener('click',function(){try{Sound.click()}catch(_){}pfSavePhoto(null);try{rProfile()}catch(_){}try{fbPushLb(true)}catch(_){}});
   setInterval(function(){try{if(document.getElementById('s-profile').classList.contains('on')){rProfile();rSt()}}catch(_){}},3000);
@@ -4015,7 +4070,7 @@ function topRender(list,ts,ban,tags,reasons){
     pos.style.cssText='min-width:1.9rem;flex:none';
     pos.textContent=i===0?'\ud83e\udd47':i===1?'\ud83e\udd48':i===2?'\ud83e\udd49':('#'+(i+1));
     d.appendChild(pos);
-    d.appendChild(lbAvatar(r));
+    const av=lbAvatar(r); av.style.cursor='pointer'; av.addEventListener('click',(e)=>{e.stopPropagation(); try{Sound.click()}catch(_){} showAvaSheet(r);}); d.appendChild(av);
     const info=document.createElement('div');
     info.style.cssText='flex:1;min-width:0;display:flex;flex-direction:column;gap:.05rem';
     const nm=document.createElement('div');
@@ -4040,27 +4095,88 @@ function topRender(list,ts,ban,tags,reasons){
     val.style.cssText='flex:none;text-align:right';
     val.innerHTML=catFmt(catVal(r));
     d.appendChild(val);
-    d.addEventListener('click',(e)=>{
+    info.style.cursor='pointer';
+    info.addEventListener('click',(e)=>{
       try{if(e.target&&e.target.closest&&e.target.closest('[data-ban]')){let rs='';try{rs=(reasons&&reasons[r.id])||''}catch(_){}showBanInfo(rs);return}}catch(_){}
-      const uid=lbUidOf(r.id);
-      try{Sound.click()}catch(e){}
-      try{
-        if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(uid);sn(t('id_copied',{uid:uid}))}
-        else{sn('ID: '+uid)}
-      }catch(e){sn('ID: '+uid)}
+      e.stopPropagation(); try{Sound.click()}catch(_){} showAvaSheet(r);
     });
     el.appendChild(d);
   });
 }
 try{(function(){const w=$('lbCats');if(w)w.addEventListener('click',function(e){let b=null;try{b=e.target.closest('button[data-lb]')}catch(_){}if(!b)return;try{Sound.click()}catch(_){}lbCat=b.getAttribute('data-lb')||'days';lbPaintCats();if(topCache)topRender(topCache.rows,topCacheT,topCache.ban,topCache.tags,topCache.reasons);else topLoad(false)});lbPaintCats()})()}catch(e){}
+let avaSheetData=null,otherPrev=null;
+function showAvaSheet(r){avaSheetData=r;const s=$('avaSheet');if(s)s.style.display='flex';}
+function hideAvaSheet(){const s=$('avaSheet');if(s)s.style.display='none';}
+function showOtherProfile(r){
+  hideAvaSheet();
+  otherPrev=document.querySelector('.scr.on')?document.querySelector('.scr.on').id:'s-top';
+  document.querySelectorAll('.scr').forEach(x=>x.classList.remove('on'));
+  const o=$('s-other');if(o)o.classList.add('on');
+  document.querySelectorAll('.ni').forEach(x=>x.classList.remove('on'));
+  window.scrollTo({top:0,behavior:'smooth'});
+  try{populateOther(r)}catch(e){}
+}
+function hideOtherProfile(){
+  const o=$('s-other');if(o)o.classList.remove('on');
+  const id=otherPrev||'s-top';
+  const t=$(id);if(t)t.classList.add('on'); else $('s-top').classList.add('on');
+  const tab=id.replace('s-','');
+  document.querySelectorAll('.ni').forEach(x=>x.classList.toggle('on',x.dataset.s===tab));
+  try{if(window.navIndUpdate)window.navIndUpdate()}catch(e){}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function populateOther(r){
+  if(!r)return;
+  const ava=$('opAva'),img=$('opImg'),ch=$('opLetter');
+  if(ava){
+    const pic=String(r.pic||'');
+    if((pic.startsWith('https://')||pic.startsWith('data:image/'))&&img){
+      try{img.src=pic}catch(e){} img.style.display='block'; if(ch)ch.style.display='none'; ava.style.background='var(--sc-hi)';
+    }else{
+      if(img)img.style.display='none'; if(ch){ch.style.display=''; const uid=lbUidOf(r.id); ch.textContent=(uid.match(/\d/)?.[0]||String(r.nick||'?').charAt(0).toUpperCase());}
+      try{ava.style.background=lbColor(r.id)}catch(e){}
+    }
+  }
+  const set=(id,v)=>{const e=$(id);if(e)e.textContent=v};
+  const setHtml=(id,v)=>{const e=$(id);if(e)e.innerHTML=v};
+  try{const n=$('opName');if(n)n.textContent=r.nick||'ID:'+lbUidOf(r.id)}catch(e){}
+  try{
+    let xp = Number(r.xp)||0;
+    let lvl = Number(r.lvl)||1;
+    const baseForLvl = 200*(Math.max(1,lvl)-1)*(Math.max(1,lvl)-1);
+    if(xp < baseForLvl) xp = baseForLvl;
+    let li=null; try{li=pfLevelInfo(xp)}catch(e){try{li=pfLevelInfo(baseForLvl)}catch(_){li={lvl:lvl,prog:0,next:baseForLvl+400,base:baseForLvl}}}
+    if(li&&li.lvl!==lvl){ try{li=pfLevelInfo(xp)}catch(e){} lvl=li?li.lvl:lvl; }
+    const l=$('opLvl'); if(l)l.textContent='Уровень '+lvl;
+    const bar=$('opBar'); if(bar){ try{const p=li?li.prog:0; bar.style.width=p+'%';}catch(e){bar.style.width='0%'} }
+    const xe=$('opXp'); if(xe){ try{const li2=li||pfLevelInfo(xp); xe.textContent=fmtAbbr(xp)+' XP • '+fmtAbbr(li2.next-xp)+' до '+(li2.lvl+1)+' ур.';}catch(e){xe.textContent=(r.stars||0).toLocaleString()+' ⭐'} }
+  }catch(e){}
+  setHtml('opStreak',(r.days||0)+'<span class="mat" style="font-size:1rem;vertical-align:middle;margin-left:2px">local_fire_department</span>');
+  set('opAch',(r.ach||0)+'/16');
+  set('opT',String(r.bets||0));
+  set('opW',String(r.wins||0));
+  set('opL',String(Math.max(0,(r.bets||0)-(r.wins||0))));
+  set('opWo',String((r.stars||0).toLocaleString()));
+  set('opB',String((r.bets||0).toLocaleString()));
+  const prof=(r.bets?Math.max(0,(r.stars||0)-(r.bets*10)):0); set('opP',String(prof.toLocaleString()));
+  set('opWR',(r.wr||0)+'%');
+  set('opBest',String((r.stars||0).toLocaleString()));
+  set('opSt',String(r.strk||0));
+}
+try{
+  const av=$('avaSheet'); if(av)av.addEventListener('click',(e)=>{if(e.target===av)hideAvaSheet()});
+  const vb=$('avaViewBtn'); if(vb)vb.addEventListener('click',()=>{if(avaSheetData)showOtherProfile(avaSheetData)});
+  const cb=$('avaCancelBtn'); if(cb)cb.addEventListener('click',hideAvaSheet);
+  const ob=$('opBackBtn'); if(ob)ob.addEventListener('click',()=>{try{Sound.click()}catch(_){} hideOtherProfile()});
+}catch(e){}
 let lbPushT=null;
 function lbStats(){
   let ach=0;
   try{PF_ACHS.forEach(a=>{let h=false;try{h=!!a.ok()}catch(_){}if(h)ach++})}catch(e){}
   const total=S.stats.total||0,win=S.stats.win||0;
-  let lvl=1;try{lvl=pfLevelInfo(pfXp()).lvl}catch(e){}
+  let lvl=1, xp=0; try{xp=pfXp(); lvl=pfLevelInfo(xp).lvl}catch(e){}
   let pic='';try{pic=pfPhoto||tgPhoto()||''}catch(e){try{pic=tgPhoto()||''}catch(_){}}
-  return {n:tgNick(),pic:pic,stars:balSan(S.bal),bets:total,wins:win,wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,ts:Date.now()};
+  return {n:tgNick(),pic:pic,stars:balSan(S.bal),bets:total,wins:win,wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,xp:xp,ts:Date.now()};
 }
 function fbPushLb(now){
   if(!duelFbReady())return;
@@ -4098,7 +4214,7 @@ function topLoad(force){
     if(ban==null||typeof ban!=='object')ban={};
     const arr=Object.keys(all).map(k=>{
       const c=all[k]||{};
-      return {id:k,nick:String(c.n||'').slice(0,24),pic:String(c.pic||'').slice(0,400),stars:Math.max(0,Math.floor(+c.stars||0)),bets:Math.floor(+c.bets||0),wins:Math.floor(+c.wins||0),wr:+c.wr||0,strk:Math.floor(+c.strk||0),ach:Math.floor(+c.ach||0),days:Math.floor(+c.days||0),lvl:Math.floor(+c.lvl||0)};
+      return {id:k,nick:String(c.n||'').slice(0,24),pic:String(c.pic||'').slice(0,15000),stars:Math.max(0,Math.floor(+c.stars||0)),bets:Math.floor(+c.bets||0),wins:Math.floor(+c.wins||0),wr:+c.wr||0,strk:Math.floor(+c.strk||0),ach:Math.floor(+c.ach||0),days:Math.floor(+c.days||0),lvl:Math.floor(+c.lvl||0),xp:Math.max(0,Math.floor(+c.xp||0))};
     }).filter(r=>r.nick);
     topCache={rows:arr,ban:ban,tags:tags,reasons:reasons};topCacheT=Date.now();
     topRender(arr,topCacheT,ban,tags,reasons);
