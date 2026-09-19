@@ -2015,8 +2015,12 @@ function fbPushSave(now){
       fbDb.ref(p).transaction(cur=>{
         if(cur&&cur.state){
           const ct=(cur.state.stats&&cur.state.stats.total)||0, lt=S.stats.total||0;
+          const cb=cur.state.bal||0, lb=S.bal||0;
           if(ct>lt+5)return;
-          if(lt>ct+5){}else if((cur.savedAt||0)>(S.savedAt||0))return;
+          if(lt>ct+5){} 
+          else if(cb>lb*2 && ct>=lt-5)return;
+          else if(lb>cb*2 && lt>=ct-5){}
+          else if((cur.savedAt||0)>(S.savedAt||0))return;
         }else if(cur&&((cur.savedAt||0)>(S.savedAt||0)))return;
         return {state:S,savedAt:S.savedAt||Date.now()};
       },(err,ok)=>{if(ok){try{fbStateJson=snap}catch(e){}return}try{setTimeout(()=>{try{fbStateJson=null;fbPushSave(false)}catch(e){}},5000)}catch(e){}});
@@ -2030,13 +2034,14 @@ function fbPullSave(){
     let v=null;try{v=snap.val()}catch(e){}
     if(v&&v.state){
       const ct=(v.state.stats&&v.state.stats.total)||0, lt=S.stats.total||0;
+      const cb=v.state.bal||0, lb=S.bal||0;
       const serverNewer=((v.savedAt||0)>(S.savedAt||0));
-      if(ct>lt+5 || (serverNewer && ct>=lt-5)){
+      if(ct>lt+5 || (cb>lb*2 && ct>=lt-5)){
         applyLoadedState(Object.assign({},v.state,{savedAt:v.savedAt}));
         try{const c=Object.assign({},S);delete c.savedAt;fbStateJson=JSON.stringify(c)}catch(e){}
         try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}
         writeLocal();renderAll();
-      }else if(lt>ct+5 || serverNewer===false){
+      }else if(lt>ct+5 || (lb>cb*2 && lt>=ct-5)){
         try{fbPushSave(true)}catch(e){}try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}
       }else if(serverNewer){
         applyLoadedState(Object.assign({},v.state,{savedAt:v.savedAt}));
@@ -3986,7 +3991,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='13.19';
+const APP_VER='13.20';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
