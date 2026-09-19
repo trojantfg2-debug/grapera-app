@@ -3164,8 +3164,8 @@ function clkCheckWindow(){
   const now=Date.now();
   if(now-S.clkWin.start>=CLK_WINDOW){S.clkWin.used=0;S.clkWin.start=now;save()}
 }
-function powCost(){return Math.floor(120*Math.pow(S.clkPower,1.45))}
-function turboCost(){return Math.floor(400*Math.pow(S.clkTurbo+1,1.6))}
+function powCost(){return Math.floor(80*S.clkPower + 40)}
+function turboCost(){return Math.floor(150*(S.clkTurbo+1) + 60)}
 function rClk(){
   clkCheckWindow();
   $('clkCount').textContent=(S.clicks||0).toLocaleString();
@@ -3998,7 +3998,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='13.22';
+const APP_VER='13.23';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
