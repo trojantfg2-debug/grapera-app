@@ -59,9 +59,10 @@ main{max-width:560px;margin:0 auto;padding:.6rem 1rem calc(88px + env(safe-area-
 @keyframes fi{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 
 .card{background:var(--sc);border-radius:20px;padding:1.1rem;margin-bottom:.8rem;border:none;transition:transform .2s var(--ease)}
-.lbl{font-size:.6875rem;font-weight:500;letter-spacing:.5px;color:var(--on-sv);margin-bottom:.4rem}
+.lbl{font-family:var(--fh);font-size:.6875rem;font-weight:500;letter-spacing:.5px;color:var(--on-sv);margin-bottom:.4rem}
 .page-t{font-family:var(--fh);font-weight:700;font-size:1.65rem;letter-spacing:.2px;margin:.2rem 0 .9rem}
 .sec-t{font-family:var(--fh);font-weight:700;font-size:1.25rem;margin:1rem 0 .7rem;padding-left:.7rem;border-left:2px solid var(--ol-v)}
+.page-t,.sec-t,.hub-name,.topbar-name,.pf-name,.stat .v,.cred-name,.achievement-title{font-family:var(--fh)}
 .help-tip{position:relative;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--sc-hi);color:var(--on-sv);font:700 .62rem var(--fh);cursor:pointer;flex:none}
 .help-pop{position:absolute;left:50%;top:calc(100% + 8px);transform:translateX(-50%);background:var(--sc-hi);color:var(--on);border:1px solid var(--ol-v);border-radius:10px;padding:.6rem .7rem;font:400 .72rem/1.3 var(--f);white-space:normal;width:240px;max-width:78vw;box-shadow:0 8px 24px rgba(0,0,0,.35);display:none;z-index:20;text-align:left}
 .help-tip.on .help-pop{display:block}
@@ -82,7 +83,7 @@ main{max-width:560px;margin:0 auto;padding:.6rem 1rem calc(88px + env(safe-area-
   .pf-btns .btn{flex:1;padding:.45rem .5rem;font-size:.72rem}
   .page-t{font-size:1.3rem}
   .sec-t{font-size:1.05rem}
-  #lbCats .btn{font-size:.46rem;padding:.40rem .02rem;letter-spacing:-.2px}
+  #lbCats .btn{font-size:.40rem;padding:.32rem .01rem;letter-spacing:-.3px}
 }
 
 
@@ -336,8 +337,8 @@ main{max-width:560px;margin:0 auto;padding:.6rem 1rem calc(88px + env(safe-area-
 .lb-nm{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-id{font-size:.62rem;opacity:.62;font-weight:500;letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .lb-me{outline:1px solid var(--p)}
-#lbCats{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;padding:.1rem 0 .6rem}
-#lbCats .btn{padding:.55rem .05rem;font-size:.60rem;white-space:nowrap;min-width:0}
+#lbCats{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem;padding:.1rem 0 .6rem}
+#lbCats .btn{padding:.48rem .03rem;font-size:.52rem;white-space:nowrap;min-width:0;letter-spacing:-.2px}
 .hub-tile{position:relative;overflow:hidden;background:var(--sc);border:none;border-radius:20px;min-height:150px;display:flex;align-items:flex-end;justify-content:center;padding:.9rem;cursor:pointer;color:var(--on);font-family:inherit;transition:transform .12s var(--ease)}
 .hub-tile:active{transform:scale(.96)}
 .hub-art{position:absolute;top:-16px;left:-12px;line-height:1;opacity:.14;color:var(--on);transform:rotate(-12deg);pointer-events:none;font-size:120px}
@@ -459,7 +460,7 @@ button:focus-visible,input:focus-visible,[role="switch"]:focus-visible{outline:2
 .pf-ava{width:72px;height:72px;flex-shrink:0;border-radius:50%;display:grid;place-items:center;font-size:1.9rem;font-weight:700;border:2px solid var(--ol-v);overflow:hidden;position:relative;color:#fff;cursor:pointer;transition:transform .15s var(--ease)}
 .pf-ava:active{transform:scale(.93)}
 .pf-ava img{width:100%;height:100%;object-fit:cover;display:block}
-.pf-name{font-weight:700;font-size:1.05rem;word-break:break-all}
+.pf-name{font-family:var(--fh);font-weight:700;font-size:1.05rem;word-break:break-all}
 .pf-lvl{font-size:.72rem;color:var(--on-sv);margin-top:.2rem}
 .pf-ava-row{display:flex;gap:.5rem;margin-top:.7rem}
 .pf-ava-row .btn{flex:1}
@@ -3213,7 +3214,7 @@ function turboCost(){return Math.floor(150*(S.clkTurbo+1) + 60)}
 function rClk(){
   clkCheckWindow();
   $('clkCount').textContent=(S.clicks||0).toLocaleString();
-  $('clkPow').textContent='+'+Math.max(1,Math.floor(S.clkPower*(1+S.clkTurbo*0.1)));
+  $('clkPow').textContent='+'+Math.max(1,Math.floor(S.clkPower*(1+S.clkTurbo*0.1+(rebirthBonus()-1))));
   const lim=clkLimit();
   const left=lim-S.clkWin.used;
   $('clkBarFill').style.width=Math.min(100,(S.clkWin.used/lim*100))+'%';
@@ -3240,7 +3241,7 @@ $('clkStar').addEventListener('click',()=>{
   if(S.clkWin.used>=clkLimit()){sn(t('click_limit_out'));return}
   Sound.click();
   $('clkStar').classList.remove('pop');void $('clkStar').offsetWidth;$('clkStar').classList.add('pop');
-  const clickReward=Math.max(1,Math.floor(S.clkPower*(1+S.clkTurbo*0.1)*rebirthBonus()));
+  const clickReward=Math.max(1,Math.floor(S.clkPower*(1+S.clkTurbo*0.1+(rebirthBonus()-1))));
   S.bal+=clickReward;S.clicks=(S.clicks||0)+1;S.clkWin.used++;save();rBal();rClk();
   const rect=$('clkStar').getBoundingClientRect();
   const f=document.createElement('div');
