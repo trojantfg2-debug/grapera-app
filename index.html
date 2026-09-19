@@ -4193,7 +4193,7 @@ function lbStats(){
   const total=S.stats.total||0,win=S.stats.win||0;
   let lvl=1, xp=0; try{xp=pfXp(); lvl=pfLevelInfo(xp).lvl}catch(e){}
   let pic='';try{pic=pfPhoto||tgPhoto()||''}catch(e){try{pic=tgPhoto()||''}catch(_){}}
-  return {n:tgNick(),pic:pic,stars:balSan(S.bal),bets:total,wins:win,loss:Math.max(0,total-win),won:Math.max(0,Math.floor(S.stats.won||0)),betted:Math.max(0,Math.floor(S.stats.bet||0)),best:Math.max(0,Math.floor(S.stats.best||0)),wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,xp:xp,ts:Date.now()};
+  return {n:tgNick(),pic:pic,stars:balSan(S.bal),bets:total,wins:win,loss:Math.max(0,total-win),won:Math.max(0,Math.floor(S.stats.won||0)),betted:Math.max(0,Math.floor(S.stats.bet||0)),best:Math.max(0,Math.floor(S.stats.best||0)),wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.streak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,xp:xp,ts:Date.now()};
 }
 function fbPushLb(now){
   if(!duelFbReady())return;
@@ -4240,7 +4240,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='13.28';
+const APP_VER='13.29';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
