@@ -426,10 +426,10 @@ main{max-width:560px;margin:0 auto;padding:.6rem 1rem calc(88px + env(safe-area-
 .theme-sw.sel{border:none}
 .theme-preview{width:100%;height:42px;border-radius:var(--sh-m);border:1px solid var(--ol-v)}
 .theme-beta{position:absolute;top:.4rem;right:.4rem;font-size:.55rem;font-weight:700;letter-spacing:.4px;background:var(--win);color:var(--on-win);padding:.1rem .45rem;border-radius:var(--sh-full);text-transform:uppercase}
-.lang-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem}
-.lang-sw{position:relative;display:flex;flex-direction:column;align-items:center;gap:.4rem;background:var(--sc);border:2px solid var(--ol-v);border-radius:var(--sh-l);padding:.8rem .4rem;cursor:pointer;font:500 .78rem var(--f);color:var(--on);transition:transform .12s var(--ease), border-color .2s, opacity .2s}
-.lang-sw:active{transform:scale(.95)}
-.lang-sw.sel{border-color:var(--p)}
+.lang-grid{display:inline-flex;background:var(--sc);border-radius:var(--sh-full);padding:4px;gap:0;align-items:center}
+.lang-sw{position:relative;display:flex;align-items:center;justify-content:center;min-width:64px;height:38px;flex:1;background:transparent;color:var(--on-sv);border:1px solid transparent;border-radius:var(--sh-full);cursor:pointer;font:500 .78rem var(--f);transition:background .18s var(--ease),color .18s,transform .12s var(--ease),border-color .18s}
+.lang-sw:active{transform:scale(.96)}
+.lang-sw.sel{background:var(--sc-hi);color:var(--on);border-color:var(--ol-v);box-shadow:0 1px 3px rgba(0,0,0,.18)}
 .lang-flag{font-size:1.6rem;line-height:1}
 .lang-sw.lang-soon{opacity:.6}
 .lang-soon-badge{position:absolute;top:-.5rem;left:50%;transform:translateX(-50%);font-size:.5rem;font-weight:700;letter-spacing:.3px;background:var(--s2-c);color:var(--on-s2);padding:.1rem .4rem;border-radius:var(--sh-full);text-transform:uppercase;white-space:nowrap}
@@ -1087,11 +1087,11 @@ body::before{display:none}
     <div class="page-t"><span data-i18n="nav_settings">Настройки</span></div>
     <div class="card">
       <div class="sec-t" data-i18n="language">ЯЗЫК</div>
-      <div class="lang-grid" id="langGrid">
-        <button class="lang-sw sel" data-lang="ru"><span class="lang-flag">🇷🇺</span><span data-i18n="lang_ru">Русский</span></button>
-        <button class="lang-sw" data-lang="uk"><span class="lang-flag">🇺🇦</span><span data-i18n="lang_uk">Українська</span></button>
-        <button class="lang-sw" data-lang="en"><span class="lang-flag">🇬🇧</span><span data-i18n="lang_en">English</span></button>
-      </div>
+      <div style="display:flex;justify-content:flex-start"><div class="lang-grid" id="langGrid">
+        <button class="lang-sw sel" data-lang="ru"><span class="lang-flag">🇷🇺</span></button>
+        <button class="lang-sw" data-lang="uk"><span class="lang-flag">🇺🇦</span></button>
+        <button class="lang-sw" data-lang="en"><span class="lang-flag">🇬🇧</span></button>
+      </div></div>
     </div>
     <div class="card">
       <div class="sec-t" style="display:flex;align-items:center;gap:.4rem"><span data-i18n="theme">ТЕМА ОФОРМЛЕНИЯ</span><span class="help-tip" id="themeHelp">?<span class="help-pop" id="themeHelpPop"></span></span></div>
