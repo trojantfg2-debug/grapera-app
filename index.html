@@ -3206,7 +3206,7 @@ rClk();
 setInterval(rClk,1000);
 $('clkStar').addEventListener('click',()=>{
   clkCheckWindow();
-  if(S.clkWin.used>=lim){sn(t('click_limit_out'));return}
+  if(S.clkWin.used>=clkLimit()){sn(t('click_limit_out'));return}
   Sound.click();
   $('clkStar').classList.remove('pop');void $('clkStar').offsetWidth;$('clkStar').classList.add('pop');
   const clickReward=Math.max(1,Math.floor(S.clkPower*(1+S.clkTurbo*0.1)*rebirthBonus()));
@@ -4025,7 +4025,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='13.25';
+const APP_VER='13.26';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
