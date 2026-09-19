@@ -1341,12 +1341,31 @@ const R_OUTSIDE_MULT=ROULETTE_EDGE/(18/rNums.length);
 const R_STRAIGHT_MULT=ROULETTE_EDGE/(1/rNums.length);
 (function(){const el=$('rrOdds');if(el)el.textContent='Число ×'+R_STRAIGHT_MULT.toFixed(2)+' • цвет, чёт/нечет, 1-18/19-36 ×'+R_OUTSIDE_MULT.toFixed(2)+' • зеро бьёт всё, кроме прямого числа'})();
 function getUid(){
-  try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user&&TG.initDataUnsafe.user.id)return 'tg'+TG.initDataUnsafe.user.id}catch(e){}
+  try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user&&TG.initDataUnsafe.user.id){const id='tg'+TG.initDataUnsafe.user.id;try{localStorage.setItem('gapera_account_id',id);if(CLOUD_OK)try{TG.CloudStorage.setItem('gapera_account',id,()=>{})}catch(e){}}catch(e){}return id}}catch(e){}
+  try{const sid=localStorage.getItem('gapera_account_id');if(sid&&/^tg\d+$/.test(sid))return sid}catch(e){}
   try{
     if(!window.__gx)window.__gx='gx'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
     return window.__gx;
   }catch(e){return 'gx_fallback'}
 }
+function ensureCloudAccount(){
+  try{
+    if(!CLOUD_OK)return;
+    TG.CloudStorage.getItem('gapera_account',(err,val)=>{
+      try{
+        if(err||!val||!/^tg\d+$/.test(val))return;
+        const cur=getUid();
+        if(val!==cur){
+          try{localStorage.setItem('gapera_account_id',val)}catch(e){}
+          if(cur!==val && cur.startsWith('tg')!==val.startsWith('tg')){
+            try{location.reload()}catch(e){}
+          }
+        }
+      }catch(e){}
+    });
+  }catch(e){}
+}
+try{ensureCloudAccount()}catch(e){}
 const SAVE_VERSION=9;
 const STORAGE_KEY='gapera_alpha61_v9_save_'+getUid();
 const BACKUP_KEY=STORAGE_KEY+'_backup';
@@ -3649,7 +3668,7 @@ function duelMe(){
 }
 function duelSetText(id,v){const e=$(id);if(e)e.textContent=v}
 function duelSetStatus(k,pr){DU.st={k:k,p:pr||null};const el=$('duelStatus');if(el){try{el.textContent=t(k,pr)}catch(e){el.textContent=k}}}
-function accountId(){try{if(TG&&TG.initDataUnsafe&&TG.initDataUnsafe.user&&TG.initDataUnsafe.user.id){const id='tg'+TG.initDataUnsafe.user.id;try{localStorage.setItem('gapera_account_id',id)}catch(e){}return id}}catch(e){}try{const sid=localStorage.getItem('gapera_account_id');if(sid&&/^tg\d+$/.test(sid))return sid}catch(e){}return null}
+function accountId(){const u=getUid();return u&&u.startsWith('tg')?u:null}
 try{
 Object.assign(I18N.ru,{app_upd:'Вышла новая версия - обнови страницу'});
 Object.assign(I18N.en,{app_upd:'New version available - refresh the page'});
@@ -4025,7 +4044,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='13.26';
+const APP_VER='13.27';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
