@@ -851,6 +851,7 @@ body::before{display:none}
         <div class="up-info"><span class="up-name" data-i18n="turbo_name">🚀 Турбо</span><span class="up-lvl" id="upTurboLvl">Уровень 0 • +0% к силе</span></div>
         <button class="btn btn-p btn-sm up-btn" id="upTurboBtn">Купить</button>
       </div>
+      <button class="btn btn-s btn-sm" id="clkResetBtn" style="margin-top:.6rem;width:100%"><span class="mat">restart_alt</span><span data-i18n="clk_reset">Сбросить прогресс</span></button>
     </div>
   </section>
 
@@ -1453,7 +1454,7 @@ function normalizeState(x){
   d.clkWin.start=Number.isFinite(+d.clkWin.start)?+d.clkWin.start:Date.now();
   d.clkPower=Math.max(1,Math.min(1000,Math.floor(+v.clkPower||1)));
   d.clkAuto=Math.max(0,Math.min(1000,Math.floor(+v.clkAuto||0)));
-  d.clkTurbo=Math.max(0,Math.min(50,Math.floor(+v.clkTurbo||0)));
+  d.clkTurbo=Math.max(0,Math.min(100,Math.floor(+v.clkTurbo||0)));
   d.daily=Object.assign(d.daily,v.daily||{});
   d.daily.lastClaim=Number.isFinite(+d.daily.lastClaim)?+d.daily.lastClaim:null;
   d.daily.streak=Math.max(0,Math.min(30,Math.floor(+d.daily.streak||0)));
@@ -3215,6 +3216,12 @@ $('upTurboBtn').addEventListener('click',()=>{
   if(S.bal<cost){sn(t('not_enough_stars'));return}
   Sound.click();S.bal-=cost;S.clkTurbo++;save();rBal();rClk();sn(t('turbo_up'));
 });
+try{const _cr=$('clkResetBtn');if(_cr)_cr.addEventListener('click',()=>{
+  Sound.click();
+  if(!confirm(t('clk_reset')+'?'))return;
+  S.clkPower=1;S.clkTurbo=0;S.clicks=0;S.clkWin.used=0;S.clkWin.start=Date.now();
+  save();rBal();rClk();sn(t('reset_done'));
+})}catch(e){}
 const DAILY_REWARDS_30=[250,350,500,700,950,1300,1900,2300,2700,3100,3600,4100,4700,5300,6000,6700,7400,8200,9000,9900,10800,11800,12800,13900,15000,16200,17400,18700,20000,21500];
 function dailyReward(n){
   n=Math.max(1,Math.min(30,Math.floor(n)));
@@ -3991,7 +3998,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='13.20';
+const APP_VER='13.22';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
