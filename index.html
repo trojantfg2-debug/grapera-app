@@ -1133,7 +1133,7 @@ body::before{display:none}
       <button class="btn btn-s btn-lg" id="avaCancelBtn" style="margin-top:.5rem">Отмена</button>
     </div>
   </div>
-  <div id="avaFull" style="display:none;position:fixed;inset:0;z-index:130;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem">
+  <div id="avaFull" style="display:none;position:fixed;inset:0;z-index:130;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem;touch-action:none;overscroll-behavior:contain">
     <button id="avaFullClose" style="position:absolute;top:calc(env(safe-area-inset-top) + 14px);right:14px;width:44px;height:44px;border-radius:50%;background:var(--sc-hi);color:var(--on);border:1px solid var(--ol-v);display:grid;place-items:center;cursor:pointer"><span class="mat">close</span></button>
     <img id="avaFullImg" alt="" style="width:min(88vw,420px);height:auto;max-width:88vw;max-height:88vh;object-fit:contain;border-radius:16px;box-shadow:0 16px 48px rgba(0,0,0,.7)">
   </div>
@@ -3629,8 +3629,8 @@ function pfOnFile(e){
     try{e.target.value=''}catch(_){}
   }catch(e){}
 }
-function showAvaFull(src){const w=$('avaFull'),im=$('avaFullImg');if(!w||!im||!src)return;try{im.src=src}catch(e){} w.style.display='flex';}
-function hideAvaFull(){const w=$('avaFull');if(w)w.style.display='none';}
+function showAvaFull(src){const w=$('avaFull'),im=$('avaFullImg');if(!w||!im||!src)return;try{im.src=src}catch(e){} w.style.display='flex'; try{document.body.style.overflow='hidden'; document.documentElement.style.overflow='hidden';}catch(e){}}
+function hideAvaFull(){const w=$('avaFull');if(w)w.style.display='none'; try{document.body.style.overflow=''; document.documentElement.style.overflow='';}catch(e){}}
 try{
   pfLoadPhoto();
   try{pfPushAva()}catch(e){}
@@ -3638,7 +3638,7 @@ try{
   const _up=$('pfUpBtn');if(_up)_up.addEventListener('click',function(){try{Sound.click()}catch(_){}pfPickPhoto()});
   const _av=$('pfAva');if(_av)_av.addEventListener('click',function(){try{Sound.click()}catch(_){}const src=pfPhoto||tgPhoto()||''; if(src)showAvaFull(src);});
   const _opAv=$('opAva');if(_opAv)_opAv.addEventListener('click',function(){try{Sound.click()}catch(_){}const im=$('opImg');let src=''; if(im&&im.style.display!=='none'&&im.src)src=im.src; else if(avaSheetData&&avaSheetData.pic)src=avaSheetData.pic; if(src)showAvaFull(src);});
-  const _af=$('avaFull');if(_af)_af.addEventListener('click',(e)=>{if(e.target===_af)hideAvaFull();});
+  const _af=$('avaFull');if(_af){_af.addEventListener('click',(e)=>{if(e.target===_af)hideAvaFull();}); _af.addEventListener('touchmove',(e)=>{e.preventDefault(); e.stopPropagation();},{passive:false}); _af.addEventListener('wheel',(e)=>{e.preventDefault(); e.stopPropagation();},{passive:false});}
   const _afc=$('avaFullClose');if(_afc)_afc.addEventListener('click',()=>{try{Sound.click()}catch(_){} hideAvaFull();});
   const _fl=$('pfFile');if(_fl)_fl.addEventListener('change',pfOnFile);
   const _dl=$('pfDelBtn');if(_dl)_dl.addEventListener('click',function(){try{Sound.click()}catch(_){}pfSavePhoto(null);try{rProfile()}catch(_){}try{fbPushLb(true)}catch(_){}});
