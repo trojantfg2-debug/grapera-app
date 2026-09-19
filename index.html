@@ -414,6 +414,9 @@ main{max-width:560px;margin:0 auto;padding:.6rem 1rem calc(88px + env(safe-area-
 .ni.on{color:var(--on)}.ni.on .np{background:color-mix(in srgb,var(--on) 13%,transparent);color:var(--on)}
 .ni.on .mat{font-variation-settings:'FILL' 1}
 .nl{display:none}
+.nav-ind{position:absolute;top:.45rem;left:0;width:52px;height:46px;border-radius:50%;background:color-mix(in srgb,var(--on) 13%,transparent);transition:transform .22s cubic-bezier(.4,0,.2,1),width .18s var(--ease);will-change:transform;pointer-events:none;z-index:0}
+.nav .ni{position:relative;z-index:1}
+.ni.on .np{background:transparent !important}
 
 
 .theme-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
@@ -1137,6 +1140,7 @@ body::before{display:none}
 </main>
 
 <nav class="nav">
+  <div class="nav-ind" id="navInd"></div>
   <button class="ni on" data-s="games"><span class="np"><span class="mat">sports_esports</span></span></button>
   <button class="ni" data-s="rewards"><span class="np"><span class="mat">card_giftcard</span></span></button>
   <button class="ni" data-s="profile"><span class="np"><span class="mat">person</span></span></button>
@@ -2176,7 +2180,25 @@ document.querySelectorAll('.ni').forEach(b=>b.addEventListener('click',()=>{
   if(b.dataset.s==='rewards'){dailyTick();tickBonus();if(typeof crashResize==='function')crashResize()}
   if(b.dataset.s==='clicker')rClk();
   if(b.dataset.s==='crash'){try{crashResize();crashHud();if(!crashRunning)crashIdle()}catch(e){}}
+  try{if(window.navIndUpdate)window.navIndUpdate()}catch(e){}
 }));
+(function(){
+  function navIndUpdate(){
+    const nav=document.querySelector('.nav');
+    const ind=document.getElementById('navInd');
+    const on=document.querySelector('.ni.on');
+    if(!nav||!ind||!on)return;
+    ind.style.width=on.offsetWidth+'px';
+    ind.style.transform='translateX('+on.offsetLeft+'px)';
+  }
+  window.navIndUpdate=navIndUpdate;
+  try{navIndUpdate()}catch(e){}
+  window.addEventListener('resize',()=>{try{navIndUpdate()}catch(e){}});
+  document.querySelectorAll('.ni').forEach(b=>b.addEventListener('click',()=>setTimeout(navIndUpdate,10)));
+  document.querySelectorAll('.hub-tile').forEach(b=>b.addEventListener('click',()=>setTimeout(navIndUpdate,40)));
+  setTimeout(navIndUpdate,100);
+  setTimeout(navIndUpdate,600);
+})();
 document.querySelectorAll('.hub-tile').forEach(b=>b.addEventListener('click',()=>{
   try{Sound.click()}catch(e){}
   const g=b.dataset.g;if(!g||!$('s-'+g))return;
