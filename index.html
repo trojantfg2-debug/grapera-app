@@ -851,6 +851,14 @@ body::before{display:none}
         <div class="up-info"><span class="up-name" data-i18n="turbo_name">🚀 Турбо</span><span class="up-lvl" id="upTurboLvl">Уровень 0 • +0% к силе</span></div>
         <button class="btn btn-p btn-sm up-btn" id="upTurboBtn">Купить</button>
       </div>
+      <div class="up-card">
+        <div class="up-info"><span class="up-name" data-i18n="limit_name">⏱ Лимит</span><span class="up-lvl" id="upLimitLvl">2000 / час</span></div>
+        <button class="btn btn-p btn-sm up-btn" id="upLimitBtn">Купить</button>
+      </div>
+      <div class="up-card" style="background:var(--sc-hi);border:1px solid var(--p)">
+        <div class="up-info"><span class="up-name" data-i18n="rebirth_name">♻️ Ребирф</span><span class="up-lvl" id="rebirthLvl">0 • +0%</span></div>
+        <button class="btn btn-p btn-sm up-btn" id="rebirthBtn">Купить</button>
+      </div>
       <button class="btn btn-s btn-sm" id="clkResetBtn" style="margin-top:.6rem;width:100%"><span class="mat">restart_alt</span><span data-i18n="clk_reset">Сбросить прогресс</span></button>
     </div>
   </section>
@@ -1416,8 +1424,8 @@ function defaultState(){
     version:SAVE_VERSION, bal:1000,
     stats:{total:0,win:0,loss:0,won:0,bet:0},
     hist:[], lastBonus:null, clicks:0, slotMax:500, crashHist:[],
-    clkWin:{used:0,start:Date.now()}, clkPower:1, clkAuto:0, clkTurbo:0,
-    daily:{lastClaim:null,streak:0}, savedAt:0, theme:'dark', sound:true,
+    clkWin:{used:0,start:Date.now()}, clkPower:1, clkAuto:0, clkTurbo:0, clkLimitLevel:0, rebirth:0,
+    daily:{lastClaim:null,streak:0}, savedAt:0, ver:0, theme:'dark', sound:true,
     freeSpins:0, usedPromos:[], lang:'ru', bonusX2Until:0,
     crashAutoOn:true, crashAutoVal:200, crashFree:0, betaModes:false,
     bets:{}
@@ -1455,9 +1463,12 @@ function normalizeState(x){
   d.clkPower=Math.max(1,Math.min(1000,Math.floor(+v.clkPower||1)));
   d.clkAuto=Math.max(0,Math.min(1000,Math.floor(+v.clkAuto||0)));
   d.clkTurbo=Math.max(0,Math.min(100,Math.floor(+v.clkTurbo||0)));
+  d.clkLimitLevel=Math.max(0,Math.min(20,Math.floor(+v.clkLimitLevel||0)));
+  d.rebirth=Math.max(0,Math.min(99,Math.floor(+v.rebirth||0)));
   d.daily=Object.assign(d.daily,v.daily||{});
   d.daily.lastClaim=Number.isFinite(+d.daily.lastClaim)?+d.daily.lastClaim:null;
   d.daily.streak=Math.max(0,Math.min(30,Math.floor(+d.daily.streak||0)));
+  d.ver=Math.max(0,Math.floor(+v.ver||0));
   d.savedAt=Number.isFinite(+v.savedAt)?+v.savedAt:0;
   d.theme=THEMES.includes(themeMig(v.theme))?themeMig(v.theme):d.theme;
   d.sound=v.sound!==false;
@@ -1497,9 +1508,10 @@ function writeCloud(){
 function save(immediate=false){
   try{balFix()}catch(e){}
   let snap='';
-  try{const c=Object.assign({},S);delete c.savedAt;snap=JSON.stringify(c)}catch(e){snap=''}
+  try{const c=Object.assign({},S);delete c.savedAt;delete c.ver;snap=JSON.stringify(c)}catch(e){snap=''}
   if(snap&&window.__lastSaveSnap&&snap===window.__lastSaveSnap)return;
   if(snap)window.__lastSaveSnap=snap;
+  S.ver=(S.ver||0)+1;
   S.savedAt=Date.now();
   try{fbPushSave(immediate)}catch(e){}
   clearTimeout(saveTimer);clearTimeout(cloudTimer);
@@ -1532,9 +1544,9 @@ function renderAll(){
   try{applyI18n()}catch(e){}
 }
 const I18N={
-ru:{ver_badge:'prebeta',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'- растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ - ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% - возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме - шанс без штрафа',risk1:'Повышенная ставка - шанс −6%',risk2:'Крупная ставка - шанс −13%',risk3:'Высокий риск - шанс −20%',risk4:'Очень высокий риск - шанс −28%',risk5:'Экстремальный риск - шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1-18/19-36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону - выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} - награда ждёт!',received:'Получено',streak_next:'Стрик {s} • следующая награда завтра • сгорает при пропуске дня',daily_reward_for:'День {d} - +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто - подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-en:{ver_badge:'prebeta',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'- grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND - PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee - 97% return',throw:'ROLL',risk0:'Normal bet - no chance penalty',risk1:'Raised bet - chance −6%',risk2:'Big bet - chance −13%',risk3:'High risk - chance −20%',risk4:'Very high risk - chance −28%',risk5:'Extreme risk - chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1-18/19-36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side - payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} - reward is waiting!',received:'Claimed',streak_next:'Streak {s} • next reward tomorrow • resets if you miss a day',daily_reward_for:'Day {d} - +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto - follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
-uk:{ver_badge:'prebeta',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'- зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ - ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% - повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі - шанс без штрафу',risk1:'Підвищена ставка - шанс −6%',risk2:'Велика ставка - шанс −13%',risk3:'Високий ризик - шанс −20%',risk4:'Дуже високий ризик - шанс −28%',risk5:'Екстремальний ризик - шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1-18/19-36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону - виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} - нагорода чекає!',received:'Отримано',streak_next:'Стрік {s} • наступна нагорода завтра • згорає, якщо пропустити день',daily_reward_for:'День {d} - +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто - підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
+ru:{ver_badge:'prebeta',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'- растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ - ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% - возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме - шанс без штрафа',risk1:'Повышенная ставка - шанс −6%',risk2:'Крупная ставка - шанс −13%',risk3:'Высокий риск - шанс −20%',risk4:'Очень высокий риск - шанс −28%',risk5:'Экстремальный риск - шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1-18/19-36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'⚡ АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону - выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'⚡ Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'🚀 Турбо',limit_name:'⏱ Ліміт',limit_lvl:'{v} / год',rebirth_name:'♻️ Ребіт',rebirth_lvl:'{n} • +{p}%',rebirth_need:'Потрібно {c} ⭐ і 30 сили',limit_name:'⏱ Лимит',limit_lvl:'{v} / час',rebirth_name:'♻️ Ребирф',rebirth_lvl:'{n} • +{p}%',rebirth_need:'Нужно {c} ⭐ и 30 силы',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} - награда ждёт!',received:'Получено',streak_next:'Стрик {s} • следующая награда завтра • сгорает при пропуске дня',daily_reward_for:'День {d} - +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто - подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+en:{ver_badge:'prebeta',nav_slots:'Slots',nav_dice:'Dice',nav_roulette:'Roulette',nav_crash:'Crash',nav_mines:'Mines',nav_coin:'Coin',nav_clicker:'Clicker',nav_rewards:'Rewards',nav_stats:'Stats',nav_settings:'Settings',daily_bonus:'Daily bonus',claim:'Claim',bonus_ready_title:'Bonus ready!',bonus_ready:'bonus ready!',bonus_in:'in {s}s',ready:'Ready!',press_claim:'Tap "Claim"',to_bonus:'Until bonus',x2_left:'×2 until {t}',claim_for:'Claim +{n}',wait_btn:'Wait {s}s',wait_s:'Wait {s}s',stars_many:'stars',bet_limit:'Bet limit:',bet_limit_grows:'- grows with wins',free_spins:'Free spins:',spin:'SPIN',pay3:'PAY FOR 3 IN A ROW',pay2:'2 OF A KIND - PARTIAL PAYOUT',slot_bonus_note:'Big-bet payout bonus: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'BET ON:',over:'OVER',chance:'chance',multiplier:'multiplier',dice_fee:'Multiplier already includes a 3% fee - 97% return',throw:'ROLL',risk0:'Normal bet - no chance penalty',risk1:'Raised bet - chance −6%',risk2:'Big bet - chance −13%',risk3:'High risk - chance −20%',risk4:'Very high risk - chance −28%',risk5:'Extreme risk - chance −38%',even:'Even',odd:'Odd',rr_odds:'Number ×{straight} • color, even/odd, 1-18/19-36 ×{outside} • zero beats everything except straight-up',bet:'BET',bet_min:'Bet must be more than 0',autocash:'AUTO CASHOUT',auto_hint:'Triggers only if the chart reaches the multiplier',launch:'LAUNCH',take:'CASH OUT',crash_make_bet:'Place a bet and launch the rocket',crash_growing:'Chart is rising • cash out before the crash',crash_started:'📈 Rise started...',crash_crashed:'📉 CHART CRASHED',crash_crash_point:'crash point',crash_auto:'⚡ AUTO CASHOUT',crash_took:'📈 SUCCESSFUL CASHOUT',crash_bet_word:'bet',crash_info_idle:'Game RTP: 97% • The chart can crash at any moment',crash_info_live:'Cash out before the crash • auto: {auto}×',mines:'MINES:',mines_hint:'Pick tiles and win!',start:'START',mines_fee:'Multiplier already includes a 4% fee',mines_open:'Open tiles! Mines: {n}',mines_mult:'Multiplier:',mines_take_word:'Cash out:',mines_hit:'💥 Mine! −{n}',mines_took:'✅ Cashed out <b>{c}</b> (×{m})',heads:'Heads 🦅',tails:'Tails 🔔',heads_name:'Heads',tails_name:'Tails',coin_note:'Guess the side - payout ×1.92',click_title:'CLICK AND EARN STARS',per_click:'Per click:',total_clicks:'Total clicks:',clk_limit:'{used} / {limit} per hour',clk_limit_out:'Limit reached. Reset in {m}m {s}s',upgrades:'UPGRADES',power_name:'⚡ Click power',power_lvl:'Level {lvl} • +{p} star/click',buy:'Buy',turbo_name:'🚀 Turbo',limit_name:'⏱ Limit',limit_lvl:'{v} / hour',rebirth_name:'♻️ Rebirth',rebirth_lvl:'{n} • +{p}%',rebirth_need:'Need {c} ⭐ and 30 power',turbo_lvl:'Level {lvl} • +{p}% power',daily_rewards:'DAILY REWARDS',loading:'Loading...',per_minute:'BONUS EVERY MINUTE',day:'Day',day_n_of_7:'Day {d} - reward is waiting!',received:'Claimed',streak_next:'Streak {s} • next reward tomorrow • resets if you miss a day',daily_reward_for:'Day {d} - +{r} stars',daily_claim_btn:'Claim +{r}',daily_claimed_msg:'+{r} stars! Day {d}',stats:'STATISTICS',bets:'bets',wins:'wins',losses:'losses',won:'won',betted:'wagered',profit:'profit',history:'HISTORY',empty:'Empty',reset:'Reset',language:'LANGUAGE',theme:'THEME',th_purple:'Purple',th_black:'Black',th_white:'White',th_red:'Red',th_auto:'Auto',th_ocean:'Ocean',th_sunset:'Sunset',beta:'beta',auto_note:'Auto - follows your phone’s dark/light theme',sound:'SOUND',sound_on:'Sound on',sound_off:'Sound off',promo:'PROMO CODE',promo_ph:'Enter promo code',activate:'Activate',promo_enter:'Enter a promo code',promo_not_found:'Promo code not found',promo_expired:'Promo code expired',promo_used:'Promo code already used',promo_freespins:'free spins',promo_x2:'×2 on minute bonuses for {min} min!',promo_ok:'Activated: {parts}',not_enough:'Not enough',not_enough_stars:'Not enough stars',choose_bet:'Choose a bet',jackpot:'JACKPOT +{w}',two_in_row:'2 IN A ROW +{w}',miss:'Miss',limit_up:'Bet limit increased to {n} ⭐',click_limit_out:'Click limit reached, wait for reset',power_up:'Click power upgraded!',turbo_up:'Turbo upgraded!',turbo_max:'Turbo is at max level',reset_done:'Reset',theme_applied:'Theme applied',lang_applied:'Language applied',id_copied:'ID copied: {uid}',game_slots:'Slots',game_dice:'Dice',game_roulette:'Roulette',game_crash:'Crash',game_mines:'Mines',game_coin:'Coin',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
+uk:{ver_badge:'prebeta',nav_slots:'Слоти',nav_dice:'Кістки',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Міни',nav_coin:'Монета',nav_clicker:'Клікер',nav_rewards:'Нагороди',nav_stats:'Стата',nav_settings:'Налаштування',daily_bonus:'Щоденний бонус',claim:'Забрати',bonus_ready_title:'Бонус готовий!',bonus_ready:'бонус готовий!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Натисни «Забрати»',to_bonus:'До бонусу',x2_left:'×2 до {t}',claim_for:'Забрати +{n}',wait_btn:'Чекай {s}с',wait_s:'Зачекай {s}с',stars_many:'зірок',bet_limit:'Ліміт ставки:',bet_limit_grows:'- зростає з перемогами',free_spins:'Безкоштовних спінів:',spin:'КРУТИТИ',pay3:'ВИПЛАТА ЗА 3 В РЯД',pay2:'2 ОДНАКОВИХ - ЧАСТКОВА ВИПЛАТА',slot_bonus_note:'Бонус до виплати за велику ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БІЛЬШЕ',chance:'шанс',multiplier:'множник',dice_fee:'Множник уже включає комісію 3% - повернення 97%',throw:'КИНУТИ',risk0:'Ставка в нормі - шанс без штрафу',risk1:'Підвищена ставка - шанс −6%',risk2:'Велика ставка - шанс −13%',risk3:'Високий ризик - шанс −20%',risk4:'Дуже високий ризик - шанс −28%',risk5:'Екстремальний ризик - шанс −38%',even:'Парне',odd:'Непарне',rr_odds:'Число ×{straight} • колір, парне/непарне, 1-18/19-36 ×{outside} • зеро б’є все, крім прямого числа',bet:'СТАВКА',bet_min:'Ставка має бути більше 0',autocash:'АВТОЗАБІР',auto_hint:'Спрацює, лише якщо графік дістанеться множника',launch:'ЗАПУСТИТИ',take:'ЗАБРАТИ',crash_make_bet:'Зроби ставку і запускай ракету',crash_growing:'Графік зростає • забери до обриву',crash_started:'📈 Зростання почалося...',crash_crashed:'📉 ГРАФІК ОБІРВАВСЯ',crash_crash_point:'точка обриву',crash_auto:'⚡ АВТОЗАБІР',crash_took:'📈 УСПІШНИЙ ЗАБІР',crash_bet_word:'ставка',crash_info_idle:'RTP гри: 97% • Графік може обірватися будь-якої миті',crash_info_live:'Забери виграш до обриву графіка • авто: {auto}×',mines:'МІНИ:',mines_hint:'Обирай клітинки і вигравай!',start:'ПОЧАТИ',mines_fee:'Множник уже включає комісію 4%',mines_open:'Відкривай клітинки! Міни: {n}',mines_mult:'Множник:',mines_take_word:'Забрати:',mines_hit:'💥 Міна! −{n}',mines_took:'✅ Забрав <b>{c}</b> (×{m})',heads:'Орел 🦅',tails:'Решка 🔔',heads_name:'Орел',tails_name:'Решка',coin_note:'Вгадай сторону - виплата ×1.92',click_title:'КЛІКАЙ І ОТРИМУЙ ЗІРКИ',per_click:'За клік:',total_clicks:'Всього кліків:',clk_limit:'{used} / {limit} за 1 годину',clk_limit_out:'Ліміт вичерпано. Скидання через {m}хв {s}с',upgrades:'ПОКРАЩЕННЯ',power_name:'⚡ Сила кліку',power_lvl:'Рівень {lvl} • +{p} зірка/клік',buy:'Купити',turbo_name:'🚀 Турбо',limit_name:'⏱ Лимит',limit_lvl:'{v} / час',rebirth_name:'♻️ Ребирф',rebirth_lvl:'{n} • +{p}%',rebirth_need:'Нужно {c} ⭐ и 30 силы',turbo_lvl:'Рівень {lvl} • +{p}% до сили',daily_rewards:'ЩОДЕННІ НАГОРОДИ',loading:'Завантаження...',per_minute:'БОНУС ЩОХВИЛИНИ',day:'День',day_n_of_7:'День {d} - нагорода чекає!',received:'Отримано',streak_next:'Стрік {s} • наступна нагорода завтра • згорає, якщо пропустити день',daily_reward_for:'День {d} - +{r} зірок',daily_claim_btn:'Забрати +{r}',daily_claimed_msg:'+{r} зірок! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'перемог',losses:'поразок',won:'виграно',betted:'поставлено',profit:'профіт',history:'ІСТОРІЯ',empty:'Порожньо',reset:'Скинути',language:'МОВА',theme:'ТЕМА ОФОРМЛЕННЯ',th_purple:'Фіолетова',th_black:'Чорна',th_white:'Біла',th_red:'Червона',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Захід',beta:'бета',auto_note:'Авто - підлаштовується під темну/світлу тему телефона',sound:'ЗВУК',sound_on:'Звук увімкнено',sound_off:'Звук вимкнено',promo:'ПРОМОКОД',promo_ph:'Введіть промокод',activate:'Активувати',promo_enter:'Введіть промокод',promo_not_found:'Промокод не знайдено',promo_expired:'Термін дії промокоду минув',promo_used:'Промокод уже використано',promo_freespins:'фріспінів',promo_x2:'×2 до щохвилинних бонусів на {min} хв!',promo_ok:'Активовано: {parts}',not_enough:'Не вистачає',not_enough_stars:'Не вистачає зірок',choose_bet:'Обери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Ліміт ставки збільшено до {n} ⭐',click_limit_out:'Ліміт кліків вичерпано, чекай скидання',power_up:'Силу кліку покращено!',turbo_up:'Турбо покращено!',turbo_max:'Турбо досягло максимального рівня',reset_done:'Скинуто',theme_applied:'Тему застосовано',lang_applied:'Мову застосовано',id_copied:'ID скопійовано: {uid}',game_slots:'Слоти',game_dice:'Кістки',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Міни',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'}
 };
 try{
 I18N.ru.nav_tower='Башня';I18N.ru.game_tower='Башня';I18N.ru.tw_easy='Легко 4×';I18N.ru.tw_med='Средне 3×';I18N.ru.tw_hard='Хард 2×';I18N.ru.tw_fee='8 этажей • на каждом одна бомба • множитель уже включает комиссию 4%';I18N.ru.tw_hint='Выбери клетку на каждом этаже и лезь вверх!';I18N.ru.tw_floor='Этаж';I18N.ru.tw_next='Этаж {n} из 8 - выбери клетку!';I18N.ru.tw_hit='💥 Бомба на {n} этаже! −{b}';I18N.ru.tw_took='✅ Забрал <b>{c}</b> (×{m}) • этаж {n}';I18N.ru.tw_max='🏆 Вершина! <b>{c}</b> (×{m}) - автовыплата!';
@@ -2010,21 +2022,19 @@ function fbPushSave(now){
   fbSaveTimer=setTimeout(()=>{
     if(lockDenied)return;
     let snap='';
-    try{const c=Object.assign({},S);delete c.savedAt;snap=JSON.stringify(c)}catch(e){snap=''}
+    try{const c=Object.assign({},S);delete c.savedAt;delete c.ver;snap=JSON.stringify(c)}catch(e){snap=''}
     if(snap&&snap===fbStateJson)return;
     try{
       fbDb.ref(p).transaction(cur=>{
-        if(cur&&cur.state){
-          const ct=(cur.state.stats&&cur.state.stats.total)||0, lt=S.stats.total||0;
-          const cb=cur.state.bal||0, lb=S.bal||0;
-          if(ct>lt+5)return;
-          if(lt>ct+5){} 
-          else if(cb>lb*2 && ct>=lt-5)return;
-          else if(lb>cb*2 && lt>=ct-5){}
-          else if((cur.savedAt||0)>(S.savedAt||0))return;
-        }else if(cur&&((cur.savedAt||0)>(S.savedAt||0)))return;
+        if(cur&&cur.state&&typeof cur.state.ver==='number'&&typeof S.ver==='number'){
+          if(cur.state.ver>S.ver)return;
+          if(cur.state.ver===S.ver&&((cur.savedAt||0)>(S.savedAt||0)))return;
+        }else{
+          if(cur&&fbBaseSavedAt!==null&&cur.savedAt!==fbBaseSavedAt)return;
+          if(cur&&((cur.savedAt||0)>(S.savedAt||0)))return;
+        }
         return {state:S,savedAt:S.savedAt||Date.now()};
-      },(err,ok)=>{if(ok){try{fbStateJson=snap}catch(e){}return}try{setTimeout(()=>{try{fbStateJson=null;fbPushSave(false)}catch(e){}},5000)}catch(e){}});
+      },(err,ok)=>{if(ok){try{fbStateJson=snap;fbBaseSavedAt=S.savedAt;}catch(e){}return}try{setTimeout(()=>{try{fbPullSave()}catch(e){}},800)}catch(e){}});
     }catch(e){}
   },now?100:400);
 }
@@ -2034,23 +2044,22 @@ function fbPullSave(){
   fbDb.ref(p).once('value').then(snap=>{
     let v=null;try{v=snap.val()}catch(e){}
     if(v&&v.state){
-      const ct=(v.state.stats&&v.state.stats.total)||0, lt=S.stats.total||0;
-      const cb=v.state.bal||0, lb=S.bal||0;
+      const cv=(v.state.ver||0), lv=S.ver||0;
       const serverNewer=((v.savedAt||0)>(S.savedAt||0));
-      if(ct>lt+5 || (cb>lb*2 && ct>=lt-5)){
+      if(cv>lv){
         applyLoadedState(Object.assign({},v.state,{savedAt:v.savedAt}));
         try{const c=Object.assign({},S);delete c.savedAt;fbStateJson=JSON.stringify(c)}catch(e){}
         try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}
         writeLocal();renderAll();
-      }else if(lt>ct+5 || (lb>cb*2 && lt>=ct-5)){
+      }else if(lv>cv){
         try{fbPushSave(true)}catch(e){}try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}
       }else if(serverNewer){
         applyLoadedState(Object.assign({},v.state,{savedAt:v.savedAt}));
         try{const c=Object.assign({},S);delete c.savedAt;fbStateJson=JSON.stringify(c)}catch(e){}
         try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}
         writeLocal();renderAll();
-      }else{try{fbPushSave(true)}catch(e){}try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}}
-    }else{try{fbPushSave(true)}catch(e){}try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}}
+      }else{fbBaseSavedAt=S.savedAt;try{fbPushSave(true)}catch(e){}try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}}
+    }else{fbBaseSavedAt=S.savedAt;try{fbPushSave(true)}catch(e){}try{fbStarsSyncedV=null;fbStarsPush()}catch(e){}}
     fbSyncReady=true;
   }).catch(()=>{fbSyncReady=true;});
 }
@@ -3159,7 +3168,11 @@ $('cGo').addEventListener('click',()=>{
   const r=Math.random()<.5?'h':'t';const c=$('cC');c.classList.add('flip');
   setTimeout(()=>{c.classList.remove('flip');const rn=r==='h'?'🦅':'🔔';c.textContent=rn;const w=r===cCh?Math.floor(bet*1.94):0;const rl=cCh==='h'?t('heads_name'):t('tails_name');S.bal+=w;save();rBal();$('cR').innerHTML=(w>0?'✅ '+rl+' - +'+w:'❌ '+rl+' - −'+bet);$('cR').style.color=w>0?'var(--win)':'var(--e)';aH('coin',w,bet);cFlip=false;$('cGo').disabled=false;bz(w?'win':'loss');if(w>0){const rc=c.getBoundingClientRect();confetti(rc.left+rc.width/2,rc.top+rc.height/2,16)}},650);
 });
-const CLK_LIMIT=2000, CLK_WINDOW=3600000;
+const CLK_WINDOW=3600000;
+function clkLimit(){return 2000 + (S.clkLimitLevel||0)*1000;}
+function limitCost(){return Math.floor(12000*Math.pow(1.55,S.clkLimitLevel||0));}
+function rebirthCost(){return Math.floor(500000*Math.pow(2.2,S.rebirth||0));}
+function rebirthBonus(){return 1 + (S.rebirth||0)*0.18;}
 function clkCheckWindow(){
   const now=Date.now();
   if(now-S.clkWin.start>=CLK_WINDOW){S.clkWin.used=0;S.clkWin.start=now;save()}
@@ -3170,30 +3183,33 @@ function rClk(){
   clkCheckWindow();
   $('clkCount').textContent=(S.clicks||0).toLocaleString();
   $('clkPow').textContent='+'+Math.max(1,Math.floor(S.clkPower*(1+S.clkTurbo*0.1)));
-  const left=CLK_LIMIT-S.clkWin.used;
-  $('clkBarFill').style.width=Math.min(100,(S.clkWin.used/CLK_LIMIT*100))+'%';
+  const lim=clkLimit();
+  const left=lim-S.clkWin.used;
+  $('clkBarFill').style.width=Math.min(100,(S.clkWin.used/lim*100))+'%';
   if(left<=0){
     const remain=Math.max(0,CLK_WINDOW-(Date.now()-S.clkWin.start));
     const mm=Math.floor(remain/60000),ss=Math.floor((remain%60000)/1000);
     $('clkLimitTxt').textContent=t('clk_limit_out',{m:mm,s:ss});
     $('clkStar').disabled=true;
   }else{
-    $('clkLimitTxt').textContent=t('clk_limit',{used:S.clkWin.used,limit:CLK_LIMIT});
+    $('clkLimitTxt').textContent=t('clk_limit',{used:S.clkWin.used,limit:lim});
     $('clkStar').disabled=false;
   }
   $('upPowLvl').textContent=t('power_lvl',{lvl:S.clkPower,p:S.clkPower});
-  $('upPowBtn').textContent=t('buy')+' ('+powCost()+')';
+  $('upPowBtn').textContent=t('buy')+' ('+fmtAbbr(powCost())+')';
   $('upTurboLvl').textContent=t('turbo_lvl',{lvl:S.clkTurbo,p:S.clkTurbo*10});
-  $('upTurboBtn').textContent=t('buy')+' ('+turboCost()+')';
+  $('upTurboBtn').textContent=t('buy')+' ('+fmtAbbr(turboCost())+')';
+  try{$('upLimitLvl').textContent=t('limit_lvl',{v:clkLimit()});$('upLimitBtn').textContent=t('buy')+' ('+fmtAbbr(limitCost())+')';}catch(e){}
+  try{$('rebirthLvl').textContent=t('rebirth_lvl',{n:S.rebirth||0,p:Math.round((rebirthBonus()-1)*100)});$('rebirthBtn').textContent=S.rebirth?' '+fmtAbbr(rebirthCost()):t('buy')+' ('+fmtAbbr(rebirthCost())+')';}catch(e){}
 }
 rClk();
 setInterval(rClk,1000);
 $('clkStar').addEventListener('click',()=>{
   clkCheckWindow();
-  if(S.clkWin.used>=CLK_LIMIT){sn(t('click_limit_out'));return}
+  if(S.clkWin.used>=lim){sn(t('click_limit_out'));return}
   Sound.click();
   $('clkStar').classList.remove('pop');void $('clkStar').offsetWidth;$('clkStar').classList.add('pop');
-  const clickReward=Math.max(1,Math.floor(S.clkPower*(1+S.clkTurbo*0.1)));
+  const clickReward=Math.max(1,Math.floor(S.clkPower*(1+S.clkTurbo*0.1)*rebirthBonus()));
   S.bal+=clickReward;S.clicks=(S.clicks||0)+1;S.clkWin.used++;save();rBal();rClk();
   const rect=$('clkStar').getBoundingClientRect();
   const f=document.createElement('div');
@@ -3215,6 +3231,17 @@ $('upTurboBtn').addEventListener('click',()=>{
   if(S.clkTurbo>=20){sn(t('turbo_max'));return}
   if(S.bal<cost){sn(t('not_enough_stars'));return}
   Sound.click();S.bal-=cost;S.clkTurbo++;save();rBal();rClk();sn(t('turbo_up'));
+});
+$('upLimitBtn').addEventListener('click',()=>{
+  const cost=limitCost();
+  if(S.bal<cost){sn(t('not_enough_stars'));return}
+  Sound.click();S.bal-=cost;S.clkLimitLevel=(S.clkLimitLevel||0)+1;save();rBal();rClk();sn(t('power_up'));
+});
+$('rebirthBtn').addEventListener('click',()=>{
+  const cost=rebirthCost();
+  if(S.clkPower<30){sn(t('rebirth_need',{c:fmtAbbr(cost)}));return}
+  if(S.bal<cost){sn(t('not_enough_stars'));return}
+  Sound.click();S.bal-=cost;S.rebirth=(S.rebirth||0)+1;S.clkPower=1;S.clkTurbo=0;S.clicks=0;S.clkWin.used=0;S.clkWin.start=Date.now();save();rBal();rClk();sn('♻️ +'+Math.round((rebirthBonus()-1 -0.18)*100)+'%');
 });
 try{const _cr=$('clkResetBtn');if(_cr)_cr.addEventListener('click',()=>{
   Sound.click();
@@ -3998,7 +4025,7 @@ function topLoad(force){
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='13.23';
+const APP_VER='13.25';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
