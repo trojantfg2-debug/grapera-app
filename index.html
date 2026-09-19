@@ -1452,16 +1452,10 @@ function balSan(v){
 function fmtAbbr(n){
   n=Math.floor(Number(n)||0);
   if(n<10000)return n.toLocaleString();
-  try{
-    const lang=curLang();
-    const loc=lang==='en'?'en':(lang==='uk'?'uk':'ru');
-    return new Intl.NumberFormat(loc,{notation:'compact',maximumFractionDigits:1}).format(n);
-  }catch(e){
-    if(n>=1e12)return (n/1e12).toFixed(1).replace(/\.0$/,'')+'T';
-    if(n>=1e9)return (n/1e9).toFixed(1).replace(/\.0$/,'')+'B';
-    if(n>=1e6)return (n/1e6).toFixed(1).replace(/\.0$/,'')+'M';
-    return (n/1e3).toFixed(1).replace(/\.0$/,'')+'K';
-  }
+  if(n>=1e12)return (n/1e12).toFixed(1).replace(/\.0$/,'')+'T';
+  if(n>=1e9)return (n/1e9).toFixed(1).replace(/\.0$/,'')+'B';
+  if(n>=1e6)return (n/1e6).toFixed(1).replace(/\.0$/,'')+'M';
+  return (n/1e3).toFixed(1).replace(/\.0$/,'')+'K';
 }
 function balFmt(v){
   const n=balSan(v);
@@ -3486,7 +3480,7 @@ $('dailyBtnTop').addEventListener('click',claimDaily);
 dailyTick();
 setInterval(dailyTick,1000);
 const GAME_NAMES={slots:'Слоты',dice:'Кости',roulette:'Рулетка',crash:'Ракетка',mines:'Мины',coin:'Монета',tower:'Башня',bj:'Блэкджек'};
-function rSt(){$('xT').textContent=fmtAbbr(S.stats.total);$('xW').textContent=fmtAbbr(S.stats.win);$('xL').textContent=fmtAbbr(S.stats.loss);$('xWo').textContent=fmtAbbr(S.stats.won);$('xB').textContent=fmtAbbr(S.stats.bet);const _p=S.stats.won-S.stats.bet;$('xP').textContent=( _p>=0?'+':'')+fmtAbbr(_p);$('xP').style.color=_p>=0?'var(--win)':'var(--e)';$('xWR').textContent=S.stats.total?Math.round(S.stats.win/S.stats.total*100)+'%':'-';$('xBest').textContent=fmtAbbr(S.stats.best||0);const _stw=S.stats.streak||0;$('xSt').textContent=_stw+(_stw>=2?'🔥':'');try{$('xT').title=S.stats.total.toLocaleString();$('xWo').title=S.stats.won.toLocaleString();$('xB').title=S.stats.bet.toLocaleString();$('xP').title=(S.stats.won-S.stats.bet).toLocaleString();$('xBest').title=(S.stats.best||0).toLocaleString();}catch(e){}const el=$('hL');if(!S.hist.length){el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">'+t('empty')+'</div>';return}el.innerHTML='';S.hist.slice(0,30).forEach(h=>{const d=document.createElement('div');d.className='h-item';const t=new Date(h.t);const ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');const safeGame=String(gameName(h.g)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function rSt(){$('xT').textContent=fmtAbbr(S.stats.total);$('xW').textContent=fmtAbbr(S.stats.win);$('xL').textContent=fmtAbbr(S.stats.loss);$('xWo').textContent=fmtAbbr(S.stats.won);$('xB').textContent=fmtAbbr(S.stats.bet);const _p=S.stats.won-S.stats.bet;$('xP').textContent=( _p>=0?'+':'')+fmtAbbr(_p);$('xP').style.color=_p>=0?'var(--win)':'var(--e)';$('xWR').textContent=S.stats.total?Math.round(S.stats.win/S.stats.total*100)+'%':'-';$('xBest').textContent=fmtAbbr(S.stats.best||0);const _stw=S.stats.streak||0;$('xSt').textContent=_stw+(_stw>=2?'🔥':'');try{$('xT').title=S.stats.total.toLocaleString();$('xW').title=S.stats.win.toLocaleString();$('xL').title=S.stats.loss.toLocaleString();$('xWo').title=S.stats.won.toLocaleString();$('xB').title=S.stats.bet.toLocaleString();$('xP').title=(S.stats.won-S.stats.bet).toLocaleString();$('xBest').title=(S.stats.best||0).toLocaleString();$('xSt').title=String(_stw);}catch(e){}try{const _bind=(id,val)=>{const e=$(id); if(e){e.style.cursor='pointer'; e.onclick=()=>{try{Sound.click()}catch(_){} const v=(typeof val==='number'?val.toLocaleString():String(val)); sn(v)}}}; _bind('xT',S.stats.total); _bind('xW',S.stats.win); _bind('xL',S.stats.loss); _bind('xWo',S.stats.won); _bind('xB',S.stats.bet); _bind('xP',S.stats.won-S.stats.bet); _bind('xBest',S.stats.best); _bind('xSt',_stw); _bind('xWR',S.stats.total?Math.round(S.stats.win/S.stats.total*100)+'%':'-');}catch(e){}const el=$('hL');if(!S.hist.length){el.innerHTML='<div style="text-align:center;padding:.8rem;color:var(--on-sv);font-size:.8rem">'+t('empty')+'</div>';return}el.innerHTML='';S.hist.slice(0,30).forEach(h=>{const d=document.createElement('div');d.className='h-item';const t=new Date(h.t);const ts=t.getHours().toString().padStart(2,'0')+':'+t.getMinutes().toString().padStart(2,'0');const safeGame=String(gameName(h.g)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 d.innerHTML='<span>'+safeGame+' • '+ts+'</span><span title="'+(h.r>0?h.r:h.a)+'">'+(h.r>0?'<span class="w">+'+fmtAbbr(h.r)+'</span>':'<span class="l">−'+fmtAbbr(h.a)+'</span>')+'</span>';el.appendChild(d)})}
 rSt();
 
@@ -4170,16 +4164,21 @@ function populateOther(r){
     const xe=$('opXp'); if(xe){ try{const li2=li||pfLevelInfo(xp); xe.textContent=fmtAbbr(xp)+' XP • '+fmtAbbr(li2.next-xp)+' до '+(li2.lvl+1)+' ур.';}catch(e){xe.textContent=fmtAbbr(r.stars||0)+' ⭐'} }
   }catch(e){}
   setHtml('opStreak',(r.days||0)+'<span class="mat" style="font-size:1rem;vertical-align:middle;margin-left:2px">local_fire_department</span>');
-  set('opAch',fmtAbbr(r.ach||0)+'/16');
-  set('opT',fmtAbbr(r.bets||0));
-  set('opW',fmtAbbr(r.wins||0));
-  set('opL',fmtAbbr(Math.max(0,(r.bets||0)-(r.wins||0))));
-  set('opWo',fmtAbbr(r.stars||0));
-  set('opB',fmtAbbr(r.bets||0));
-  const prof=(r.bets?Math.max(0,(r.stars||0)-(r.bets*10)):0); set('opP',fmtAbbr(prof));
-  set('opWR',(r.wr||0)+'%');
-  set('opBest',fmtAbbr(r.stars||0));
-  set('opSt',fmtAbbr(r.strk||0));
+  (function(){
+    const _setAbbr=(id,raw)=>{const e=$(id); if(!e)return; const v=Math.max(0,Math.floor(Number(raw)||0)); e.textContent=fmtAbbr(v); try{e.title=v.toLocaleString(); e.style.cursor='pointer'; e.onclick=()=>{try{Sound.click()}catch(_){} sn(v.toLocaleString())}}catch(e){}};
+    const _setAbbrOrDash=(id,raw)=>{const e=$(id); if(!e)return; if(raw==null||raw===''||!Number.isFinite(Number(raw))){e.textContent='—'; try{e.title='нет данных'; e.style.cursor='default'; e.onclick=null}catch(e){} return;} const v=Math.max(0,Math.floor(Number(raw))); e.textContent=fmtAbbr(v); try{e.title=v.toLocaleString(); e.style.cursor='pointer'; e.onclick=()=>{try{Sound.click()}catch(_){} sn(v.toLocaleString())}}catch(e){}};
+    const _setAch=(id,raw)=>{const e=$(id); if(!e)return; e.textContent=fmtAbbr(raw)+'/16'; try{e.title=raw+'/16'; e.style.cursor='pointer'; e.onclick=()=>sn(raw+'/16')}catch(e){}};
+    _setAch('opAch', r.ach||0);
+    _setAbbr('opT', r.bets||0);
+    _setAbbr('opW', r.wins||0);
+    const _loss = (r.loss!=null? r.loss : Math.max(0,(r.bets||0)-(r.wins||0))); _setAbbr('opL', _loss);
+    _setAbbrOrDash('opWo', r.won);
+    _setAbbrOrDash('opB', r.betted);
+    const _profEl=$('opP'); if(_profEl){ if(r.won!=null&&r.betted!=null){const v=r.won-r.betted; _profEl.textContent=(v>=0?'+':'')+fmtAbbr(v); try{_profEl.title=v.toLocaleString(); _profEl.style.cursor='pointer'; _profEl.style.color=v>=0?'var(--win)':'var(--e)'; _profEl.onclick=()=>sn(v.toLocaleString())}catch(e){}} else{_profEl.textContent='—'; try{_profEl.title='нет данных'; _profEl.style.cursor='default'; _profEl.style.color=''; _profEl.onclick=null}catch(e){}} }
+    const _wrEl=$('opWR'); if(_wrEl){ _wrEl.textContent=(r.wr||0)+'%'; try{_wrEl.title=(r.wr||0)+'%'; _wrEl.style.cursor='pointer'; _wrEl.onclick=()=>sn((r.wr||0)+'%')}catch(e){}}
+    _setAbbrOrDash('opBest', r.best);
+    _setAbbr('opSt', r.strk||0);
+  })();
 }
 try{
   const av=$('avaSheet'); if(av)av.addEventListener('click',(e)=>{if(e.target===av)hideAvaSheet()});
@@ -4194,7 +4193,7 @@ function lbStats(){
   const total=S.stats.total||0,win=S.stats.win||0;
   let lvl=1, xp=0; try{xp=pfXp(); lvl=pfLevelInfo(xp).lvl}catch(e){}
   let pic='';try{pic=pfPhoto||tgPhoto()||''}catch(e){try{pic=tgPhoto()||''}catch(_){}}
-  return {n:tgNick(),pic:pic,stars:balSan(S.bal),bets:total,wins:win,wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,xp:xp,ts:Date.now()};
+  return {n:tgNick(),pic:pic,stars:balSan(S.bal),bets:total,wins:win,loss:Math.max(0,total-win),won:Math.max(0,Math.floor(S.stats.won||0)),betted:Math.max(0,Math.floor(S.stats.bet||0)),best:Math.max(0,Math.floor(S.stats.best||0)),wr:total>0?(Math.round(win/total*1000)/10):0,strk:(S.stats.bestStreak||0),ach:ach,days:(S.daily.streak||0),lvl:lvl,xp:xp,ts:Date.now()};
 }
 function fbPushLb(now){
   if(!duelFbReady())return;
@@ -4232,14 +4231,16 @@ function topLoad(force){
     if(ban==null||typeof ban!=='object')ban={};
     const arr=Object.keys(all).map(k=>{
       const c=all[k]||{};
-      return {id:k,nick:String(c.n||'').slice(0,24),pic:String(c.pic||'').slice(0,15000),stars:Math.max(0,Math.floor(+c.stars||0)),bets:Math.floor(+c.bets||0),wins:Math.floor(+c.wins||0),wr:+c.wr||0,strk:Math.floor(+c.strk||0),ach:Math.floor(+c.ach||0),days:Math.floor(+c.days||0),lvl:Math.floor(+c.lvl||0),xp:Math.max(0,Math.floor(+c.xp||0))};
+      const _num=(v)=>{const n=Math.floor(Number(v)); return Number.isFinite(n)?Math.max(0,n):undefined};
+      const _has=(v)=>v!=null&&v!==''&&Number.isFinite(Number(v));
+      return {id:k,nick:String(c.n||'').slice(0,24),pic:String(c.pic||'').slice(0,15000),stars:Math.max(0,Math.floor(+c.stars||0)),bets:Math.floor(+c.bets||0),wins:Math.floor(+c.wins||0),loss:_has(c.loss)?Math.floor(+c.loss):undefined,won:_has(c.won)?Math.max(0,Math.floor(+c.won)):undefined,betted:_has(c.betted)?Math.max(0,Math.floor(+c.betted)):undefined,best:_has(c.best)?Math.max(0,Math.floor(+c.best)):undefined,wr:+c.wr||0,strk:Math.floor(+c.strk||0),ach:Math.floor(+c.ach||0),days:Math.floor(+c.days||0),lvl:Math.floor(+c.lvl||0),xp:_has(c.xp)?Math.max(0,Math.floor(+c.xp)):undefined};
     }).filter(r=>r.nick);
     topCache={rows:arr,ban:ban,tags:tags,reasons:reasons};topCacheT=Date.now();
     topRender(arr,topCacheT,ban,tags,reasons);
   });
 }
 try{const _tg=$('topGo');if(_tg)_tg.addEventListener('click',function(){try{Sound.click()}catch(_){}topLoad(true)})}catch(e){}
-const APP_VER='13.27';
+const APP_VER='13.28';
 function appVerCheck(){
   try{
     fetch(location.href.split('#')[0],{cache:'no-store'}).then(r=>r.text()).then(txt=>{
