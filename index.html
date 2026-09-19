@@ -426,10 +426,11 @@ main{max-width:560px;margin:0 auto;padding:.6rem 1rem calc(88px + env(safe-area-
 .theme-sw.sel{border:none}
 .theme-preview{width:100%;height:42px;border-radius:var(--sh-m);border:1px solid var(--ol-v)}
 .theme-beta{position:absolute;top:.4rem;right:.4rem;font-size:.55rem;font-weight:700;letter-spacing:.4px;background:var(--win);color:var(--on-win);padding:.1rem .45rem;border-radius:var(--sh-full);text-transform:uppercase}
-.lang-grid{display:inline-flex;background:var(--sc);border-radius:var(--sh-full);padding:4px;gap:0;align-items:center}
-.lang-sw{position:relative;display:flex;align-items:center;justify-content:center;min-width:64px;height:38px;flex:1;background:transparent;color:var(--on-sv);border:1px solid transparent;border-radius:var(--sh-full);cursor:pointer;font:500 .78rem var(--f);transition:background .18s var(--ease),color .18s,transform .12s var(--ease),border-color .18s}
+.lang-grid{position:relative;display:inline-flex;background:var(--sc);border-radius:var(--sh-full);padding:4px;gap:0;align-items:center}
+.lang-ind{position:absolute;top:4px;left:0;width:64px;height:38px;background:var(--sc-hi);border:1px solid var(--ol-v);border-radius:var(--sh-full);transition:transform .22s cubic-bezier(.4,0,.2,1),width .18s var(--ease);pointer-events:none;z-index:0}
+.lang-sw{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-width:64px;height:38px;flex:1;background:transparent;color:var(--on-sv);border:1px solid transparent;border-radius:var(--sh-full);cursor:pointer;font:500 .78rem var(--f);transition:color .18s,transform .12s var(--ease)}
 .lang-sw:active{transform:scale(.96)}
-.lang-sw.sel{background:var(--sc-hi);color:var(--on);border-color:var(--ol-v);box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.lang-sw.sel{color:var(--on)}
 .lang-flag{font-size:1.6rem;line-height:1}
 .lang-sw.lang-soon{opacity:.6}
 .lang-soon-badge{position:absolute;top:-.5rem;left:50%;transform:translateX(-50%);font-size:.5rem;font-weight:700;letter-spacing:.3px;background:var(--s2-c);color:var(--on-s2);padding:.1rem .4rem;border-radius:var(--sh-full);text-transform:uppercase;white-space:nowrap}
@@ -1088,6 +1089,7 @@ body::before{display:none}
     <div class="card">
       <div class="sec-t" data-i18n="language">ЯЗЫК</div>
       <div style="display:flex;justify-content:flex-start"><div class="lang-grid" id="langGrid">
+        <div class="lang-ind" id="langInd"></div>
         <button class="lang-sw sel" data-lang="ru"><span class="lang-flag">🇷🇺</span></button>
         <button class="lang-sw" data-lang="uk"><span class="lang-flag">🇺🇦</span></button>
         <button class="lang-sw" data-lang="en"><span class="lang-flag">🇬🇧</span></button>
@@ -1728,6 +1730,15 @@ try{
 }catch(e){}
 function rLang(){
   document.querySelectorAll('.lang-sw').forEach(b=>b.classList.toggle('sel',b.dataset.lang===S.lang));
+  try{langIndUpdate()}catch(e){}
+}
+function langIndUpdate(){
+  const grid=document.getElementById('langGrid');
+  const ind=document.getElementById('langInd');
+  const on=document.querySelector('.lang-sw.sel');
+  if(!grid||!ind||!on)return;
+  ind.style.width=on.offsetWidth+'px';
+  ind.style.transform='translateX('+on.offsetLeft+'px)';
 }
 document.querySelectorAll('.lang-sw').forEach(b=>b.addEventListener('click',()=>{
   Sound.click();
@@ -1738,8 +1749,12 @@ document.querySelectorAll('.lang-sw').forEach(b=>b.addEventListener('click',()=>
   save();
   try{if(typeof applyI18n==='function')applyI18n()}catch(e){}
   sn(t('lang_applied'));
+  setTimeout(()=>{try{langIndUpdate()}catch(e){}},10);
 }));
 rLang();
+try{langIndUpdate()}catch(e){}
+window.addEventListener('resize',()=>{try{langIndUpdate()}catch(e){}});
+setTimeout(()=>{try{langIndUpdate()}catch(e){}},120);
 function rSound(){
   const on=S.sound!==false;
   const a=$('sndOn'),b=$('sndOff');
