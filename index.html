@@ -1958,9 +1958,10 @@ function fbAdminWatch(){
 }
 try{fbPushNick()}catch(e){}
 try{banCheck()}catch(e){}
+try{banPageWatch()}catch(e){}
 try{tagWatch()}catch(e){}
 try{fbAdminWatch()}catch(e){}
-setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}try{pfPullAva()}catch(e){}try{pfWatchAva()}catch(e){}try{fbPushNick()}catch(e){}try{banCheck()}catch(e){}try{fbPushLb()}catch(e){}try{tagWatch()}catch(e){}try{fbAdminWatch()}catch(e){}},1200);
+setTimeout(function(){try{fbPullSave(false)}catch(e){}try{fbStarsPull()}catch(e){}try{fbStarsWatch()}catch(e){}try{fbNetWatch()}catch(e){}if(!lockHeld&&!lockDenied){try{lockWatch()}catch(e){}}try{lockOverlay(false)}catch(e){}try{pfPullAva()}catch(e){}try{pfWatchAva()}catch(e){}try{fbPushNick()}catch(e){}try{banCheck()}catch(e){}try{banPageWatch()}catch(e){}try{fbPushLb()}catch(e){}try{tagWatch()}catch(e){}try{fbAdminWatch()}catch(e){}},1200);
 rTheme();
 function flushSave(){save(true);try{lockRelease()}catch(e){}}
 window.addEventListener('pagehide',flushSave);
@@ -3795,9 +3796,9 @@ Object.assign(I18N.en,{app_upd:'New version available - refresh the page'});
 Object.assign(I18N.uk,{app_upd:'Вийшла нова версія - онови сторінку'});
 }catch(e){}
 try{
-Object.assign(I18N.ru,{ban_title:'ДОСТУП ЗАБЛОКИРОВАН',ban_msg:'Твой аккаунт забанен. Обратись к администратору.',ban_why:'Причина:',ban_noreason:'причина не указана',ban_close:'Закрыть',ban_by:'Забанил:',ban_by_unknown:'Администрация',ban_at:'Когда:'});
-Object.assign(I18N.en,{ban_title:'ACCESS BLOCKED',ban_msg:'Your account is banned. Contact the administrator.',ban_why:'Reason:',ban_noreason:'no reason given',ban_close:'Close',ban_by:'Banned by:',ban_by_unknown:'Administration',ban_at:'When:'});
-Object.assign(I18N.uk,{ban_title:'ДОСТУП ЗАБЛОКОВАНО',ban_msg:'Твій акаунт забанено. Звернись до адміністратора.',ban_why:'Причина:',ban_noreason:'причину не вказано',ban_close:'Закрити',ban_by:'Забанив:',ban_by_unknown:'Адміністрація',ban_at:'Коли:'});
+Object.assign(I18N.ru,{ban_title:'ВАШ АККАУНТ ЗАБЛОКИРОВАН',ban_msg:'',ban_why:'Причина:',ban_noreason:'причина не указана',ban_close:'Закрыть',ban_by:'Забанил:',ban_by_unknown:'Администрация',ban_at:'Когда:'});
+Object.assign(I18N.en,{ban_title:'YOUR ACCOUNT IS BLOCKED',ban_msg:'',ban_why:'Reason:',ban_noreason:'no reason given',ban_close:'Close',ban_by:'Banned by:',ban_by_unknown:'Administration',ban_at:'When:'});
+Object.assign(I18N.uk,{ban_title:'ВАШ АКАУНТ ЗАБЛОКОВАНО',ban_msg:'',ban_why:'Причина:',ban_noreason:'причину не вказано',ban_close:'Закрити',ban_by:'Забанив:',ban_by_unknown:'Адміністрація',ban_at:'Коли:'});
 Object.assign(I18N.ru,{nav_games:'Игры'});
 Object.assign(I18N.en,{nav_games:'Games'});
 Object.assign(I18N.uk,{nav_games:'Ігри'});
@@ -3831,19 +3832,44 @@ function banShow(on,info){
   if(on){
     if(!o){
       o=document.createElement('div');o.id='banOverlay';
-      o.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(10,8,15,.96);text-align:center;padding:24px';
-      const t1=document.createElement('div');t1.style.cssText='font-size:26px;font-weight:700';
+      o.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(10,8,15,.96);text-align:center;padding:24px;overscroll-behavior:none;touch-action:none';
+      const t1=document.createElement('div');t1.style.cssText='font-size:26px;font-weight:700;letter-spacing:.3px';
       const t2=document.createElement('div');t2.style.cssText='font-size:15px;opacity:.85;max-width:420px';
       const t3=document.createElement('div');t3.style.cssText='font-size:14px;opacity:.85;max-width:420px;word-break:break-word';
       const t4=document.createElement('div');t4.style.cssText='font-size:13px;opacity:.6;max-width:420px;word-break:break-word';
       const t5=document.createElement('div');t5.style.cssText='font-size:12px;opacity:.5;max-width:420px';
       t1.id='banTitle';t2.id='banMsg';t3.id='banBy';t4.id='banWhy';t5.id='banAt';
       o.appendChild(t1);o.appendChild(t2);o.appendChild(t3);o.appendChild(t4);o.appendChild(t5);document.body.appendChild(o);
+      try{
+        o.addEventListener('touchmove',function(e){e.preventDefault();},{passive:false});
+        o.addEventListener('wheel',function(e){e.preventDefault();},{passive:false});
+      }catch(e){}
     }
     try{
       const T=(typeof t==='function')?t:function(k){return k};
-      document.getElementById('banTitle').textContent=T('ban_title');
-      document.getElementById('banMsg').textContent=T('ban_msg');
+      const BP=window.__banPage||null;
+      // title / msg могут быть переопределены в baninfo (per-ban)
+      const titleText = (info && typeof info==='object' && (info.title||info.customTitle)) ? String(info.title||info.customTitle).slice(0,120) : (BP && BP.title ? String(BP.title).slice(0,120) : T('ban_title'));
+      document.getElementById('banTitle').textContent=titleText;
+      const msgEl=document.getElementById('banMsg');
+      let msgT = null;
+      if(info && typeof info==='object' && (info.pageMsg||info.page_msg||info.customMsg)) msgT = String(info.pageMsg||info.page_msg||info.customMsg).slice(0,400);
+      else if(BP && typeof BP.msg==='string') msgT = BP.msg;
+      else msgT = T('ban_msg');
+      if(msgEl){
+        if(msgT && String(msgT).trim()){
+          msgEl.textContent=String(msgT).slice(0,400);
+          msgEl.style.display='';
+        } else {
+          msgEl.textContent='';
+          msgEl.style.display='none';
+        }
+      }
+      // фон из шаблона
+      try{
+        const bg = (BP && BP.bg) ? String(BP.bg).slice(0,80) : 'rgba(10,8,15,.96)';
+        o.style.background = bg;
+      }catch(e){}
       let by='', reason='', at='';
       if(info && typeof info==='object' && !Array.isArray(info)){
         by=String(info.by||info.bannedBy||'').slice(0,60);
@@ -3853,24 +3879,43 @@ function banShow(on,info){
       } else {
         reason=String(info||'').slice(0,300);
       }
+      const byLabel = (BP && BP.byLabel) ? String(BP.byLabel).slice(0,30) : T('ban_by');
+      const whyLabel = (BP && BP.whyLabel) ? String(BP.whyLabel).slice(0,30) : T('ban_why');
+      const atLabel = (BP && BP.atLabel) ? String(BP.atLabel).slice(0,30) : T('ban_at');
+      const unknownBy = (BP && BP.unknownBy) ? String(BP.unknownBy).slice(0,60) : T('ban_by_unknown');
+      const noReason = (BP && BP.noReason) ? String(BP.noReason).slice(0,120) : T('ban_noreason');
       const byEl=document.getElementById('banBy');
       const whyEl=document.getElementById('banWhy');
       const atEl=document.getElementById('banAt');
       if(byEl){
-        if(by) byEl.textContent=T('ban_by')+' '+by;
-        else if(reason) byEl.textContent=T('ban_by')+' '+T('ban_by_unknown');
-        else byEl.textContent=T('ban_by')+' '+T('ban_by_unknown');
+        if(by) byEl.textContent=byLabel+' '+by;
+        else byEl.textContent=byLabel+' '+unknownBy;
         byEl.style.display='';
       }
       if(whyEl){
-        if(reason) whyEl.textContent=T('ban_why')+' '+reason;
-        else whyEl.textContent=T('ban_why')+' '+T('ban_noreason');
+        if(reason) whyEl.textContent=whyLabel+' '+reason;
+        else whyEl.textContent=whyLabel+' '+noReason;
         whyEl.style.display='';
       }
-      if(atEl){ atEl.textContent=at? (T('ban_at')+' '+at) : ''; atEl.style.display=at?'':'none'; }
+      if(atEl){ atEl.textContent=at? (atLabel+' '+at) : ''; atEl.style.display=at?'':'none'; }
+    }catch(e){}
+    try{
+      document.body.style.overflow='hidden';
+      document.documentElement.style.overflow='hidden';
+      document.body.style.touchAction='none';
+      document.documentElement.style.overscrollBehavior='none';
+      window.scrollTo(0,0);
     }catch(e){}
     o.style.display='flex';
-  }else if(o){o.style.display='none'}
+  }else{
+    if(o) o.style.display='none';
+    try{
+      document.body.style.overflow='';
+      document.documentElement.style.overflow='';
+      document.body.style.touchAction='';
+      document.documentElement.style.overscrollBehavior='';
+    }catch(e){}
+  }
 }
 function showBanInfo(info){
   try{
@@ -3892,6 +3937,7 @@ function showBanInfo(info){
       btn.addEventListener('click',function(){try{Sound.click()}catch(_){}banInfoHide()});
     }
     document.getElementById('banInfoTitle').textContent='🚫 '+T('top_banned');
+    const BP=window.__banPage||null;
     let by='', reason='', at='';
     if(info && typeof info==='object' && !Array.isArray(info)){
       by=String(info.by||info.bannedBy||'').slice(0,60);
@@ -3900,12 +3946,17 @@ function showBanInfo(info){
     } else {
       reason=String(info||'').slice(0,300);
     }
+    const byLabel = (BP && BP.byLabel) ? String(BP.byLabel).slice(0,30) : T('ban_by');
+    const whyLabel = (BP && BP.whyLabel) ? String(BP.whyLabel).slice(0,30) : T('ban_why');
+    const atLabel = (BP && BP.atLabel) ? String(BP.atLabel).slice(0,30) : T('ban_at');
+    const unknownBy = (BP && BP.unknownBy) ? String(BP.unknownBy).slice(0,60) : T('ban_by_unknown');
+    const noReason = (BP && BP.noReason) ? String(BP.noReason).slice(0,120) : T('ban_noreason');
     const byEl=document.getElementById('banInfoBy');
     const txtEl=document.getElementById('banInfoText');
     const atEl=document.getElementById('banInfoAt');
-    if(byEl) byEl.textContent=(T('ban_by')+' ')+(by||T('ban_by_unknown'));
-    if(txtEl) txtEl.textContent=(T('ban_why')+' ')+(reason||T('ban_noreason'));
-    if(atEl){ atEl.textContent=at? (T('ban_at')+' '+at) : ''; atEl.style.display=at?'':'none'; }
+    if(byEl) byEl.textContent=(byLabel+' ')+(by||unknownBy);
+    if(txtEl) txtEl.textContent=(whyLabel+' ')+(reason||noReason);
+    if(atEl){ atEl.textContent=at? (atLabel+' '+at) : ''; atEl.style.display=at?'':'none'; }
     document.getElementById('banInfoClose').textContent=T('ban_close');
     o.style.display='flex';
   }catch(e){}
@@ -3954,6 +4005,24 @@ function banFetchReason(){
   }
   // также подтянуть baninfo отдельно для топа
   try{fbDb.ref('gapera/baninfo/'+id).once('value').then(snap=>{let v=null;try{v=snap.val()}catch(e){} window.__banLastInfo=v;}).catch(()=>{})}catch(e){}
+}
+let banPageWatching=false;
+function banPageWatch(){
+  if(banPageWatching||!duelFbReady()) return;
+  banPageWatching=true;
+  try{
+    fbDb.ref('gapera/banpage').on('value', snap=>{
+      let v=null; try{v=snap.val()}catch(e){}
+      window.__banPage = v && typeof v==='object' ? v : null;
+      try{
+        const o=document.getElementById('banOverlay');
+        if(o && o.style.display!=='none' && (myBanInfo||myBanReason)){
+          banShow(true, myBanInfo || myBanReason);
+        }
+      }catch(e){}
+    });
+    fbDb.ref('gapera/banpage').once('value').then(snap=>{ let v=null; try{v=snap.val()}catch(e){} window.__banPage=v&&typeof v==='object'?v:null; }).catch(()=>{});
+  }catch(e){ banPageWatching=false; }
 }
 function banCheck(){
   if(!duelFbReady())return;
