@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
   <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
   <title>Gapera Pre-Beta</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js">
+
+</script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <link rel="preconnect" href="https://gaperabot-default-rtdb.firebaseio.com" />
@@ -642,6 +644,12 @@ body::before{display:none}
 #dSum,#dRisk,#mInf,#mNext,#twInf,#crashChance,#crashAutoHint{display:none !important}
 .bet-row input,.bet-q,.bet-quick button,.bet-max,#freeSpinsInfo,.daily-title,#bonusReadySub,.daily-sub{font-family:var(--fh)}
 .m3-slider__label,.dice-target,.ch-item .v,.ch-item .l,.tw-diff button,.tw-mx,.m-cnt button,.rr-b,.coin-ch button,.up-name,.up-lvl,.up-btn,.clk-count,.clk-limit,.reward-cell .rw-val,.reward-cell .rw-day,.rewards-timer,.stat .v,.stat .l,.pf-mini .v,.pf-mini .l,.lang-sw,.theme-sw,.crash-quick button,.dice-sum,.m-info,.m-next,.tw-info{font-family:var(--fh)}
+  
+/* === FIREBASE BROADCASTS (news & giveaway) === */
+#newsWrap .daily-card{position:relative}
+#newsWrap .daily-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.news-meta{font-size:.64rem;opacity:.7;margin-top:.2rem}
+
   </style>
 </head>
 <body>
@@ -657,6 +665,8 @@ body::before{display:none}
 
 <div class="daily" id="dailyWrap" style="display:none"><div class="daily-card"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">card_giftcard</span><span data-i18n="daily_bonus">Ежедневный бонус</span></div><div class="daily-sub" id="dailySub"></div><div class="daily-dots" id="dailyDots"></div></div><button class="btn btn-p btn-sm daily-btn" id="dailyBtnTop" data-i18n="claim">Забрать</button></div></div>
 <div class="daily" id="bonusWrap" style="display:none"><div class="daily-card" style="background:linear-gradient(135deg,#2E7D32,var(--win));color:#fff"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">payments</span><span data-i18n="bonus_ready_title">Бонус готов!</span></div><div class="daily-sub" id="bonusReadySub">+500 звёзд</div></div><button class="btn btn-p btn-sm daily-btn" id="bonusBtnTop" style="background:#fff;color:#2E7D32" data-i18n="claim">Забрать</button></div></div>
+<div id="newsWrap" style="display:none"></div>
+<div id="giveawayWrap" style="display:none"></div>
 
 <main>
   
@@ -1621,7 +1631,8 @@ function renderAll(){
   try{rrHistRender()}catch(e){}
   try{rFreeSpins()}catch(e){}
   try{if(typeof rBets==='function')rBets()}catch(e){}
-  try{applyI18n()}catch(e){}
+  
+try{applyI18n()}catch(e){}
 }
 const I18N={
 ru:{ver_badge:'prebeta',nav_slots:'Слоты',nav_dice:'Кости',nav_roulette:'Рулетка',nav_crash:'Ракетка',nav_mines:'Мины',nav_coin:'Монета',nav_clicker:'Кликер',nav_rewards:'Награды',nav_stats:'Стата',nav_settings:'Настройки',daily_bonus:'Ежедневный бонус',claim:'Забрать',bonus_ready_title:'Бонус готов!',bonus_ready:'бонус готов!',bonus_in:'через {s}с',ready:'Готово!',press_claim:'Нажми «Забрать»',to_bonus:'До бонуса',x2_left:'×2 до {t}',claim_for:'Забрать +{n}',wait_btn:'Жди {s}с',wait_s:'Подожди {s}с',stars_many:'звёзд',bet_limit:'Лимит ставки:',bet_limit_grows:'- растёт от побед',free_spins:'Бесплатных спинов:',spin:'КРУТИТЬ',pay3:'ВЫПЛАТА ЗА 3 В РЯД',pay2:'2 ОДИНАКОВЫХ - ЧАСТИЧНАЯ ВЫПЛАТА',slot_bonus_note:'Бонус к выплате за крупную ставку: 200+ ×1.04 • 500+ ×1.10 • 1000+ ×1.22 • 2000+ ×1.38 • 3000+ ×1.55 • 5000+ ×1.80',bet_on:'СТАВКА НА:',over:'БОЛЬШЕ',chance:'шанс',multiplier:'множитель',dice_fee:'Множитель уже включает комиссию 3% - возврат 97%',throw:'БРОСИТЬ',risk0:'Ставка в норме - шанс без штрафа',risk1:'Повышенная ставка - шанс −6%',risk2:'Крупная ставка - шанс −13%',risk3:'Высокий риск - шанс −20%',risk4:'Очень высокий риск - шанс −28%',risk5:'Экстремальный риск - шанс −38%',even:'Чёт',odd:'Нечёт',rr_odds:'Число ×{straight} • цвет, чёт/нечет, 1-18/19-36 ×{outside} • зеро бьёт всё, кроме прямого числа',bet:'СТАВКА',bet_min:'Ставка должна быть больше 0',autocash:'АВТОЗАБОР',auto_hint:'Сработает только если график доберётся до множителя',launch:'ЗАПУСТИТЬ',take:'ЗАБРАТЬ',crash_make_bet:'Сделай ставку и запускай ракету',crash_growing:'График растёт • забери до обрыва',crash_started:'📈 Рост начался...',crash_crashed:'📉 ГРАФИК ОБОРВАЛСЯ',crash_crash_point:'точка обрыва',crash_auto:'АВТОЗАБОР',crash_took:'📈 УСПЕШНЫЙ ЗАБОР',crash_bet_word:'ставка',crash_info_idle:'RTP игры: 97% • График может оборваться в любой момент',crash_info_live:'Забери выигрыш до обрыва графика • авто: {auto}×',mines:'МИНЫ:',mines_hint:'Выбери клетки и выигрывай!',start:'НАЧАТЬ',mines_fee:'Множитель уже включает комиссию 4%',mines_open:'Открывай клетки! Мины: {n}',mines_mult:'Множитель:',mines_take_word:'Забрать:',mines_hit:'💥 Мина! −{n}',mines_took:'✅ Забрал <b>{c}</b> (×{m})',heads:'Орёл 🦅',tails:'Решка 🔔',heads_name:'Орёл',tails_name:'Решка',coin_note:'Угадал сторону - выплата ×1.92',click_title:'КЛИКАЙ И ПОЛУЧАЙ ЗВЁЗДЫ',per_click:'За клик:',total_clicks:'Всего кликов:',clk_limit:'{used} / {limit} за 1 час',clk_limit_out:'Лимит исчерпан. Сброс через {m}м {s}с',upgrades:'УЛУЧШЕНИЯ',power_name:'Сила клика',power_lvl:'Уровень {lvl} • +{p} звезда/клик',buy:'Купить',turbo_name:'Турбо',limit_name:'Ліміт',limit_lvl:'{v} / год',rebirth_name:'Ребіт',rebirth_lvl:'{n} • +{p}%',rebirth_need:'Потрібно {c} ⭐ і 30 сили',limit_name:'Лимит',limit_lvl:'{v} / час',rebirth_name:'Ребирф',rebirth_lvl:'{n} • +{p}%',rebirth_need:'Нужно {c} ⭐ и 30 силы',turbo_lvl:'Уровень {lvl} • +{p}% к силе',daily_rewards:'ЕЖЕДНЕВНЫЕ НАГРАДЫ',loading:'Загрузка...',per_minute:'БОНУС КАЖДУЮ МИНУТУ',day:'День',day_n_of_7:'День {d} - награда ждёт!',received:'Получено',streak_next:'Стрик {s} • следующая награда завтра • сгорает при пропуске дня',daily_reward_for:'День {d} - +{r} звёзд',daily_claim_btn:'Забрать +{r}',daily_claimed_msg:'+{r} звёзд! День {d}',stats:'СТАТИСТИКА',bets:'ставок',wins:'побед',losses:'проигрышей',won:'выиграно',betted:'поставлено',profit:'профит',history:'ИСТОРИЯ',empty:'Пусто',reset:'Сбросить',language:'ЯЗЫК',theme:'ТЕМА ОФОРМЛЕНИЯ',th_purple:'Фиолетовая',th_black:'Чёрная',th_white:'Белая',th_red:'Красная',th_auto:'Авто',th_ocean:'Океан',th_sunset:'Закат',beta:'бета',auto_note:'Авто - подстраивается под тёмную/светлую тему телефона',sound:'ЗВУК',sound_on:'Звук включён',sound_off:'Звук выключен',promo:'ПРОМОКОД',promo_ph:'Введите промокод',activate:'Активировать',promo_enter:'Введите промокод',promo_not_found:'Промокод не найден',promo_expired:'Срок действия промокода истёк',promo_used:'Промокод уже использован',promo_freespins:'фриспинов',promo_x2:'×2 к ежеминутным бонусам на {min} мин!',promo_ok:'Активировано: {parts}',not_enough:'Не хватает',not_enough_stars:'Не хватает звёзд',choose_bet:'Выбери ставку',jackpot:'ДЖЕКПОТ +{w}',two_in_row:'2 В РЯД +{w}',miss:'Мимо',limit_up:'Лимит ставки увеличен до {n} ⭐',click_limit_out:'Лимит кликов исчерпан, жди сброса',power_up:'Сила клика повышена!',turbo_up:'Турбо улучшено!',turbo_max:'Турбо достиг максимального уровня',reset_done:'Сброшено',theme_applied:'Тема применена',lang_applied:'Язык применён',id_copied:'ID скопирован: {uid}',game_slots:'Слоты',game_dice:'Кости',game_roulette:'Рулетка',game_crash:'Ракетка',game_mines:'Мины',game_coin:'Монета',lang_ru:'Русский',lang_uk:'Українська',lang_en:'English'},
@@ -5674,6 +5685,367 @@ try{
   duelNav();
   duelSetStatus('dst_idle');duelRender();
 }catch(e){}
+/* ======================================================
+   FIREBASE BROADCASTS: NEWS + GIVEAWAY (только через Firebase)
+   ------------------------------------------------------
+   Админ создает данные прямо в Realtime Database консоли
+   https://console.firebase.google.com/project/gaperabot/database
+
+   СТРУКТУРА (рекомендуемая, красивая ветка):
+
+   gapera
+     news
+       <id>  (например news_001)
+         title: "Обновление 1.1"
+         text:  "Сегодня в 20:00 техработы"
+         ts:    1726800000000   // число, Date.now()
+         active: true          // опц., если false - скрыто
+         expiresAt: 9999999999999 // опц.
+     giveaways   // или giveaway (оба работают)
+       <id>  (например give_001)
+         amount: 500           // любое число, обязат.
+         title:  "Раздача"
+         text:   "Успей забрать!"
+         ts:     1726800000000
+         active: true
+         expiresAt: ...
+
+   Можно также одним объектом:
+     gapera/news = {title:"...", text:"..."}
+     gapera/giveaways = {amount:500}
+
+   Новости висят пока админ не удалит узел. Раздача висит
+   после обновления страницы пока не забрал (проверка по
+   gapera/claimed/<uid>/giveaway_<id>). Выдача строго через Firebase.
+   ====================================================== */
+(function(){
+'use strict';
+let curNewsList=[], curGiveList=[];
+
+function esc(s){ return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function isNewsDismissed(id){ try{ return !!localStorage.getItem('gapera_news_dismissed_'+id)}catch(e){return false} }
+function dismissNews(id){ try{ localStorage.setItem('gapera_news_dismissed_'+id,'1')}catch(e){} }
+function isGiveawayClaimed(id){ try{ return !!localStorage.getItem('gapera_give_claimed_'+id)}catch(e){return false} }
+function markGiveawayClaimed(id){ try{ localStorage.setItem('gapera_give_claimed_'+id,'1')}catch(e){} }
+
+function hideNewsWrap(){ const w=$('newsWrap'); if(w){ w.style.display='none'; w.innerHTML=''; } curNewsList=[]; }
+function hideGiveWrap(){ const w=$('giveawayWrap'); if(w){ w.style.display='none'; w.innerHTML=''; } curGiveList=[]; }
+
+function renderNewsList(list){
+  const wrap=$('newsWrap');
+  if(!wrap) return;
+  // filter dismissed and expired
+  const now = (typeof fbNow==='function'?fbNow():Date.now());
+  const filtered = (list||[]).filter(d=> !isNewsDismissed(String(d.id)) && !(d.expiresAt && now > Number(d.expiresAt)) && d.active!==false );
+  if(!filtered.length){ hideNewsWrap(); return; }
+  curNewsList = filtered;
+  wrap.style.display='block';
+  wrap.innerHTML='';
+  filtered.forEach(data=>{
+    const id=String(data.id);
+    const card=document.createElement('div');
+    card.className='daily';
+    card.style.marginBottom='.6rem';
+    card.innerHTML='<div class="daily-card" style="background:linear-gradient(135deg,#1B3A6B 0%,#2A4A8A 55%,#A8C7FA 100%);color:#fff"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">campaign</span><span>'+esc(data.title||'Новости')+'</span></div><div class="daily-sub" style="opacity:1;white-space:pre-wrap;word-break:break-word">'+esc(data.text||data.body||'')+'</div><div class="news-meta" style="font-size:.64rem;opacity:.7;margin-top:.2rem">'+(data.ts?new Date(Number(data.ts)).toLocaleString():'')+'</div></div><button class="btn btn-s btn-sm" style="background:rgba(255,255,255,.18);color:#fff;border:none;flex:none"><span class="mat">close</span></button></div>';
+    const btn=card.querySelector('button');
+    btn.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      try{Sound.click()}catch(_){}
+      dismissNews(id);
+      card.remove();
+      if(!wrap.children.length) hideNewsWrap();
+    });
+    wrap.appendChild(card);
+  });
+  try{Sound.tick()}catch(e){}
+}
+
+function renderGiveList(list){
+  const wrap=$('giveawayWrap');
+  if(!wrap) return;
+  const now = (typeof fbNow==='function'?fbNow():Date.now());
+  // filter claimed and expired
+  const filtered = (list||[]).filter(d=>{
+    const id=String(d.id);
+    const amt=Math.floor(Number(d.amount||d.value||d.stars||0));
+    if(!(amt>=1)) return false;
+    if(isGiveawayClaimed(id)) return false;
+    if(d.active===false) return false;
+    if(d.expiresAt && now > Number(d.expiresAt)) return false;
+    return true;
+  });
+  if(!filtered.length){ hideGiveWrap(); return; }
+  // sort by ts desc
+  filtered.sort((a,b)=> (Number(b.ts)||0)-(Number(a.ts)||0));
+  curGiveList = filtered;
+  wrap.style.display='block';
+  wrap.innerHTML='';
+  filtered.forEach(data=>{
+    const id=String(data.id);
+    const amt=Math.floor(Number(data.amount||data.value||data.stars||0));
+    const card=document.createElement('div');
+    card.className='daily';
+    card.style.marginBottom='.6rem';
+    card.innerHTML='<div class="daily-card" style="background:linear-gradient(135deg,#FFA000 0%,#FFC947 52%,#FFD54F 100%);color:#3E2700"><div class="daily-left"><div class="daily-title"><span class="mat" style="font-size:20px">redeem</span><span>'+esc(data.title||'Раздача')+'<\/span> <span class="topbar-beta" style="background:rgba(62,39,0,.12);color:#3E2700">доступна<\/span><\/div><div class="daily-sub" style="color:#3E2700;opacity:.9">'+esc(data.text||'Доступна награда')+'<\/div><div style="font:700 1.25rem var(--fh);color:#3E2700;margin-top:.2rem">+'+amt.toLocaleString()+' ⭐<\/div><\/div><button class="btn btn-p btn-sm daily-btn" style="background:#fff;color:#3E2700;flex:none"><span class="mat">card_giftcard<\/span><span>Забрать +'+amt.toLocaleString()+'<\/span><\/button><\/div>';
+    const btn=card.querySelector('button');
+    btn.addEventListener('click', ()=>{
+      claimOneGiveaway(id, amt, card, btn);
+    });
+    // async check if already claimed in Firebase (per uid) -> hide if yes
+    try{
+      const uid=(typeof accountId==='function'?accountId():null) || (typeof getUid==='function'?getUid():null);
+      if(uid && duelFbReady() && fbDb){
+        const kind='giveaway_'+id;
+        fbDb.ref('gapera/claimed/'+uid+'/'+kind).once('value').then(snap=>{
+          if(snap.exists()){
+            markGiveawayClaimed(id);
+            try{card.remove(); if(!wrap.children.length) hideGiveWrap(); }catch(e){}
+          }
+        }).catch(()=>{});
+      }
+    }catch(e){}
+    wrap.appendChild(card);
+  });
+}
+
+function claimOneGiveaway(id, amt, cardEl, btnEl){
+  if(!id || !(amt>=1)) return;
+  if(isGiveawayClaimed(id)){
+    try{sn('Уже забрано')}catch(e){}
+    try{cardEl.remove(); const w=$('giveawayWrap'); if(w && !w.children.length) hideGiveWrap();}catch(e){}
+    return;
+  }
+  if(btnEl) btnEl.disabled=true;
+  try{Sound.click()}catch(e){}
+  let uid=null;
+  try{ uid=(typeof accountId==='function'?accountId():null) || (typeof getUid==='function'?getUid():null)}catch(e){}
+  if(!uid){
+    try{sn('Нет ID - зайди через Telegram')}catch(e){}
+    if(btnEl) btnEl.disabled=false;
+    return;
+  }
+  // If Firebase not ready, give locally
+  if(!duelFbReady() || !fbDb){
+    S.bal+=amt; save(); rBal(); try{fbPushLb()}catch(e){}
+    markGiveawayClaimed(id);
+    try{Sound.win();bz('win')}catch(e){}
+    try{sn('+'+amt.toLocaleString()+' ⭐ получено!')}catch(e){}
+    try{const b=btnEl.getBoundingClientRect();confetti(b.left+b.width/2,b.top,22)}catch(e){}
+    try{cardEl.remove(); const w=$('giveawayWrap'); if(w && !w.children.length) hideGiveWrap();}catch(e){}
+    return;
+  }
+  const kind='giveaway_'+id;
+  const ref=fbDb.ref('gapera/claimed/'+uid+'/'+kind);
+  ref.once('value').then(snap=>{
+    if(snap.exists()){
+      markGiveawayClaimed(id);
+      try{sn('Уже забрано')}catch(e){}
+      try{cardEl.remove(); const w=$('giveawayWrap'); if(w && !w.children.length) hideGiveWrap();}catch(e){}
+      return;
+    }
+    ref.set((typeof fbNow==='function'?fbNow():Date.now()), function(err){
+      if(err){
+        // Even if Firebase write fails (rules), still give locally to not block user
+        S.bal+=amt; save(); rBal(); try{fbPushLb()}catch(e){}
+        markGiveawayClaimed(id);
+        try{sn('+'+amt.toLocaleString()+' ⭐ получено!')}catch(e){}
+        try{Sound.win();bz('win')}catch(e){}
+        try{cardEl.remove(); const w=$('giveawayWrap'); if(w && !w.children.length) hideGiveWrap();}catch(e){}
+        return;
+      }
+      S.bal+=amt; save(); rBal(); try{fbPushLb()}catch(e){} try{fbStarsPush()}catch(e){}
+      try{aH('giveaway',amt,0)}catch(e){}
+      markGiveawayClaimed(id);
+      try{Sound.win();bz('win')}catch(e){}
+      try{sn('+'+amt.toLocaleString()+' ⭐ получено!')}catch(e){}
+      try{const b=btnEl.getBoundingClientRect();confetti(b.left+b.width/2,b.top,26)}catch(e){}
+      try{cardEl.remove(); const w=$('giveawayWrap'); if(w && !w.children.length) hideGiveWrap();}catch(e){}
+    });
+  }).catch(err=>{
+    try{sn('Ошибка проверки')}catch(e){}
+    if(btnEl) btnEl.disabled=false;
+  });
+}
+
+function parseNewsSnapshot(v){
+  if(v===null || v===undefined) return [];
+  if(typeof v==='string' || typeof v==='number'){
+    return [{id:'news_single_'+String(v).slice(0,20), title:'Новости', text:String(v), ts:Date.now()}];
+  }
+  if(typeof v!=='object') return [];
+  // single object with text/title?
+  if(v.text!==undefined || v.body!==undefined || v.msg!==undefined){
+    // if it also has amount -> not news
+    if(v.amount!==undefined && v.text===undefined && v.body===undefined && v.msg===undefined) return [];
+    // check if it's single news (has text/title) and not a map
+    const hasMapKeys = Object.keys(v).some(k=> typeof v[k]==='object' && v[k]!==null && (v[k].text!==undefined || v[k].title!==undefined));
+    if(!hasMapKeys){
+      const id = v.id||v._id||('news_single');
+      return [{id:String(id), title:v.title||v.name||'Новости', text:v.text||v.body||v.msg||'', ts:v.ts||v.time||Date.now(), active:v.active, expiresAt:v.expiresAt}];
+    }
+  }
+  // map of news: gapera/news/<id> = {title,text,ts}
+  let list=[];
+  Object.keys(v).forEach(k=>{
+    const o=v[k];
+    if(o===null || o===undefined) return;
+    if(typeof o==='string'){
+      list.push({id:String(k), title:'Новости', text:String(o), ts:Date.now()});
+      return;
+    }
+    if(typeof o==='object'){
+      if(o.text!==undefined || o.body!==undefined || o.title!==undefined || o.msg!==undefined){
+        list.push({id:String(o.id||k), title:o.title||o.name||'Новости', text:o.text||o.body||o.msg||'', ts:o.ts||o.time||0, active:o.active, expiresAt:o.expiresAt});
+      } else if(typeof o==='object' && o.amount===undefined){
+        // maybe nested? ignore
+      }
+    }
+  });
+  return list;
+}
+
+function parseGiveSnapshot(v){
+  if(v===null || v===undefined) return [];
+  if(typeof v==='number' && isFinite(v)){
+    const amt=Math.floor(v); if(!(amt>=1)) return []; return [{id:'give_num_'+amt, amount:amt, title:'Раздача', text:'Доступна награда', ts:Date.now()}];
+  }
+  if(typeof v==='string'){
+    const amt=Math.floor(Number(v)||0); if(amt>=1) return [{id:'give_str_'+amt, amount:amt, title:'Раздача', text:String(v).slice(0,80), ts:Date.now()}];
+    return [];
+  }
+  if(typeof v!=='object') return [];
+  // single giveaway object with amount at top level (gapera/giveaway = {amount:500})
+  if(v.amount!==undefined || v.value!==undefined || v.stars!==undefined){
+    // check if it's not a map (map would have children with amount)
+    const hasMapChildren = Object.keys(v).some(k=> {
+      // exclude known fields
+      if(['amount','value','stars','title','text','body','ts','time','active','expiresAt','id','_id'].includes(k)) return false;
+      const child=v[k]; return child && typeof child==='object' && (child.amount!==undefined || child.value!==undefined);
+    });
+    if(!hasMapChildren){
+      const amt=Math.floor(Number(v.amount||v.value||v.stars)||0); if(!(amt>=1)) return [];
+      const id=String(v.id||v._id||('give_'+amt+'_'+(v.ts||Date.now())));
+      return [{id:id, amount:amt, title:v.title||v.name||'Раздача', text:v.text||v.body||'Доступна награда', ts:v.ts||v.time||Date.now(), active:v.active, expiresAt:v.expiresAt}];
+    }
+  }
+  // map: gapera/giveaways/<id> = {amount,...}  OR gapera/giveaway/<id> = {amount,...}
+  let list=[];
+  Object.keys(v).forEach(k=>{
+    const o=v[k];
+    if(o===null || o===undefined) return;
+    if(typeof o==='number' && isFinite(o)){
+      const amt=Math.floor(o); if(amt>=1) list.push({id:String(k), amount:amt, title:'Раздача', text:'Доступна награда', ts:Date.now()});
+      return;
+    }
+    if(typeof o==='string'){
+      const amt=Math.floor(Number(o)||0); if(amt>=1) list.push({id:String(k), amount:amt, title:'Раздача', text:String(o).slice(0,80), ts:Date.now()});
+      return;
+    }
+    if(typeof o==='object' && (o.amount!==undefined||o.value!==undefined||o.stars!==undefined)){
+      const amt=Math.floor(Number(o.amount||o.value||o.stars)||0); if(!(amt>=1)) return;
+      list.push({id:String(o.id||k), amount:amt, title:o.title||o.name||'Раздача', text:o.text||o.body||'Доступна награда', ts:o.ts||o.time||0, active:o.active, expiresAt:o.expiresAt});
+    }
+  });
+  return list;
+}
+
+function fbNewsWatch(){
+  if(window.__newsW) return;
+  if(!duelFbReady() || !fbDb){ setTimeout(fbNewsWatch,1200); return; }
+  window.__newsW=true;
+  try{
+    const ref = fbDb.ref('gapera/news');
+    ref.on('value', snap=>{
+      let v=null; try{v=snap.val()}catch(e){}
+      const list = parseNewsSnapshot(v);
+      if(!list.length){ hideNewsWrap(); return; }
+      renderNewsList(list);
+    });
+    // also watch alternative path for backward compat, merge
+    try{
+      fbDb.ref('gapera/broadcasts/news').on('value', snap=>{
+        let v=null; try{v=snap.val()}catch(e){}
+        if(!v) return;
+        const list=parseNewsSnapshot(v);
+        if(list.length) renderNewsList(list);
+      });
+    }catch(e){}
+  }catch(e){ window.__newsW=false; setTimeout(fbNewsWatch,2000); }
+}
+function fbGiveWatch(){
+  if(window.__giveW) return;
+  if(!duelFbReady() || !fbDb){ setTimeout(fbGiveWatch,1200); return; }
+  window.__giveW=true;
+  try{
+    const handle = (snap)=>{
+      let v=null; try{v=snap.val()}catch(e){}
+      const list = parseGiveSnapshot(v);
+      if(!list.length){ /* don't hide immediately if other path has data, check both */ 
+        // check if other path still has data? for now hide, but fbGiveWatch will be called for both refs
+        // we need to merge both refs: keep last lists
+        // simple: if this snap is null and other ref has data, don't hide
+        // We'll store per ref
+        return;
+      }
+      renderGiveList(list);
+    };
+    // watch both singular and plural for admin convenience
+    const ref1 = fbDb.ref('gapera/giveaways');
+    const ref2 = fbDb.ref('gapera/giveaway');
+    // Use a merged handler that checks both
+    let last1=[], last2=[];
+    ref1.on('value', snap=>{
+      let v=null; try{v=snap.val()}catch(e){}
+      last1=parseGiveSnapshot(v);
+      let merged=[...last1, ...last2];
+      // dedup by id
+      const seen=new Set(); merged=merged.filter(x=>{ const k=String(x.id); if(seen.has(k)) return false; seen.add(k); return true;});
+      if(!merged.length) hideGiveWrap();
+      else renderGiveList(merged);
+    });
+    ref2.on('value', snap=>{
+      let v=null; try{v=snap.val()}catch(e){}
+      last2=parseGiveSnapshot(v);
+      let merged=[...last1, ...last2];
+      // dedup by id
+      const seen=new Set(); merged=merged.filter(x=>{ const k=String(x.id); if(seen.has(k)) return false; seen.add(k); return true;});
+      if(!merged.length) hideGiveWrap();
+      else renderGiveList(merged);
+    });
+    try{
+      fbDb.ref('gapera/broadcasts/giveaway').on('value', snap=>{
+        let v=null; try{v=snap.val()}catch(e){}
+        const list=parseGiveSnapshot(v);
+        if(list.length) renderGiveList(list);
+      });
+    }catch(e){}
+  }catch(e){ window.__giveW=false; setTimeout(fbGiveWatch,2000); }
+}
+
+setTimeout(fbNewsWatch, 900);
+setTimeout(fbGiveWatch, 900);
+setTimeout(function(){
+  try{fbNewsWatch()}catch(e){}
+  try{fbGiveWatch()}catch(e){}
+}, 2500);
+setTimeout(function(){
+  try{ if(typeof fbPullSave!=='undefined') fbNewsWatch(); }catch(e){}
+}, 4000);
+
+window._fbNewsWatch=fbNewsWatch;
+window._fbGiveWatch=fbGiveWatch;
+// Fix: если был оффлайн и зашел позже - перепроверить при возврате
+try{
+  document.addEventListener('visibilitychange', ()=>{ if(document.visibilityState==='visible'){ try{fbNewsWatch()}catch(e){} try{fbGiveWatch()}catch(e){} }});
+  window.addEventListener('online', ()=>{ setTimeout(()=>{ try{fbNewsWatch()}catch(e){} try{fbGiveWatch()}catch(e){} }, 600); });
+  // холодный старт - еще раз дернуть через 2с и 5с если firebase грузился долго
+  setTimeout(()=>{ try{ if(window.firebase && !window.__newsW) fbNewsWatch(); }catch(e){} }, 2000);
+  setTimeout(()=>{ try{ if(window.firebase && !window.__giveW) fbGiveWatch(); }catch(e){} }, 2000);
+  setTimeout(()=>{ try{ if(window.firebase) { window.__newsW=false; window.__giveW=false; fbNewsWatch(); fbGiveWatch(); } }catch(e){} }, 5000);
+}catch(e){}
+})();
+
 try{applyI18n()}catch(e){}
 rBal();
 })();
