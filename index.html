@@ -4,6 +4,10 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
 <title>grapera-app — проект приостановлен</title>
+<link rel="preconnect" href="https://www.youtube.com" />
+<link rel="preconnect" href="https://www.youtube-nocookie.com" />
+<link rel="preconnect" href="https://i.ytimg.com" />
+<link rel="preconnect" href="https://s.ytimg.com" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -350,14 +354,14 @@ function tryStart(){
 window.onYouTubeIframeAPIReady = function(){
   ytPlayer = new YT.Player('yt-holder', {
     height: '1', width: '1',
+    videoId: 'Rn-NBqemx-M',
+    host: 'https://www.youtube-nocookie.com',
     playerVars: {
       autoplay: 1,
       controls: 0,
       disablekb: 1,
-      listType: 'playlist',
-      list: 'PLnsXRyhXpydS-4s_2QhNuX1iNWz-0XiTR',
-      index: 10,
-      loop: 1
+      loop: 1,
+      playlist: 'Rn-NBqemx-M'
     },
     events: {
       onReady: () => { tryStart(); }
