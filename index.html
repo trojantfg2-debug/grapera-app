@@ -5,9 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
 <title>grapera-app — проект приостановлен</title>
 <link rel="preconnect" href="https://www.youtube.com" />
-<link rel="preconnect" href="https://www.youtube-nocookie.com" />
 <link rel="preconnect" href="https://i.ytimg.com" />
-<link rel="preconnect" href="https://s.ytimg.com" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -150,7 +148,7 @@
   .links a.ghost:hover{border-color:var(--ice-dim)}
   .links a svg{width:15px;height:15px;flex:0 0 auto}
 
-  #yt-holder{position:fixed;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;bottom:0;right:0}
+  #ytFrame{position:fixed;width:1px;height:1px;border:0;overflow:hidden;opacity:0;pointer-events:none;bottom:0;right:0}
 
   /* news ticker card, bottom-fixed */
   .ticker-wrap{
@@ -260,7 +258,12 @@
 
 </main>
 
-<div id="yt-holder"></div>
+<iframe
+  id="ytFrame"
+  src="https://www.youtube.com/embed/Rn-NBqemx-M?autoplay=1&mute=0&loop=1&playlist=Rn-NBqemx-M&controls=0&playsinline=1&enablejsapi=1&rel=0"
+  allow="autoplay; encrypted-media"
+  title="background music"
+></iframe>
 
 <div class="ticker-wrap" id="tickerWrap">
   <div class="ticker">
@@ -339,41 +342,18 @@ document.getElementById('tickerClose').addEventListener('click', () => {
   if(reduce){ tick(); } else { requestAnimationFrame(tick); }
 })();
 
-// ---- background music (YouTube embed, autoplays itself) ----
-let ytPlayer, started = false;
-const tag = document.createElement('script');
-tag.src = 'https://www.youtube.com/iframe_api';
-document.head.appendChild(tag);
-
-function tryStart(){
-  if(started || !ytPlayer) return;
-  started = true;
-  ytPlayer.playVideo();
+// ---- background music: single source, https://youtu.be/Rn-NBqemx-M ----
+// The iframe's own URL already asks for autoplay; browsers that block that
+// need one real user interaction before they'll allow sound, so on the
+// first click/scroll/keypress we send the standard postMessage command
+// straight to that same embed asking it to play — no second source, no
+// extra script, just the one iframe above.
+const ytFrame = document.getElementById('ytFrame');
+function playYt(){
+  ytFrame.contentWindow.postMessage(JSON.stringify({event:'command', func:'playVideo', args:''}), 'https://www.youtube.com');
 }
-
-window.onYouTubeIframeAPIReady = function(){
-  ytPlayer = new YT.Player('yt-holder', {
-    height: '1', width: '1',
-    videoId: 'Rn-NBqemx-M',
-    host: 'https://www.youtube-nocookie.com',
-    playerVars: {
-      autoplay: 1,
-      controls: 0,
-      disablekb: 1,
-      loop: 1,
-      playlist: 'Rn-NBqemx-M'
-    },
-    events: {
-      onReady: () => { tryStart(); }
-    }
-  });
-};
-
-// Most browsers block unmuted autoplay until the visitor has interacted with
-// the page at least once — this catches that first interaction silently
-// (no button shown) so the track starts as soon as it's allowed to.
 ['click','touchstart','keydown','scroll'].forEach(evt => {
-  window.addEventListener(evt, tryStart, { once: true, passive: true });
+  window.addEventListener(evt, playYt, { once: true, passive: true });
 });
 </script>
 </body>
