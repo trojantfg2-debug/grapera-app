@@ -29,6 +29,7 @@
   .gear { filter: drop-shadow(0 1.2px 1.6px rgba(0,0,0,.75)); fill: #e8751a; stroke: #e8751a; stroke-width: .9; stroke-linejoin: round; fill-rule: evenodd; }
   .burn, .sheen { stroke: none; fill-rule: evenodd; pointer-events: none; }
   .burn { fill: url(#burn); opacity: 0; } .sheen { fill: url(#sheen); }
+  .hotfill { fill: #ffb040; stroke: none; fill-rule: evenodd; opacity: 0; mix-blend-mode: screen; pointer-events: none; }
   .trace { fill: none; stroke: #9ff0ff; stroke-width: .9; stroke-linejoin: round; opacity: 0; pointer-events: none; }
   #fx, #smoke, #flames, #glows, .pud { pointer-events: none; }
 </style>
@@ -40,6 +41,7 @@
     <radialGradient id="glow"><stop offset="0" stop-color="#fff2b0" stop-opacity=".95"/><stop offset=".4" stop-color="#ff7a1a" stop-opacity=".5"/><stop offset="1" stop-color="#ff3a10" stop-opacity="0"/></radialGradient>
     <radialGradient id="burn"><stop offset=".62" stop-color="#33241d" stop-opacity="0"/><stop offset="1" stop-color="#33241d" stop-opacity=".95"/></radialGradient>
     <radialGradient id="sheen"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".26"/><stop offset=".78" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></radialGradient>
+    <radialGradient id="litg" gradientUnits="userSpaceOnUse" cx="228" cy="24" r="80"><stop offset="0" stop-color="#ffc060"/><stop offset=".5" stop-color="#ff5a1a" stop-opacity=".75"/><stop offset="1" stop-color="#ff3a10" stop-opacity="0"/></radialGradient>
     <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#e6eaee"/></linearGradient>
     <filter id="melt" x="-40%" y="-40%" width="180%" height="180%">
       <feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="2" seed="4" result="n"/>
@@ -53,6 +55,7 @@
 
   <text id="sh" class="word shadow" x="150" y="87.8" text-anchor="middle">GaperaTech</text>
   <text id="word" class="word" x="150" y="86" text-anchor="middle">GaperaTech</text>
+  <text id="lit" class="word" x="150" y="86" text-anchor="middle" style="fill:url(#litg);stroke:none;filter:none;opacity:0;pointer-events:none">GaperaTech</text>
   <g id="reg" transform="translate(284 57)" fill="none" stroke="#ccc" stroke-width="1.1">
     <circle r="5.2"/><text y="2.6" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="7.2" font-weight="700" fill="#ccc" stroke="none">R</text>
   </g>
@@ -111,13 +114,13 @@
     const d = gearPath(g.n, g.ro, g.rr, g.hole, g.h[0], g.h[1], g.h[2]);
     g.el.setAttribute('d', d);
     const mk = cls => { const c = g.el.cloneNode(); c.removeAttribute('id'); c.setAttribute('class', cls); g.grp.appendChild(c); return c; };
-    g.burn = mk('burn'); g.sheen = mk('sheen'); g.trace = mk('trace');
+    g.burn = mk('burn'); g.sheen = mk('sheen'); g.hf = mk('hotfill'); g.trace = mk('trace');
     g.trace.setAttribute('pathLength', 1000); g.trace.setAttribute('stroke-dasharray', 1000); g.trace.setAttribute('stroke-dashoffset', 1000);
     const cl = mkSvg('clipPath', { id: 'cl' + gi }); cl.appendChild(mkSvg('path', { d, 'clip-rule': 'evenodd' })); $('defs').appendChild(cl);
     g.cg = mkSvg('g', { 'clip-path': 'url(#cl' + gi + ')' }); g.cg.style.pointerEvents = 'none'; g.grp.appendChild(g.cg);
     const f = $('melt').cloneNode(true); f.querySelectorAll('[id]').forEach(e => e.removeAttribute('id')); g.fid = f.id = 'melt' + gi; $('defs').appendChild(f);
     g.fn = f.querySelector('feTurbulence'); g.fn.setAttribute('seed', 4 + gi * 5); g.fd = f.querySelector('feDisplacementMap'); g.fb = f.querySelector('feGaussianBlur');
-    g.layers = [g.el, g.burn, g.sheen, g.trace, g.cg];
+    g.layers = [g.el, g.burn, g.sheen, g.hf, g.trace, g.cg];
     g.grp.appendChild(mkSvg('circle', { r: (g.hole * .5).toFixed(2), fill: '#241911', stroke: '#9b7a5e', 'stroke-width': .35, 'pointer-events': 'none' }));   // ось
   });
   const CP = { x: -12.56 * Z, y: -5.96 * Z };
@@ -181,6 +184,7 @@
       g.burn.style.opacity = (alive ? g.soot * .9 : fall ? .5 : 0).toFixed(2);
       g.sheen.style.opacity = alive ? ((1 - g.soot * .7) * (1 - sstep(g.melt / .35)) * (1 - h * .8)).toFixed(2) : 0;
       g.glow.setAttribute('opacity', (h * h * (alive ? .9 : fall ? .6 * g.pf : 0) * (.88 + .12 * Math.sin(T * 21 + g.n))).toFixed(2));
+      g.hf.style.opacity = (alive || fall ? Math.pow(h, 2.4) * .6 * (.82 + .18 * Math.sin(T * 13 + g.n) * Math.sin(T * 7.3)) : 0).toFixed(2);   // раскалённое свечение с мерцанием
       const e = alive ? Math.max(g.melt, g.warp) : 1; g.e = e;           // у каждой шестерни свой фильтр оплавления
       g.grp.style.filter = (alive && e > .02) || fall ? 'url(#' + g.fid + ')' : 'none';
       g.fb.setAttribute('stdDeviation', (e * 2.4).toFixed(2)); g.fd.setAttribute('scale', (Math.max(0, g.melt - .25) * 15).toFixed(2));
@@ -192,6 +196,8 @@
       p.setAttribute('fill', gearColor(h, g.soot)); p.setAttribute('opacity', alive ? g.pf.toFixed(2) : 0);
     }
     $('sh').style.opacity = (hot * hot * .5).toFixed(2);
+    $('lit').style.opacity = Math.min(.85, hot * hot * .9 * (.88 + .12 * Math.sin(T * 11) * Math.sin(T * 5.7))).toFixed(2);
+    { const lg = $('litg'); if (lg.dataset.x != RX + ',' + RY) { lg.dataset.x = RX + ',' + RY; lg.setAttribute('cx', RX); lg.setAttribute('cy', RY); } }   // буквы подсвечиваются жаром
     if (Math.abs(hot - (render.lh || 0)) > .02) { render.lh = hot; document.documentElement.style.setProperty('--h', hot.toFixed(2)); }   // фон разогревается вместе с шестернями
     $('hot').setAttribute('opacity', coupled ? (hot * (.35 + .65 * Math.min(1, Math.abs(omega) / MAXW * 3))).toFixed(2) : 0);
     rig.setAttribute('transform', 'translate(' + (RX + Math.sin(T * 41) * shake * .09).toFixed(2) + ' ' + (RY + Math.cos(T * 37) * shake * .09).toFixed(2) + ')');
@@ -202,6 +208,8 @@
   const rs = g => g.ro * (.022 + Math.pow(Math.random(), 2.6) * .055);          // капли: в основном мелкие, редко крупные
   function thermal(g, dt) {
     if (g.st !== 'alive') return;
+    const o = G.find(x => x !== g);
+    if (o.st !== 'alive') { const b = g.heat; g.heat = Math.max(0, g.heat - .3 * dt); g.melt = Math.max(0, g.melt - .25 * dt); g.cool = g.heat < b - 1e-5; return; }   // партнёр расплавлен/возрождается: не греется и не получает урон
     const s = Math.min(1, Math.abs(g.om) / MAXW), before = g.heat;
     g.heat = clamp(g.heat + (.18 / g.dur * Math.pow(s, 1.5) - .13 * g.heat) * dt, 0, 1.4);
     g.cool = g.heat < before - 1e-5;
@@ -213,7 +221,6 @@
     if (g.heat > .72 && g.cr.length < 7) { g.ca += (g.heat - .65) * 2.6 * dt * (.35 + s); while (g.ca >= 1) { g.ca--; spawnCrack(g, s); } }   // случайные трещины при сильном нагреве
     if (g.melt >= 1) {
       g.st = 'fall'; g.ft = g.dt = g.fy = g.vy = 0; g.pheat = Math.max(1, g.heat); g.cool = false; if (drag && drag.g === g) endDrag();
-      const o = G.find(x => x !== g && x.st === 'alive'); if (o) o.heat = Math.min(1.3, o.heat + .1);   // соседка обжигается
     }
   }
   function spawnCrack(g, s) {
@@ -278,11 +285,12 @@
 
   // ---------- Частицы ----------
   function add(type, x, y, vx, vy, life, r, fill, o, tx, ty) {
-    if (parts.length > 360) return;
-    const el = document.createElementNS(NS, type === 'spark' ? 'line' : type === 'chip' ? 'polygon' : ['drip', 'splat', 'flame'].includes(type) ? 'ellipse' : 'circle');
+    if (parts.length > 480) return;
+    const el = document.createElementNS(NS, type === 'spark' ? 'line' : type === 'chip' ? 'polygon' : type === 'flame' ? 'path' : ['drip', 'splat'].includes(type) ? 'ellipse' : 'circle');
     if (type === 'spark') { el.setAttribute('stroke', fill); el.setAttribute('stroke-linecap', 'round'); }
     else if (type === 'ring') { el.setAttribute('fill', 'none'); el.setAttribute('stroke', fill); el.setAttribute('stroke-width', '.8'); }
     else el.setAttribute('fill', fill);
+    if (type === 'flame') el.setAttribute('d', 'M0 -2C.95 -.7 1 .8 0 1C-1 .8 -.95 -.7 0 -2Z');
     if (type === 'chip') el.setAttribute('points', [[-1, -.45], [.8, -.7], [1.1, .4], [-.2, .8]].map(q => (q[0] * r).toFixed(2) + ',' + (q[1] * r).toFixed(2)).join(' '));
     $(type === 'smoke' ? 'smoke' : type === 'flame' ? 'flames' : 'fx').appendChild(el);
     parts.push({ el, type, x, y, vx, vy, life, max: life, r, o: o || 1, tx, ty, th: tx || 0, hit: 0, rot: Math.random() * 360, vr: (Math.random() - .5) * 900 });
@@ -334,11 +342,11 @@
         add('smoke', g.cx + Math.cos(a) * d, py + Math.sin(a) * d * (g.st === 'alive' ? 1 : .2), (Math.random() - .5) * 6, -(10 + Math.random() * 8), 1.4 + Math.random(), 2 + Math.random() * 2, fill, .4);
       }
       const al = g.st === 'alive', fh = al ? g.heat : g.st === 'fall' ? g.pheat : 0, sc = g.ro / 15.2, sg = al ? sstep((g.melt - .5) / .5) : 0;
-      g.fa += (fh > .5 ? Math.min(1, (fh - .45) * 1.7) * 20 * (.5 + sc) : 0) * dt;      // маленький огонь на шестерне
+      g.fa += (fh > .5 ? Math.min(1, (fh - .45) * 1.7) * 28 * (.5 + sc) : 0) * dt;      // маленький огонь на шестерне
       while (g.fa >= 1) {
         g.fa--;
         const a = (Math.random() < .75 ? -Math.random() : Math.random()) * Math.PI, d = g.rr * (.55 + Math.random() * .55), cy = g.cy + (g.st === 'fall' ? g.fy : 0) + g.ro * .88 * sg;
-        add('flame', g.cx + Math.cos(a) * d, cy + Math.sin(a) * d * (1 - .85 * sg), (Math.random() - .5) * 6, -(14 + Math.random() * 14), .45 + Math.random() * .4, (.45 + Math.random() * .75) * (.6 + sc * .6), '#fff6c0');
+        { const qx = g.cx + Math.cos(a) * d, qy = cy + Math.sin(a) * d * (1 - .85 * sg), vx = (Math.random() - .5) * 6, vy = -(14 + Math.random() * 14), fl = .45 + Math.random() * .4, fs = (.5 + Math.random() * .8) * (.6 + sc * .6); add('flame', qx, qy, vx, vy, fl, fs, '#fff'); add('flame', qx, qy, vx, vy * 1.05, fl * .8, fs * .5, '#fff', 1, 0, 1); }
       }
       if (al && g.melt > .12) {
         g.da += g.melt * 6 * dt * (.5 + sc);
@@ -372,8 +380,8 @@
           A('cx', p.x); A('cy', p.y); A('r', p.r * (1 - .4 * u)); A('fill-opacity', 1 - u * .5); break;
         case 'flame':
           p.x += (p.vx + Math.sin(T * 14 + p.r * 30) * 5) * dt; p.y += p.vy * dt; p.vy *= 1 - .6 * dt;
-          A('cx', p.x); A('cy', p.y); A('rx', p.r * (1 - u * .75)); A('ry', p.r * (1 - u * .75) * 1.7);
-          p.el.setAttribute('fill', fireCol(u)); A('fill-opacity', .95 * Math.pow(1 - u, 1.2)); break;
+          { const k = 1 - u * .7; p.el.setAttribute('transform', 'translate(' + p.x.toFixed(2) + ' ' + p.y.toFixed(2) + ') scale(' + (p.r * k).toFixed(2) + ' ' + (p.r * k * 1.5).toFixed(2) + ') skewX(' + (Math.sin(T * 12 + p.r * 40) * 14).toFixed(0) + ')'); }
+          p.el.setAttribute('fill', fireCol(p.ty ? u * .45 : u)); A('fill-opacity', .95 * Math.pow(1 - u, 1.2)); break;
         case 'chip':
           dripStep(p, dt / 2, .45, 0); dripStep(p, dt / 2, .45, 0); p.rot += p.vr * dt;
           p.el.setAttribute('transform', 'translate(' + p.x.toFixed(2) + ' ' + p.y.toFixed(2) + ') rotate(' + p.rot.toFixed(0) + ')');
